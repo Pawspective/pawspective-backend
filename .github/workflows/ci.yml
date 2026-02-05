@@ -11,6 +11,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Generate Compilation Database
+        run: |
+          cmake -B build-debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
+
       - name: Install dependencies
         run: sudo apt update && sudo apt install -y clang-format clang-tidy cppcheck python3-autopep8
 
