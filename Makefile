@@ -75,7 +75,9 @@ format-check:
 .PHONY: tidy cppcheck lint
 tidy:
 	@echo "Running clang-tidy..."
-	find src -name '*pp' -type f | xargs $(CLANG_TIDY) -p $(BUILD_DIR)
+	find src -name '*pp' -type f | xargs $(CLANG_TIDY) -p $(TIDY_DB_DIR) \
+		--header-filter='src/.*' \
+		--extra-arg=-Wno-unknown-argument
 cppcheck:
 	@echo "Running cppcheck..."
 	$(CPPCHECK) --enable=all --error-exitcode=1 src/
