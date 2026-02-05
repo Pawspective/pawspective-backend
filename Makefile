@@ -1,6 +1,9 @@
 PROJECT_NAME = pawspective
 NPROCS ?= $(shell nproc)
 CLANG_FORMAT ?= clang-format
+CPPCHECK ?= cppcheck
+CLANG_TIDY ?= clang-tidy
+BUILD_DIR ?= build-debug
 DOCKER_IMAGE ?= ghcr.io/userver-framework/ubuntu-24.04-userver:latest
 CMAKE_OPTS ?=
 # If we're under TTY, pass "-it" to "docker run"
@@ -57,7 +60,24 @@ $(addprefix install-, $(PRESETS)): install-%: build-%
 install: install-release
 
 # Format the sources
-.PHONY: format
+.PHONY: format format-check
+# Local usage
 format:
 	find src -name '*pp' -type f | xargs $(CLANG_FORMAT) -i
 	find tests -name '*.py' -type f | xargs python3 -m autopep8 -i
+
+# for CI
+format-check:
+	find src -name '*pp' -type f | xargs $(CLANG_FORMAT) --dry-run --Werror
+	find tests -name '*.py' -type f | xargs python3 -m autopep8 --diff
+
+#Static analyzers
+.PHONY: tidy cppcheck lint
+tidy:
+	@echo "Running clang-tidy..."
+	find src -name '*pp' -type f | xargs $(CLANG_TIDY) -p $(BUILD_DIR)
+cppcheck:
+	@echo "Running cppcheck..."
+	$(CPPCHECK) --enable=all --error-exitcode=1 src/
+lint: format-check tidy cppcheck
+	@echo "All lint check passed!"
