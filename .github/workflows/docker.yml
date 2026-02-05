@@ -40,5 +40,5 @@ jobs:
 
           - name: Run tests release
             run: |
-              sudo chown -R user-user build-release
+              sudo chown -R user:user build-release
               sudo -u user make test-release
