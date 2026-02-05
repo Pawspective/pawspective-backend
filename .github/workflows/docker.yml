@@ -13,7 +13,6 @@ jobs:
             options: >
                 --cap-add=SYS_PTRACE
                 --security-opt seccomp=unconfined
-                --user user
 
         steps:
           - uses: actions/checkout@v4
@@ -29,7 +28,7 @@ jobs:
             run: make build-debug
 
           - name: Run tests debug
-            run: make test-debug
+            run: sudo -u user make test-debug
 
           - name: Configure release build
             run: make cmake-release
@@ -38,4 +37,4 @@ jobs:
             run: make build-release
 
           - name: Run tests release
-            run: make test-release
+            run: sudo -u user make test-release
