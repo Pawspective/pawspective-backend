@@ -9,7 +9,7 @@ jobs:
         runs-on: ubuntu-latest
 
         container:
-            image: ghcr.io/userver-framework/ubuntu-24.04-userver:latest
+            image: ghcr.io/userver-framework/ubuntu-22.04-userver-pg-dev:latest
             options: >
                 --cap-add=SYS_PTRACE
                 --security-opt seccomp=unconfined
