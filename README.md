@@ -34,5 +34,8 @@ the result
 set in environment `PREFIX`
 - `make install-debug` - does a `make build-debug` and runs install in directory
 set in environment `PREFIX`
+- `make tidy` - runs clang-tidy
+- `make cppcheck` - runs cppcheck
+- `make lint` - runs formatchecker, clang-tidy and cppcheck
 
 Edit `Makefile.local` to change the default configuration and build options.
