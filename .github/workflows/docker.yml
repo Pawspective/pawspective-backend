@@ -1,0 +1,40 @@
+name: Docker build & test
+
+on:
+    workflow_run:
+        workflows: ["CI (fast checks)"]
+        types:
+            - completed
+
+jobs:
+    build-test:
+        runs-on: ubuntu-latest
+
+        container:
+            image: ghcr.io/userver-framework/ubuntu-24.04-userver:latest
+            options: >
+                --cap-add=SYS_PTRACE
+                --security-opt seccomp=unconfined
+
+        steps:
+          - uses: actions/checkout@v4
+            with:
+              submodules: true
+        
+          - name: Configure debug build
+            run: make cmake-debug
+        
+          - name: Build debug
+            run: make build-debug
+
+          - name: Run tests debug
+            run: make test-debug
+
+          - name: Configure release build
+            run: make cmake-release
+
+          - name: Build release
+            run: make build-release
+
+          - name: Run tests release
+            run: make test-release
