@@ -1,0 +1,24 @@
+components_manager:
+    task_processors:
+
+        main-task-processor:
+            worker_threads: $worker-threads
+
+        fs-task-processor:
+            worker_threads: $worker-fs-threads
+
+    default_task_processor: main-task-processor
+
+    components:
+        server:
+            listener:
+                port: $server-port
+                task_processor: main-task-processor
+
+        logging:
+            fs-task-processor: fs-task-processor
+            loggers:
+                default:
+                    file_path: '@stderr'
+                    level: $logger-level
+                    overflow_behavior: discard
