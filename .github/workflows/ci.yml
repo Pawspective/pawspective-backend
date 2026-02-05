@@ -1,0 +1,24 @@
+name: CI (fast checks)
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/userver-framework/ubuntu-22.04-userver-pg-dev:latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate Compilation Database
+        run: |
+          cmake -B build-debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DUSERVER_USE_ZSTD=OFF .
+
+      - name: Install dependencies
+        run: sudo apt update && sudo apt install -y clang-format clang-tidy cppcheck python3-autopep8
+
+      - name: Run lint checks
+        run: make lint

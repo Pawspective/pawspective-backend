@@ -13,7 +13,8 @@ example: `feature/52-my-feature`.
 
 ## Commit Standard
 
-So you start developing, make your first commit, but what should you write in the commit message?
+So you start developing, make your first commit, but what should you write in
+the commit message?
 
 Here are a few rules:
 
@@ -22,7 +23,7 @@ Format: `<type>(<scope>): <description>`, example: `feat(user): add new feature`
 
 ### `<type>`
 
-This describes the kind of change that this commit providing: 
+This describes the kind of change that this commit providing:
 
 - feat: A new feature (adding a new component, providing new variants for
 an existing component, etc.).
