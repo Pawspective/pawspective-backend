@@ -28,7 +28,9 @@ jobs:
             run: make build-debug
 
           - name: Run tests debug
-            run: sudo -u user make test-debug
+            run: |
+              sudo chown -R user:user build-debug
+              sudo -u user make test-debug
 
           - name: Configure release build
             run: make cmake-release
@@ -37,4 +39,6 @@ jobs:
             run: make build-release
 
           - name: Run tests release
-            run: sudo -u user make test-release
+            run: |
+              sudo chown -R user-user build-release
+              sudo -u user make test-release
