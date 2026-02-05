@@ -1,0 +1,22 @@
+Checks: "-*,boost-*,bugprone-*,concurrency-*,cppcoreguidelines-*,misc-*,modernize-*,performance-*,portability-*,readability-*,google-build-namespaces,google-build-using-namespace,google-global-names-in-headers,google-readability-casting,google-runtime-operator,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-cppcoreguidelines-pro-bounds-constant-array-index,-*magic-numbers*,-*avoid-c-arrays*,-modernize-use-trailing-return-type,-readability-else-after-return,-readability-named-parameter,-readability-identifier-length,-bugprone-easily-swappable-parameters,-bugprone-exception-escape"
+WarningsAsErrors: "*"
+ExtraArgs:
+    - "-std=c++20"
+ExtraArgsBefore:
+    - "-xc++"
+
+CheckOptions:
+  - key: readability-identifier-naming.NamespaceCase
+    value: lower_case
+  - key: readability-identifier-naming.FunctionCase
+    value: lower_case 
+  - key: readability-identifier-naming.ParameterCase
+    value: lower_case
+  - key: readability-identifier-naming.TypeTemplateParameterCase
+    value: CamelCase
+  - key: readability-simplify-boolean-expr.ChainedConditionalReturn
+    value: 1
+  - key: readability-simplify-boolean-expr.ChainedConditionalAssignment
+    value: 1
+  - key: readability-identifier-naming.TypeTemplateParameterIgnoredRegexp
+    value: expr-type
