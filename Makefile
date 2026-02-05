@@ -60,4 +60,4 @@ install: install-release
 .PHONY: format
 format:
 	find src -name '*pp' -type f | xargs $(CLANG_FORMAT) -i
-	find tests -name '*.py' -type f | xargs autopep8 -i
+	find tests -name '*.py' -type f | xargs python3 -m autopep8 -i
