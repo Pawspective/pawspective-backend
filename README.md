@@ -1,5 +1,19 @@
 # Pawspective
 
+## Project Structure
+
+The project follows a structured folder organization where each layer has a clear and dedicated responsibility.
+
+### Directories
+
+- **handlers/** – Handle requests and responses (controllers/routes)
+- **services/** – Business logic and application rules
+- **repositories/** – Data access and persistence (DB/external services)
+- **models/** – Domain models and entities
+- **dto/** – Request/response schemas and data transfer objects
+- **utils/** – Shared helpers and common utilities
+
+
 ## Makefile
 
 Makefile contains typicaly useful targets for development:
