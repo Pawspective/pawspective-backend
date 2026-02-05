@@ -75,6 +75,8 @@ format-check:
 #Static analyzers
 .PHONY: tidy cppcheck lint
 tidy:
+	@echo "Fixing compile_commands.json for older clang-tidy..."
+	sed -i 's/-gz=zstd//g' $(TIDY_DB_DIR)/compile_commands.json
 	@echo "Running clang-tidy..."
 	find src -name '*pp' -type f | xargs $(CLANG_TIDY) -p $(TIDY_DB_DIR) \
 		--header-filter='src/.*' \
