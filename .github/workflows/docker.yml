@@ -13,11 +13,14 @@ jobs:
             options: >
                 --cap-add=SYS_PTRACE
                 --security-opt seccomp=unconfined
+                --user user
 
         steps:
           - uses: actions/checkout@v4
             with:
               submodules: true
+          - name: Fix permissions
+            run: sudo chown -R user:user .
         
           - name: Configure debug build
             run: make cmake-debug

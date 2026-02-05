@@ -8,7 +8,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/userver-framework/ubuntu-24.04-userver-pg-dev:latest
+      image: ghcr.io/userver-framework/ubuntu-24.04-userver:latest
 
     steps:
       - uses: actions/checkout@v4
