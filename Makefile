@@ -6,6 +6,7 @@ CLANG_TIDY ?= clang-tidy
 BUILD_DIR ?= build-debug
 DOCKER_IMAGE ?= ghcr.io/userver-framework/ubuntu-24.04-userver:latest
 CMAKE_OPTS ?=
+TIDY_DB_DIR ?= build-debug
 # If we're under TTY, pass "-it" to "docker run"
 DOCKER_ARGS = $(shell /bin/test -t 0 && /bin/echo -it || echo)
 PRESETS ?= debug release debug-custom release-custom
