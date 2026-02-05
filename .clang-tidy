@@ -4,6 +4,7 @@ ExtraArgs:
     - "-std=c++20"
 ExtraArgsBefore:
     - "-xc++"
+HeaderFilterRegex: "src/.*"
 
 CheckOptions:
   - key: readability-identifier-naming.NamespaceCase
