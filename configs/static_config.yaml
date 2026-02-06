@@ -22,3 +22,8 @@ components_manager:
                     file_path: '@stderr'
                     level: $logger-level
                     overflow_behavior: discard
+
+        handler-health-check:
+            path: /health
+            method: GET
+            task_processor: main-task-processor
