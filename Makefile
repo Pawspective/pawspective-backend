@@ -7,6 +7,7 @@ BUILD_DIR ?= build-debug
 DOCKER_IMAGE ?= ghcr.io/userver-framework/ubuntu-24.04-userver:latest
 CMAKE_OPTS ?=
 TIDY_DB_DIR ?= build-debug
+INCLUDE_DIRS := $(shell find src -type d -name "include" | sed 's/^/--extra-arg=-I/')
 # If we're under TTY, pass "-it" to "docker run"
 DOCKER_ARGS = $(shell /bin/test -t 0 && /bin/echo -it || echo)
 PRESETS ?= debug release debug-custom release-custom
@@ -73,15 +74,25 @@ format-check:
 	find tests -name '*.py' -type f | xargs python3 -m autopep8 --diff
 
 #Static analyzers
-.PHONY: tidy cppcheck lint
 tidy:
-	@echo "Fixing compile_commands.json for older clang-tidy..."
-	sed -i 's/-gz=zstd//g' $(TIDY_DB_DIR)/compile_commands.json
-	sed -i 's/-static-libasan//g' $(TIDY_DB_DIR)/compile_commands.json
+	@echo "Cleaning up compile_commands.json..."
+	sed -i 's/-DUSERVER_NAMESPACE_BEGIN=[^ ]*//g' $(TIDY_DB_DIR)/compile_commands.json
+	sed -i 's/-DUSERVER_NAMESPACE_END=[^ ]*//g' $(TIDY_DB_DIR)/compile_commands.json
+	sed -i 's/-fsanitize=[^ ]*//g' $(TIDY_DB_DIR)/compile_commands.json
+	sed -i 's/-fmacro-prefix-map=[^ ]*//g' $(TIDY_DB_DIR)/compile_commands.json
+	
 	@echo "Running clang-tidy..."
-	find src -name '*pp' -type f | xargs $(CLANG_TIDY) -p $(TIDY_DB_DIR) \
+	find src -name '*.cpp' -type f | xargs $(CLANG_TIDY) -p $(TIDY_DB_DIR) \
 		--header-filter='src/.*' \
-		--extra-arg=-Wno-unknown-argument
+		$(INCLUDE_DIRS) \
+		--extra-arg="-DUSERVER_NAMESPACE=userver" \
+		--extra-arg="-DUSERVER_NAMESPACE_BEGIN=namespace userver { inline namespace v2_16_rc {" \
+		--extra-arg="-DUSERVER_NAMESPACE_END=}}" \
+		--extra-arg="-Wno-unknown-argument" \
+		--extra-arg="-Wno-unused-command-line-argument" \
+		--extra-arg="-I/usr/include/userver/third_party" \
+		-checks='-*,clang-diagnostic-*,readability-*,bugprone-*,-misc-include-cleaner'
+
 cppcheck:
 	@echo "Running cppcheck..."
 	$(CPPCHECK) --enable=all --error-exitcode=1 src/
