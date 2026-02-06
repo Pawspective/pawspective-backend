@@ -21,8 +21,29 @@ endif()
 
 userver_setup_environment()
 
+if(TARGET userver::core)
+    foreach(prop 
+        INTERFACE_COMPILE_DEFINITIONS 
+        INTERFACE_COMPILE_OPTIONS
+        COMPILE_DEFINITIONS
+        COMPILE_OPTIONS)
+        get_target_property(USERVER_PROPS userver::core ${prop})
+        if(USERVER_PROPS AND NOT USERVER_PROPS STREQUAL "USERVER_PROPS-NOTFOUND")
+            list(FILTER USERVER_PROPS EXCLUDE REGEX "USERVER_NAMESPACE")
+            set_property(TARGET userver::core PROPERTY ${prop} ${USERVER_PROPS})
+        endif()
+    endforeach()
+endif()
+
+
 ## Common sources
 add_subdirectory(src)
+
+get_directory_property(DIR_COMPILE_DEFS COMPILE_DEFINITIONS)
+if(DIR_COMPILE_DEFS)
+    list(FILTER DIR_COMPILE_DEFS EXCLUDE REGEX "USERVER_NAMESPACE")
+    set_directory_properties(PROPERTIES COMPILE_DEFINITIONS "${DIR_COMPILE_DEFS}")
+endif()
 
 add_executable(${PROJECT_NAME} src/main.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE pawspective_src)
