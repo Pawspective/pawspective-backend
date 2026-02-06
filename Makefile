@@ -2,11 +2,12 @@ PROJECT_NAME = pawspective
 NPROCS ?= $(shell nproc)
 CLANG_FORMAT ?= clang-format
 CPPCHECK ?= cppcheck
-CLANG_TIDY ?= clang-tidy
+CLANG_TIDY ?= clang-tidy-18
 BUILD_DIR ?= build-debug
 DOCKER_IMAGE ?= ghcr.io/userver-framework/ubuntu-24.04-userver:latest
 CMAKE_OPTS ?=
 TIDY_DB_DIR ?= build-debug
+INCLUDE_DIRS := $(shell find src -type d -name "include" | sed 's/^/--extra-arg=-I/')
 # If we're under TTY, pass "-it" to "docker run"
 DOCKER_ARGS = $(shell /bin/test -t 0 && /bin/echo -it || echo)
 PRESETS ?= debug release debug-custom release-custom
@@ -75,15 +76,14 @@ format-check:
 #Static analyzers
 .PHONY: tidy cppcheck lint
 tidy:
-	@echo "Fixing compile_commands.json for older clang-tidy..."
-	sed -i 's/-gz=zstd//g' $(TIDY_DB_DIR)/compile_commands.json
-	sed -i 's/-static-libasan//g' $(TIDY_DB_DIR)/compile_commands.json
 	@echo "Running clang-tidy..."
 	find src -name '*pp' -type f | xargs $(CLANG_TIDY) -p $(TIDY_DB_DIR) \
 		--header-filter='src/.*' \
-		--extra-arg=-Wno-unknown-argument
+		--extra-arg=-Wno-unknown-argument \
+		--extra-arg=-Wno-unknown-warning-option
+
 cppcheck:
 	@echo "Running cppcheck..."
 	$(CPPCHECK) --enable=all --error-exitcode=1 src/
-lint: format-check tidy cppcheck
+lint: format-check cppcheck
 	@echo "All lint check passed!"

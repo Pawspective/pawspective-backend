@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.12)
 project(pawspective CXX)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(DownloadUserver)
 
@@ -16,22 +21,33 @@ endif()
 
 userver_setup_environment()
 
+if(TARGET userver::core)
+    foreach(prop 
+        INTERFACE_COMPILE_DEFINITIONS 
+        INTERFACE_COMPILE_OPTIONS
+        COMPILE_DEFINITIONS
+        COMPILE_OPTIONS)
+        get_target_property(USERVER_PROPS userver::core ${prop})
+        if(USERVER_PROPS AND NOT USERVER_PROPS STREQUAL "USERVER_PROPS-NOTFOUND")
+            list(FILTER USERVER_PROPS EXCLUDE REGEX "USERVER_NAMESPACE")
+            set_property(TARGET userver::core PROPERTY ${prop} ${USERVER_PROPS})
+        endif()
+    endforeach()
+endif()
+
+
 ## Common sources
-include_directories(src)
+add_subdirectory(src)
 
-add_library(
-    ${PROJECT_NAME}_objs OBJECT
-        src/empty.cpp
-)
-target_link_libraries(
-    ${PROJECT_NAME}_objs
-    PUBLIC userver::core
-)
+get_directory_property(DIR_COMPILE_DEFS COMPILE_DEFINITIONS)
+if(DIR_COMPILE_DEFS)
+    list(FILTER DIR_COMPILE_DEFS EXCLUDE REGEX "USERVER_NAMESPACE")
+    set_directory_properties(PROPERTIES COMPILE_DEFINITIONS "${DIR_COMPILE_DEFS}")
+endif()
 
-
-# The Service
 add_executable(${PROJECT_NAME} src/main.cpp)
-target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_objs)
+target_link_libraries(${PROJECT_NAME} PRIVATE pawspective_src)
+
 
 ## Unit Tests
 
