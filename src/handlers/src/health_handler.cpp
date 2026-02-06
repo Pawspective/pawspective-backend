@@ -3,7 +3,7 @@
 #include <userver/server/http/http_request.hpp>
 #include <userver/server/request/request_context.hpp>
 
-namespace samples::health {
+namespace handlers::health {
 std::string HealthCheck::HandleRequest(
     userver::server::http::HttpRequest & /*reqest*/,
     userver::server::request::RequestContext & /*context*/
@@ -11,4 +11,4 @@ std::string HealthCheck::HandleRequest(
     return "OK";
 }
 
-}  // namespace samples::health
+}  // namespace handlers::health
