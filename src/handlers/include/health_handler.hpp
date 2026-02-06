@@ -6,7 +6,7 @@
 #include <userver/server/http/http_request.hpp>
 #include <userver/server/request/request_context.hpp>
 
-namespace samples::health {
+namespace handlers::health {
 
 class HealthCheck final : public userver::server::handlers::HttpHandlerBase {
 public:
@@ -20,4 +20,4 @@ public:
     ) const override;
 };
 
-}  // namespace samples::health
+}  // namespace handlers::health
