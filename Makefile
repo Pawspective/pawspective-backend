@@ -82,6 +82,7 @@ tidy:
 	sed -i 's/-fmacro-prefix-map=[^ ]*//g' $(TIDY_DB_DIR)/compile_commands.json
 	
 	@echo "Running clang-tidy..."
+	cat $(TIDY_DB_DIR)/compile_commands.json
 	find src -name '*.cpp' -type f -exec $(CLANG_TIDY) -p $(TIDY_DB_DIR) \
 		--header-filter='src/.*' \
 		$(INCLUDE_DIRS) \
