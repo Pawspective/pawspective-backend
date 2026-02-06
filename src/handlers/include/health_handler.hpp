@@ -6,7 +6,7 @@
 #include <userver/server/http/http_request.hpp>
 #include <userver/server/request/request_context.hpp>
 
-namespace handlers::health {
+namespace pawspective::handlers {
 
 class HealthCheck final : public userver::server::handlers::HttpHandlerBase {
 public:

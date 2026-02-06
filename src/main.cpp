@@ -4,7 +4,7 @@
 
 int main(int argc, char *argv[]) {
     auto component_list = userver::components::MinimalServerComponentList()
-                              .Append<handlers::health::HealthCheck>();
+                              .Append<pawspective::handlers::HealthCheck>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }

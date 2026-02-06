@@ -3,7 +3,7 @@
 #include <userver/server/http/http_request.hpp>
 #include <userver/server/request/request_context.hpp>
 
-namespace handlers::health {
+namespace pawspective::handlers {
 std::string HealthCheck::HandleRequest(
     userver::server::http::HttpRequest & /*reqest*/,
     userver::server::request::RequestContext & /*context*/
