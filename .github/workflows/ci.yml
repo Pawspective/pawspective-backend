@@ -13,6 +13,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache CMake build
+        uses: actions/cache@v4
+        with:
+          path: build-debug
+          key: ${{ runner.os }}-cmake-lint-${{ hashFiles('**/CMakeLists.txt', 'cmake/**') }}
+          restore-keys: |
+            ${{ runner.os }}-cmake-lint-
+
       - name: Generate Compilation Database
         run: |
           cmake -B build-debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DUSERVER_USE_ZSTD=OFF .
