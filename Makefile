@@ -85,13 +85,12 @@ tidy:
 	find src -name '*.cpp' -type f | xargs $(CLANG_TIDY) -p $(TIDY_DB_DIR) \
 		--header-filter='src/.*' \
 		$(INCLUDE_DIRS) \
-		--extra-arg="-DUSERVER_NAMESPACE=userver" \
-		--extra-arg="-DUSERVER_NAMESPACE_BEGIN=namespace userver { inline namespace v2_16_rc {" \
-		--extra-arg="-DUSERVER_NAMESPACE_END=}}" \
-		--extra-arg="-Wno-unknown-argument" \
-		--extra-arg="-Wno-unused-command-line-argument" \
-		--extra-arg="-I/usr/include/userver/third_party" \
-		-checks='-*,clang-diagnostic-*,readability-*,bugprone-*,-misc-include-cleaner'
+		--extra-arg='-DUSERVER_NAMESPACE=userver' \
+		--extra-arg='-DUSERVER_NAMESPACE_BEGIN=namespace userver{inline namespace v2_16_rc{' \
+		--extra-arg='-DUSERVER_NAMESPACE_END=}}' \
+		--extra-arg='-Wno-unknown-argument' \
+		--extra-arg='-Wno-unused-command-line-argument' \
+		--extra-arg='-I/usr/include/userver/third_party' \
 
 cppcheck:
 	@echo "Running cppcheck..."
