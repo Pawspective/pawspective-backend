@@ -11,4 +11,4 @@ std::string HealthCheck::HandleRequest(
     return "OK";
 }
 
-}  // namespace handlers::health
+}  // namespace pawspective::handlers
