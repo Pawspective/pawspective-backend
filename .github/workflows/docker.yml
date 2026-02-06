@@ -7,6 +7,10 @@ on:
 jobs:
     build-test:
         runs-on: ubuntu-latest
+        strategy:
+          matrix:
+            build_type: [debug, release]
+          fail-fast: false
 
         container:
             image: ghcr.io/userver-framework/ubuntu-22.04-userver-pg-dev:latest
@@ -18,27 +22,23 @@ jobs:
           - uses: actions/checkout@v4
             with:
               submodules: true
+
+          - name: Cache CPM dependencies
+            uses: actions/cache@v4
+            with:
+              path: build-${{ matrix.build_type }}/_deps
+              key: ${{ runner.os }}-cpm-${{ matrix.build_type }}-${{ hashFiles('**/CMakeLists.txt', '**/cpm-hashes.cmake') }}
+              restore-keys: |
+                ${{ runner.os }}-cpm-${{ matrix.build_type }}-
+              
           - name: Fix permissions
             run: sudo chown -R user:user .
         
-          - name: Configure debug build
-            run: make cmake-debug
-        
-          - name: Build debug
-            run: make build-debug
+          - name: Configure
+            run: sudo -u user make cmake-${{ matrix.build_type }}
 
-          - name: Run tests debug
-            run: |
-              sudo chown -R user:user build-debug
-              sudo -u user make test-debug
+          - name: Build
+            run: sudo -u user cmake --build build-${{ matrix.build_type }} -j $(nproc)
 
-          - name: Configure release build
-            run: make cmake-release
-
-          - name: Build release
-            run: make build-release
-
-          - name: Run tests release
-            run: |
-              sudo chown -R user:user build-release
-              sudo -u user make test-release
+          - name: Run tests
+            run: sudo -u user make test-${{ matrix.build_type }}
