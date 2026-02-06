@@ -27,7 +27,7 @@ jobs:
             uses: actions/cache@v4
             with:
               path: build-${{ matrix.build_type }}/_deps
-              key: ${{ runner.os }}-cpm-${{ matrix.build_type }}-${{ hashFiles('**/CMakeLists.txt', '**/cpm-hashes.cmake') }}
+              key: ${{ runner.os }}-cpm-${{ matrix.build_type }}-${{ hashFiles('**/CMakeLists.txt',  '**/cpm-hashes.cmake') }} 
               restore-keys: |
                 ${{ runner.os }}-cpm-${{ matrix.build_type }}-
               
