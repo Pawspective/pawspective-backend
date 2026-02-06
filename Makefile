@@ -74,23 +74,13 @@ format-check:
 	find tests -name '*.py' -type f | xargs python3 -m autopep8 --diff
 
 #Static analyzers
+.PHONY: tidy cppcheck lint
 tidy:
-	@echo "Cleaning up compile_commands.json..."
-	sed -i 's/-DUSERVER_NAMESPACE_BEGIN=[^ ]*//g' $(TIDY_DB_DIR)/compile_commands.json
-	sed -i 's/-DUSERVER_NAMESPACE_END=[^ ]*//g' $(TIDY_DB_DIR)/compile_commands.json
-	sed -i 's/-fsanitize=[^ ]*//g' $(TIDY_DB_DIR)/compile_commands.json
-	sed -i 's/-fmacro-prefix-map=[^ ]*//g' $(TIDY_DB_DIR)/compile_commands.json
-	
 	@echo "Running clang-tidy..."
-	cat $(TIDY_DB_DIR)/compile_commands.json
-	find src -name '*.cpp' -type f -exec $(CLANG_TIDY) -p $(TIDY_DB_DIR) \
+	find src -name '*pp' -type f | xargs $(CLANG_TIDY) -p $(TIDY_DB_DIR) \
 		--header-filter='src/.*' \
-		$(INCLUDE_DIRS) \
-		"--extra-arg=-Wno-unknown-argument" \
-		"--extra-arg=-Wno-unused-command-line-argument" \
-		"--extra-arg=-I/usr/include/userver/third_party" \
-		"-checks=-*,clang-diagnostic-*,readability-*,bugprone-*,-misc-include-cleaner" \
-		{} +
+		--extra-arg=-Wno-unknown-argument \
+		--extra-arg=-Wno-unknown-warning-option
 
 cppcheck:
 	@echo "Running cppcheck..."
