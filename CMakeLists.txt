@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.12)
 project(pawspective CXX)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(DownloadUserver)
 
@@ -17,21 +22,11 @@ endif()
 userver_setup_environment()
 
 ## Common sources
-include_directories(src)
+add_subdirectory(src)
 
-add_library(
-    ${PROJECT_NAME}_objs OBJECT
-        src/empty.cpp
-)
-target_link_libraries(
-    ${PROJECT_NAME}_objs
-    PUBLIC userver::core
-)
-
-
-# The Service
 add_executable(${PROJECT_NAME} src/main.cpp)
-target_link_libraries(${PROJECT_NAME} PRIVATE ${PROJECT_NAME}_objs)
+target_link_libraries(${PROJECT_NAME} PRIVATE pawspective_src)
+
 
 ## Unit Tests
 
