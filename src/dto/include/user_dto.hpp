@@ -10,7 +10,7 @@
 namespace pawspective::dto {
 
 struct UserDTO {
-    std::int64_t id;
+    std::int64_t id{};
     std::string email;
     std::string first_name;
     std::string last_name;
