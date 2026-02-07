@@ -1,4 +1,4 @@
-// cppcheck-suppress all
+// cppcheck-suppress-file style
 #include "../include/user_dto.hpp"
 #include <cstdint>
 #include <string>
@@ -9,6 +9,7 @@
 
 namespace pawspective::dto {
 
+// cppcheck-suppress unusedFunction
 [[maybe_unused]] userver::formats::json::Value
 serialize(const UserDTO &data, userver::formats::serialize::To<userver::formats::json::Value>) {
     userver::formats::json::ValueBuilder builder;
@@ -17,16 +18,12 @@ serialize(const UserDTO &data, userver::formats::serialize::To<userver::formats:
     builder["email"] = data.email;
     builder["first_name"] = data.first_name;
     builder["last_name"] = data.last_name;
-
-    if (data.organization_id.has_value()) {
-        builder["organization_id"] = *data.organization_id;
-    } else {
-        builder["organization_id"] = nullptr;
-    }
+    builder["organization_id"] = data.organization_id;
 
     return builder.ExtractValue();
 }
 
+// cppcheck-suppress unusedFunction
 [[maybe_unused]] UserDTO
 parse(const userver::formats::json::Value &json, userver::formats::parse::To<UserDTO>) {
     UserDTO dto;
@@ -35,10 +32,7 @@ parse(const userver::formats::json::Value &json, userver::formats::parse::To<Use
     dto.email = json["email"].As<std::string>();
     dto.first_name = json["first_name"].As<std::string>();
     dto.last_name = json["last_name"].As<std::string>();
-
-    if (!json["organization_id"].IsNull()) {
-        dto.organization_id = json["organization_id"].As<std::int64_t>();
-    }
+    dto.organization_id = json["organization_id"].As<std::optional<std::int64_t>>();
 
     return dto;
 }
