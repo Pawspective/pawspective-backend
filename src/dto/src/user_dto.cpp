@@ -32,7 +32,8 @@ parse(const userver::formats::json::Value &json, userver::formats::parse::To<Use
     dto.email = json["email"].As<std::string>();
     dto.first_name = json["first_name"].As<std::string>();
     dto.last_name = json["last_name"].As<std::string>();
-    dto.organization_id = json["organization_id"].As<std::optional<std::int64_t>>();
+    dto.organization_id =
+        json["organization_id"].As<std::optional<std::int64_t>>();
 
     return dto;
 }
