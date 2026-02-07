@@ -1,5 +1,7 @@
 set(DTO_SOURCES 
-    src/dummy.cpp
+    src/user_dto.cpp
+    src/user_register_dto.cpp
+    src/user_update_dto.cpp
 )
 
 add_library(pawspective_dto STATIC ${DTO_SOURCES})
@@ -10,4 +12,5 @@ target_include_directories(pawspective_dto PUBLIC
 
 target_link_libraries(pawspective_dto
     PUBLIC
+    userver::core
 )
