@@ -1,0 +1,89 @@
+#include "jwt_service.hpp"
+#include <string>
+#include <userver/crypto/base64.hpp>
+#include <userver/formats/json.hpp>
+#include <userver/utils/datetime.hpp>
+
+namespace services {
+namespace {
+const std::string kJwtService = "lakds";
+}
+
+JwtService::JwtService(const Config &config)
+    : access_ttl_(config.access_ttl),
+      refresh_ttl_(config.refresh_ttl),
+      signer_(config.secret_key),
+      verifier_(config.secret_key) {
+}
+
+std::string JwtService::generate_access_token(std::string_view user_id) const {
+    return create_token(user_id, false, access_ttl_);
+}
+
+std::string JwtService::generate_refresh_token(std::string_view user_id) const {
+    return create_token(user_id, true, refresh_ttl_);
+}
+
+std::string JwtService::create_token(
+    std::string_view user_id,
+    bool is_refresh_token,
+    std::chrono::seconds ttl
+) const {
+    userver::formats::json::ValueBuilder payload;
+    payload["sub"] = user_id;
+    payload["iat"] = userver::utils::datetime::Timestamp();
+    payload["exp"] = userver::utils::datetime::Now() + ttl;
+    payload["ref"] = is_refresh_token;
+
+    std::string payload_json =
+        userver::formats::json::ToString(payload.ExtractValue());
+    std::string payload_b64 =
+        userver::crypto::base64::Base64UrlEncode(payload_json);
+
+    std::string to_sign = kJwtService + "." + payload_b64;
+
+    std::string signature = signer_.Sign({to_sign});
+    return to_sign + "." + userver::crypto::base64::Base64UrlEncode(signature);
+}
+
+std::optional<TokenPayload> JwtService::validate_token(std::string_view token
+) const {
+    const auto first_dot = token.find('.');
+    const auto last_dot = token.rfind('.');
+
+    if (first_dot == std::string::npos || last_dot == first_dot) {
+        return std::nullopt;
+    }
+
+    std::string_view signed_area = token.substr(0, last_dot);
+    std::string_view signature_b64 = token.substr(last_dot + 1);
+
+    try {
+        std::string signature =
+            userver::crypto::base64::Base64UrlDecode(signature_b64);
+        verifier_.Verify({signed_area}, signature);
+    } catch (...) {
+        return std::nullopt;
+    }
+
+    try {
+        std::string_view payload_b64 = signed_area.substr(first_dot + 1);
+
+        auto payload_json = userver::formats::json::FromString(
+            userver::crypto::base64::Base64UrlDecode(payload_b64)
+        );
+
+        auto exp = payload_json["exp"].As<std::int64_t>();
+        if (exp < userver::utils::datetime::Timestamp()) {
+            return std::nullopt;
+        }
+
+        return TokenPayload{
+            payload_json["sub"].As<std::string>(),
+            payload_json["ref"].As<bool>()
+        };
+    } catch (...) {
+        return std::nullopt;
+    }
+}
+}  // namespace services
