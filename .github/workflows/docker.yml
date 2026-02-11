@@ -34,6 +34,9 @@ jobs:
           - name: Fix permissions
             run: sudo chown -R user:user .
         
+          - name: Install dependencies
+            run: sudo apt update && sudo apt install -y libargon2-dev
+
           - name: Configure
             run: sudo -u user make cmake-${{ matrix.build_type }}
 
