@@ -19,6 +19,10 @@ if(NOT userver_FOUND)
     download_userver(TRY_DIR third_party/userver)
 endif()
 
+# Find argon2 library
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(ARGON2 REQUIRED libargon2)
+
 userver_setup_environment()
 
 
@@ -32,6 +36,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE pawspective_src)
 
 
 ## Unit Tests
+include(CTest)
+enable_testing()
 
 ## Benchmarks
 
