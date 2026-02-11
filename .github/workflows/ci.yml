@@ -26,7 +26,7 @@ jobs:
           cmake -B build-debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DUSERVER_USE_ZSTD=OFF .
 
       - name: Install dependencies
-        run: sudo apt update && sudo apt install -y clang-format clang-tidy cppcheck python3-autopep8
+        run: sudo apt update && sudo apt install -y clang-format clang-tidy cppcheck python3-autopep8 libargon2-dev
 
       - name: Run lint checks
         run: make lint
