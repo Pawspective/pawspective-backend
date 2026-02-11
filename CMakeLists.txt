@@ -27,7 +27,8 @@ add_subdirectory(src)
 
 get_directory_property(DIR_COMPILE_DEFS COMPILE_DEFINITIONS)
 
-add_executable(${PROJECT_NAME} src/main.cpp)
+add_executable(${PROJECT_NAME} src/main.cpp
+        src/services/src/jwt_service.cpp)
 target_link_libraries(${PROJECT_NAME} PRIVATE pawspective_src)
 
 

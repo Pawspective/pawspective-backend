@@ -25,8 +25,10 @@ public:
     ) const;
     [[nodiscard]] std::string generate_refresh_token(std::string_view user_id
     ) const;
-
-    [[nodiscard]] std::optional<TokenPayload> validate_token(
+    [[nodiscard]] std::optional<TokenPayload> validate_access_token(
+        std::string_view token
+    ) const;
+    [[nodiscard]] std::optional<TokenPayload> validate_refresh_token(
         std::string_view token
     ) const;
 
@@ -35,6 +37,10 @@ private:
         std::string_view user_id,
         bool is_refresh_token,
         std::chrono::seconds ttl
+    ) const;
+
+    [[nodiscard]] std::optional<TokenPayload> validate_token(
+        std::string_view token
     ) const;
 
     const std::chrono::seconds access_ttl_;

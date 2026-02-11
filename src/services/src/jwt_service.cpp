@@ -5,9 +5,6 @@
 #include <userver/utils/datetime.hpp>
 
 namespace services {
-namespace {
-const std::string kJwtService = "lakds";
-}
 
 JwtService::JwtService(const Config &config)
     : access_ttl_(config.access_ttl),
@@ -34,13 +31,18 @@ std::string JwtService::create_token(
     payload["iat"] = userver::utils::datetime::Timestamp();
     payload["exp"] = userver::utils::datetime::Now() + ttl;
     payload["ref"] = is_refresh_token;
+    payload["iss"] = "auth-service";
 
     std::string payload_json =
         userver::formats::json::ToString(payload.ExtractValue());
     std::string payload_b64 =
         userver::crypto::base64::Base64UrlEncode(payload_json);
 
-    std::string to_sign = kJwtService + "." + payload_b64;
+    std::string header_json = R"({"alg":"HS256","typ":"JWT"})";
+    std::string header_b64 =
+        userver::crypto::base64::Base64UrlEncode(header_json);
+
+    std::string to_sign = header_b64 + "." + payload_b64;
 
     std::string signature = signer_.Sign({to_sign});
     return to_sign + "." + userver::crypto::base64::Base64UrlEncode(signature);
@@ -78,6 +80,18 @@ std::optional<TokenPayload> JwtService::validate_token(std::string_view token
             return std::nullopt;
         }
 
+        auto header_json = signed_area.substr(0, first_dot);
+        if (userver::formats::json::FromString(
+                userver::crypto::base64::Base64UrlDecode(header_json)
+            )["alg"]
+                .As<std::string>() != "HS256") {
+            return std::nullopt;
+        }
+
+        if (payload_json["iss"].As<std::string>() != "auth-service") {
+            return std::nullopt;
+        }
+
         return TokenPayload{
             payload_json["sub"].As<std::string>(),
             payload_json["ref"].As<bool>()
@@ -86,4 +100,25 @@ std::optional<TokenPayload> JwtService::validate_token(std::string_view token
         return std::nullopt;
     }
 }
+
+std::optional<TokenPayload> JwtService::validate_access_token(
+    std::string_view token
+) const {
+    auto payload = validate_token(token);
+    if (payload && !payload->is_refresh_token) {
+        return payload;
+    }
+    return std::nullopt;
+}
+
+std::optional<TokenPayload> JwtService::validate_refresh_token(
+    std::string_view token
+) const {
+    auto payload = validate_token(token);
+    if (payload && payload->is_refresh_token) {
+        return payload;
+    }
+    return std::nullopt;
+}
+
 }  // namespace services
