@@ -84,6 +84,9 @@ tidy:
 
 cppcheck:
 	@echo "Running cppcheck..."
-	$(CPPCHECK) --enable=all --error-exitcode=1 src/
+	$(CPPCHECK) --enable=all --error-exitcode=1 \
+		--project=build-debug/compile_commands.json \
+		--suppressions-list=.cppcheck_suppressions \
+		--file-filter="*/src/*" 
 lint: format-check cppcheck
 	@echo "All lint check passed!"

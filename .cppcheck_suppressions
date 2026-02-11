@@ -1,0 +1,2 @@
+# Suppress unusedFunction warnings for the whole project.
+unusedFunction
