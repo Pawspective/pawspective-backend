@@ -21,12 +21,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cmake-lint-
 
+      - name: Install dependencies
+        run: sudo apt update && sudo apt install -y clang-format clang-tidy cppcheck python3-autopep8 libargon2-dev
+
       - name: Generate Compilation Database
         run: |
           cmake -B build-debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DUSERVER_USE_ZSTD=OFF .
-
-      - name: Install dependencies
-        run: sudo apt update && sudo apt install -y clang-format clang-tidy cppcheck python3-autopep8
 
       - name: Run lint checks
         run: make lint
