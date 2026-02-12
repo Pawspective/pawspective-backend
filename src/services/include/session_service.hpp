@@ -2,6 +2,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include "jwt_service.hpp"
 
 namespace pawspective::services {
