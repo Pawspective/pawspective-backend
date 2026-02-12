@@ -1,5 +1,6 @@
 set(SERVICES_SOURCES 
     src/jwt_service.cpp
+    src/pg_session_service.cpp
 )
 
 add_library(pawspective_services STATIC ${SERVICES_SOURCES})
