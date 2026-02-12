@@ -3,6 +3,7 @@
 #include <chrono>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <userver/crypto/signers.hpp>
 #include <userver/crypto/verifiers.hpp>
 

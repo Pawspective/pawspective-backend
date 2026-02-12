@@ -1,5 +1,6 @@
 #include "jwt_service.hpp"
 #include <string>
+#include <string_view>
 #include <userver/crypto/base64.hpp>
 #include <userver/formats/json.hpp>
 #include <userver/utils/datetime.hpp>
