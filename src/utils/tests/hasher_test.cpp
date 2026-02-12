@@ -1,9 +1,3 @@
-#ifdef __cppcheck__
-int cppcheck_stub() {
-    return 0;
-}
-#else
-
 #include "../include/hasher.hpp"
 #include <userver/utest/utest.hpp>
 
@@ -53,5 +47,3 @@ UTEST(CryptoUtils, LongPassword) {
 }
 
 }  // namespace pawspective::utils::crypto::tests
-
-#endif  // __cppcheck__
