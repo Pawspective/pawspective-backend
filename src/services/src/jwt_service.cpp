@@ -14,16 +14,18 @@ JwtService::JwtService(const Config &config)
       verifier_(config.secret_key) {
 }
 
-std::string JwtService::generate_access_token(std::string_view user_id) const {
+std::string JwtService::generate_access_token(const std::string_view user_id
+) const {
     return create_token(user_id, false, access_ttl_);
 }
 
-std::string JwtService::generate_refresh_token(std::string_view user_id) const {
+std::string JwtService::generate_refresh_token(const std::string_view user_id
+) const {
     return create_token(user_id, true, refresh_ttl_);
 }
 
 std::string JwtService::create_token(
-    std::string_view user_id,
+    const std::string_view user_id,
     bool is_refresh_token,
     std::chrono::seconds ttl
 ) const {
@@ -56,7 +58,8 @@ std::string JwtService::create_token(
     return to_sign + "." + userver::crypto::base64::Base64UrlEncode(signature);
 }
 
-std::optional<TokenPayload> JwtService::validate_token(std::string_view token
+std::optional<TokenPayload> JwtService::validate_token(
+    const std::string_view token
 ) const {
     const auto first_dot = token.find('.');
     const auto last_dot = token.rfind('.');
@@ -110,7 +113,7 @@ std::optional<TokenPayload> JwtService::validate_token(std::string_view token
 }
 
 std::optional<TokenPayload> JwtService::validate_access_token(
-    std::string_view token
+    const std::string_view token
 ) const {
     auto payload = validate_token(token);
     if (payload && !payload->is_refresh_token) {
@@ -120,7 +123,7 @@ std::optional<TokenPayload> JwtService::validate_access_token(
 }
 
 std::optional<TokenPayload> JwtService::validate_refresh_token(
-    std::string_view token
+    const std::string_view token
 ) const {
     auto payload = validate_token(token);
     if (payload && payload->is_refresh_token) {

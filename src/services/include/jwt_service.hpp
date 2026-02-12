@@ -11,11 +11,12 @@ namespace pawspective::services {
 
 /**
  * @brief Decoded JWT payload returned after successful validation.
- * 
+ *
  */
 struct TokenPayload {
-    std::string user_id; ///< Subject indentifier extracted from the token.
-    bool is_refresh_token{false}; ///< Indicates whether the token is a refresh token or an access token.
+    std::string user_id;  ///< Subject indentifier extracted from the token.
+    bool is_refresh_token{false
+    };  ///< Indicates whether the token is a refresh token or an access token.
 };
 
 /**
@@ -37,30 +38,33 @@ struct TokenPayload {
 class JwtService final {
 public:
     struct Config {
-        std::string secret_key; ///< Symmetric key used for HS256 signing.
-        std::chrono::seconds access_ttl; ///< Lifetime of access tokens.
-        std::chrono::seconds refresh_ttl; ///< Lifetime of refresh tokens.
+        std::string secret_key;  ///< Symmetric key used for HS256 signing.
+        std::chrono::seconds access_ttl;   ///< Lifetime of access tokens.
+        std::chrono::seconds refresh_ttl;  ///< Lifetime of refresh tokens.
     };
 
     /**
-     * @brief Construct a new JwtService object with given configuration.     
+     * @brief Construct a new JwtService object with given configuration.
      *
-     * @param config  Configuration parameters for the JWT service, including secret key and token lifetimes.
+     * @param config  Configuration parameters for the JWT service, including
+     * secret key and token lifetimes.
      */
     explicit JwtService(const Config &config);
 
-    
     /**
      * @brief Generates a JWT access token.
-     * 
-     * The token contains subject (`sub`) claim with the user ID, issued at (`iat`) and expiration (`exp`) claims, and a custom `ref` claim set to false. The token is signed using HS256 and is valid for the duration specified in the configuration. *
+     *
+     * The token contains subject (`sub`) claim with the user ID, issued at
+     * (`iat`) and expiration (`exp`) claims, and a custom `ref` claim set to
+     * false. The token is signed using HS256 and is valid for the duration
+     * specified in the configuration. *
      * @param user_id Identifier of the authenticated user.
      * @return std::string signed JWT access token.
      */
     [[nodiscard]] std::string generate_access_token(std::string_view user_id
     ) const;
 
-        /**
+    /**
      * @brief Generates a signed JWT refresh token.
      *
      * The token contains subject (`sub`), expiration (`exp`),
@@ -87,7 +91,7 @@ public:
         std::string_view token
     ) const;
 
-        /**
+    /**
      * @brief Validates a refresh token.
      *
      * Performs:
