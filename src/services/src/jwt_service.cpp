@@ -26,10 +26,12 @@ std::string JwtService::create_token(
     bool is_refresh_token,
     std::chrono::seconds ttl
 ) const {
+    auto now = userver::utils::datetime::Now();
+    auto expiry = now + ttl;
     userver::formats::json::ValueBuilder payload;
     payload["sub"] = user_id;
-    payload["iat"] = userver::utils::datetime::Timestamp();
-    payload["exp"] = userver::utils::datetime::Now() + ttl;
+    payload["iat"] = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
+    payload["exp"] = std::chrono::duration_cast<std::chrono::seconds>(expiry.time_since_epoch()).count();
     payload["ref"] = is_refresh_token;
     payload["iss"] = "auth-service";
 
