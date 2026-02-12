@@ -44,7 +44,6 @@ bool verify_hash(const std::string &data, const std::string &hash) {
         return false;
     }
 
-    // argon2id_verify сам извлекает соль и параметры из строки hash
     int result = argon2id_verify(hash.data(), data.data(), data.size());
 
     if (result == ARGON2_OK) {
