@@ -1,9 +1,3 @@
-#ifdef __cppcheck__
-int cppcheck_stub() {
-    return 0;
-}
-#else
-
 #include "../include/hasher.hpp"
 #include <userver/utest/utest.hpp>
 
@@ -15,7 +9,6 @@ const std::string password = "my_secure_password_123!";
 
 UTEST(CryptoUtils, HashCreateAndVerify) {
     const std::string hash = generate_hash(password);
-    std::cout << "Generated hash: " << hash << std::endl;
 
     EXPECT_FALSE(hash.empty());
     EXPECT_NE(password, hash);
@@ -54,5 +47,3 @@ UTEST(CryptoUtils, LongPassword) {
 }
 
 }  // namespace pawspective::utils::crypto::tests
-
-#endif  // __cppcheck__
