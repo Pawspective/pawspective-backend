@@ -30,8 +30,13 @@ std::string JwtService::create_token(
     auto expiry = now + ttl;
     userver::formats::json::ValueBuilder payload;
     payload["sub"] = user_id;
-    payload["iat"] = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
-    payload["exp"] = std::chrono::duration_cast<std::chrono::seconds>(expiry.time_since_epoch()).count();
+    payload["iat"] =
+        std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch())
+            .count();
+    payload["exp"] = std::chrono::duration_cast<std::chrono::seconds>(
+                         expiry.time_since_epoch()
+    )
+                         .count();
     payload["ref"] = is_refresh_token;
     payload["iss"] = "auth-service";
 
