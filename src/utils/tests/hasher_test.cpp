@@ -15,7 +15,6 @@ const std::string password = "my_secure_password_123!";
 
 UTEST(CryptoUtils, HashCreateAndVerify) {
     const std::string hash = generate_hash(password);
-    std::cout << "Generated hash: " << hash << std::endl;
 
     EXPECT_FALSE(hash.empty());
     EXPECT_NE(password, hash);
