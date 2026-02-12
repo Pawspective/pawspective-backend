@@ -43,18 +43,18 @@ std::string JwtService::create_token(
     payload["ref"] = is_refresh_token;
     payload["iss"] = "auth-service";
 
-    std::string payload_json =
+    const std::string payload_json =
         userver::formats::json::ToString(payload.ExtractValue());
-    std::string payload_b64 =
+    const std::string payload_b64 =
         userver::crypto::base64::Base64UrlEncode(payload_json);
 
-    std::string header_json = R"({"alg":"HS256","typ":"JWT"})";
-    std::string header_b64 =
+    const std::string header_json = R"({"alg":"HS256","typ":"JWT"})";
+    const std::string header_b64 =
         userver::crypto::base64::Base64UrlEncode(header_json);
 
-    std::string to_sign = header_b64 + "." + payload_b64;
+    const std::string to_sign = header_b64 + "." + payload_b64;
 
-    std::string signature = signer_.Sign({to_sign});
+    const std::string signature = signer_.Sign({to_sign});
     return to_sign + "." + userver::crypto::base64::Base64UrlEncode(signature);
 }
 
@@ -68,11 +68,11 @@ std::optional<TokenPayload> JwtService::validate_token(
         return std::nullopt;
     }
 
-    std::string_view signed_area = token.substr(0, last_dot);
-    std::string_view signature_b64 = token.substr(last_dot + 1);
+    const std::string_view signed_area = token.substr(0, last_dot);
+    const std::string_view signature_b64 = token.substr(last_dot + 1);
 
     try {
-        std::string signature =
+        const std::string signature =
             userver::crypto::base64::Base64UrlDecode(signature_b64);
         verifier_.Verify({signed_area}, signature);
     } catch (...) {
@@ -80,7 +80,7 @@ std::optional<TokenPayload> JwtService::validate_token(
     }
 
     try {
-        std::string_view payload_b64 = signed_area.substr(first_dot + 1);
+        const std::string_view payload_b64 = signed_area.substr(first_dot + 1);
 
         auto payload_json = userver::formats::json::FromString(
             userver::crypto::base64::Base64UrlDecode(payload_b64)
