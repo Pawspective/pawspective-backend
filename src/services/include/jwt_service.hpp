@@ -50,4 +50,4 @@ private:
     userver::crypto::VerifierHs256 verifier_;
 };
 
-}  // namespace services
+}  // namespace pawspective::services

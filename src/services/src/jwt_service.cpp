@@ -128,4 +128,4 @@ std::optional<TokenPayload> JwtService::validate_refresh_token(
     return std::nullopt;
 }
 
-}  // namespace services
+}  // namespace pawspective::services
