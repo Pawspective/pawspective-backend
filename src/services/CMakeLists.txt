@@ -1,5 +1,4 @@
 set(SERVICES_SOURCES 
-    src/dummy.cpp
     src/jwt_service.cpp
 )
 
