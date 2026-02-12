@@ -6,7 +6,7 @@
 #include <userver/crypto/signers.hpp>
 #include <userver/crypto/verifiers.hpp>
 
-namespace services {
+namespace pawspective::services {
 struct TokenPayload {
     std::string user_id;
     bool is_refresh_token{false};

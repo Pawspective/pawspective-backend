@@ -4,7 +4,7 @@
 #include <userver/formats/json.hpp>
 #include <userver/utils/datetime.hpp>
 
-namespace services {
+namespace pawspective::services {
 
 JwtService::JwtService(const Config &config)
     : access_ttl_(config.access_ttl),
