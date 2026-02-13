@@ -2,7 +2,7 @@ PROJECT_NAME = pawspective
 NPROCS ?= $(shell nproc)
 CLANG_FORMAT ?= clang-format
 CPPCHECK ?= cppcheck
-CLANG_TIDY ?= clang-tidy-18
+CLANG_TIDY ?= run-clang-tidy-18
 BUILD_DIR ?= build-debug
 DOCKER_IMAGE ?= ghcr.io/userver-framework/ubuntu-24.04-userver:latest
 CMAKE_OPTS ?=
@@ -81,11 +81,10 @@ format-check:
 tidy:
 	@echo "Running clang-tidy..."
 	find src -name '*.[ch]pp' -type f | xargs $(CLANG_TIDY) -p $(TIDY_DB_DIR) \
-		--header-filter='src/.*' \
-		--extra-arg=-Wno-unknown-argument \
-		--extra-arg=-Wno-unknown-warning-option \
-		--extra-arg="-xc++" \
-		--extra-arg="-std=c++20"
+		-j $(shell nproc) \
+		-extra-arg=-Wno-unknown-argument \
+		-extra-arg=-Wno-unknown-warning-option \
+		-extra-arg="-std=c++20"
 
 cppcheck:
 	@echo "Running cppcheck..."
