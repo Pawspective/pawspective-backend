@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <userver/storages/postgres/cluster.hpp>
 #include "../../models/include/user.hpp"
 
 namespace pawspective::repositories {
