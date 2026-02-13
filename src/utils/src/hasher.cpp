@@ -1,9 +1,10 @@
 #include "hasher.hpp"
 #include <argon2.h>
+#include <cstddef>
+#include <cstdint>
 #include <string>
 #include <userver/crypto/random.hpp>
 #include <userver/logging/log.hpp>
-#include <userver/utils/encoding/hex.hpp>
 #include <vector>
 
 namespace pawspective::utils::crypto {
@@ -18,15 +19,15 @@ constexpr uint32_t kSaltLength = 16;
 }  // namespace
 
 std::string generate_hash(const std::string &data) {
-    auto salt = userver::crypto::GenerateRandomBlock(kSaltLength);
+    const auto salt = userver::crypto::GenerateRandomBlock(kSaltLength);
 
-    size_t encoded_len = argon2_encodedlen(
+    const size_t encoded_len = argon2_encodedlen(
         kTimeCost, kMemoryCost, kParallelism, kSaltLength, kHashLength,
         Argon2_id
     );
     std::vector<char> buffer(encoded_len);
 
-    int result = argon2id_hash_encoded(
+    const int result = argon2id_hash_encoded(
         kTimeCost, kMemoryCost, kParallelism, data.data(), data.size(),
         salt.data(), kSaltLength, kHashLength, buffer.data(), buffer.size()
     );
@@ -44,7 +45,7 @@ bool verify_hash(const std::string &data, const std::string &hash) {
         return false;
     }
 
-    int result = argon2id_verify(hash.data(), data.data(), data.size());
+    const int result = argon2id_verify(hash.data(), data.data(), data.size());
 
     if (result == ARGON2_OK) {
         return true;

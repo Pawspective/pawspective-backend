@@ -1,4 +1,6 @@
 #include "../include/hasher.hpp"
+#include <gtest/gtest.h>
+#include <string>
 #include <userver/utest/utest.hpp>
 
 namespace pawspective::utils::crypto::tests {
@@ -40,7 +42,7 @@ UTEST(CryptoUtils, InvalidHashFormat) {
 }
 
 UTEST(CryptoUtils, LongPassword) {
-    std::string long_password(100, 'a');
+    const std::string long_password(100, 'a');
     const auto hash = generate_hash(long_password);
 
     EXPECT_TRUE(verify_hash(long_password, hash));
