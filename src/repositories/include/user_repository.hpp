@@ -10,7 +10,7 @@ namespace pawspective::repositories {
 
 class UserRepository {
 private:
-    userver::storages::postgres::ClusterPtr pg_cluster_{};
+    userver::storages::postgres::ClusterPtr pg_cluster_;
 
 public:
     explicit UserRepository(userver::storages::postgres::ClusterPtr pg_cluster);
