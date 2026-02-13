@@ -125,8 +125,8 @@ private:
         std::string_view token
     ) const;
 
-    const std::chrono::seconds access_ttl_;
-    const std::chrono::seconds refresh_ttl_;
+    std::chrono::seconds access_ttl_;
+    std::chrono::seconds refresh_ttl_;
 
     userver::crypto::SignerHs256 signer_;
     userver::crypto::VerifierHs256 verifier_;

@@ -3,13 +3,14 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <userver/storages/postgres/cluster.hpp>
 #include "../../models/include/user.hpp"
 
 namespace pawspective::repositories {
 
 class UserRepository {
 private:
-    userver::storages::postgres::ClusterPtr pg_cluster_{};
+    userver::storages::postgres::ClusterPtr pg_cluster_;
 
 public:
     explicit UserRepository(userver::storages::postgres::ClusterPtr pg_cluster);
