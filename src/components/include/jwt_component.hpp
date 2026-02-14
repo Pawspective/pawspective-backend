@@ -21,6 +21,11 @@ public:
     static userver::yaml_config::Schema GetStaticConfigSchema();
 
 private:
+    static services::JwtService make_service(
+        const userver::components::ComponentConfig &config,
+        const userver::components::ComponentContext &context
+    );
+
     services::JwtService service_;
 };
 }  // namespace pawspective::components

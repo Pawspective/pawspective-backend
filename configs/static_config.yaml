@@ -18,11 +18,11 @@ components_manager:
 
         default-secdist-provider:
             config: /home/user/pawspective/secdist.json
-            missing-ok: true
+            missing-ok: false
 
 
         secdist:
-
+            provider: default-secdist-provider
         
 
         dns-client:
@@ -42,7 +42,7 @@ components_manager:
             dns_resolver: async
 
         jwt-service:
-            secret_key: "super-sercret-key"
+            secret_key: $JWT_SECRET_KEY
             access_ttl: 3600
             refresh_ttl: 86400
         

@@ -3,8 +3,11 @@
 #include <string>
 #include <userver/components/component_config.hpp>
 #include <userver/components/component_context.hpp>
+#include <userver/storages/secdist/component.hpp>
+#include <userver/storages/secdist/secdist.hpp>
 #include <userver/yaml_config/merge_schemas.hpp>
 #include <userver/yaml_config/schema.hpp>
+#include "jwt_secrets.hpp"
 #include "jwt_service.hpp"
 
 namespace pawspective::components {
@@ -13,11 +16,7 @@ JwtComponent::JwtComponent(
     const userver::components::ComponentContext &context
 )
     : LoggableComponentBase(config, context),
-      service_(services::JwtService::Config{
-          config["secret_key"].As<std::string>(),
-          config["access_ttl"].As<std::chrono::seconds>(),
-          config["refresh_ttl"].As<std::chrono::seconds>()
-      }) {
+      service_(make_service(config, context)) {
 }
 
 const services::JwtService &JwtComponent::get_service() const {
@@ -41,4 +40,19 @@ userver::yaml_config::Schema JwtComponent::GetStaticConfigSchema() {
                 description: Time-to-live for refresh tokens in seconds
     )");
 }
+
+services::JwtService JwtComponent::make_service(
+    const userver::components::ComponentConfig &config,
+    const userver::components::ComponentContext &context
+) {
+    const auto &secdist =
+        context.FindComponent<userver::components::Secdist>().Get();
+    const auto &secrets = secdist.Get<models::JwtSecrets>();
+
+    return services::JwtService{services::JwtService::Config{
+        secrets.secret_key, config["access_ttl"].As<std::chrono::seconds>(),
+        config["refresh_ttl"].As<std::chrono::seconds>()
+    }};
+}
+
 }  // namespace pawspective::components
