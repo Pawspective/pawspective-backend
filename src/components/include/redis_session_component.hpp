@@ -16,11 +16,9 @@ public:
         const userver::components::ComponentContext &context
     );
 
-    [[nodiscard]] services::SessionService &get_service() {
-        return *impl_;
-    }
+    [[nodiscard]] const services::SessionService &get_service() const;
 
 private:
-    std::unique_ptr<services::RedisSessionService> impl_;
+    services::RedisSessionService session_service_;
 };
 }  // namespace pawspective::components
