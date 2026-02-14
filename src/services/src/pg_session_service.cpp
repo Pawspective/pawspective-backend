@@ -8,6 +8,7 @@
 #include <userver/storages/postgres/result_set.hpp>
 #include <utility>
 #include "jwt_service.hpp"
+#include "session_service.hpp"
 
 namespace pawspective::services {
 

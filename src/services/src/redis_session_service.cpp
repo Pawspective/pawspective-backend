@@ -8,6 +8,7 @@
 #include <userver/storages/redis/client_fwd.hpp>
 #include <utility>
 #include "jwt_service.hpp"
+#include "session_service.hpp"
 
 namespace pawspective::services {
 
