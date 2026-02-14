@@ -14,7 +14,7 @@ namespace pawspective::services {
 
 RedisSessionService::RedisSessionService(
     userver::storages::redis::ClientPtr redis_client,
-    JwtService &jwt
+    const JwtService &jwt
 )
     : redis_(std::move(redis_client)), jwt_(jwt) {
 }

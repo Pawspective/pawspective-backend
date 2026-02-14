@@ -14,7 +14,7 @@ namespace pawspective::services {
 
 PgSessionService::PgSessionService(
     userver::storages::postgres::ClusterPtr pg_cluster,
-    JwtService &jwt
+    const JwtService &jwt
 )
     : pg_cluster_(std::move(pg_cluster)), jwt_(jwt) {
 }

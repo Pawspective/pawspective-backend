@@ -9,9 +9,10 @@
 namespace pawspective::services {
 
 class PgSessionService final : public SessionService {
+public:
     explicit PgSessionService(
         userver::storages::postgres::ClusterPtr pg_cluster,
-        JwtService &jwt
+        const JwtService &jwt
     );
 
     SessionBundle create_session(std::string_view user_id) override;
@@ -21,6 +22,6 @@ class PgSessionService final : public SessionService {
 
 private:
     userver::storages::postgres::ClusterPtr pg_cluster_;
-    JwtService &jwt_;
+    const JwtService &jwt_;
 };
 }  // namespace pawspective::services

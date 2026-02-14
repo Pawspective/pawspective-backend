@@ -1,0 +1,17 @@
+set(COMPONENTS_SOURCES 
+    src/jwt_component.cpp
+    src/pg_session_component.cpp
+    src/redis_session_component.cpp
+)
+
+add_library(pawspective_components STATIC ${COMPONENTS_SOURCES})
+
+target_include_directories(pawspective_components PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
+
+target_link_libraries(pawspective_components
+    PUBLIC
+    userver::core
+    pawspective_services
+)
