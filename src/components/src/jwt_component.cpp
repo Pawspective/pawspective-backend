@@ -20,6 +20,10 @@ JwtComponent::JwtComponent(
       }) {
 }
 
+const services::JwtService &JwtComponent::get_service() const {
+    return service_;
+}
+
 userver::yaml_config::Schema JwtComponent::GetStaticConfigSchema() {
     return userver::yaml_config::MergeSchemas<LoggableComponentBase>(R"(
         type: object

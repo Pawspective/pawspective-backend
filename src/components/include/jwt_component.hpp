@@ -16,9 +16,7 @@ public:
         const userver::components::ComponentContext &context
     );
 
-    [[nodiscard]] const services::JwtService &get_service() const {
-        return service_;
-    }
+    [[nodiscard]] const services::JwtService &get_service() const;
 
     static userver::yaml_config::Schema GetStaticConfigSchema();
 
