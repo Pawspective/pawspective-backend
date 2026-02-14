@@ -10,6 +10,48 @@ components_manager:
     default_task_processor: main-task-processor
 
     components:
+        testsuite-support:
+
+        http-client:
+
+        http-client-middleware-pipeline:
+
+        default-secdist-provider:
+            config: /home/user/pawspective/secdist.json
+            missing-ok: true
+
+
+        secdist:
+
+        
+
+        dns-client:
+            fs-task-processor: fs-task-processor
+#        redis-session:
+#            groups:
+#                - db: 0
+#                  config_name: master
+#            subscribe_groups: []
+#            thread_pools:
+#                redis_thread_pool_size: 8
+#                sentinel_thread_pool_size: 1
+            
+        postgres-db:
+            dbconnection: 'postgresql://user:password@localhost:5432/postgres-db'
+            blocking_task_processor: fs-task-processor
+            dns_resolver: async
+
+        jwt-service:
+            secret_key: "super-sercret-key"
+            access_ttl: 3600
+            refresh_ttl: 86400
+        
+        session-service-pg:
+            load-enabled: true 
+
+#        session-service-redis:
+#            load-enabled: true
+
         server:
             listener:
                 port: $server-port
