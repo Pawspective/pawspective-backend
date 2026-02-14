@@ -27,14 +27,6 @@ components_manager:
 
         dns-client:
             fs-task-processor: fs-task-processor
-#        redis-session:
-#            groups:
-#                - db: 0
-#                  config_name: master
-#            subscribe_groups: []
-#            thread_pools:
-#                redis_thread_pool_size: 8
-#                sentinel_thread_pool_size: 1
             
         postgres-db:
             dbconnection: 'postgresql://user:password@localhost:5432/postgres-db'
@@ -49,8 +41,6 @@ components_manager:
         session-service-pg:
             load-enabled: true 
 
-#        session-service-redis:
-#            load-enabled: true
 
         server:
             listener:
