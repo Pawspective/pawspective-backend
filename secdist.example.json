@@ -1,0 +1,5 @@
+{
+  "jwt-service": {
+    "secret_key": "dev-secret-key-change-me-in-production"
+  }
+}

@@ -14,4 +14,5 @@ target_link_libraries(pawspective_components
     PUBLIC
     userver::core
     pawspective_services
+    pawspective_models
 )
