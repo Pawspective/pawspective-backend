@@ -78,3 +78,12 @@ components_manager:
             path: /auth/login
             method: POST
             task_processor: main-task-processor
+
+        handler-auth-logout:
+            path: /auth/logout
+            method: POST
+            task_processor: main-task-processor
+            auth:
+                types:
+                    - jwt
+                required: true
