@@ -2,10 +2,11 @@
 #include <userver/components/component.hpp>
 #include <userver/http/common_headers.hpp>
 #include "../../services/include/jwt_service.hpp"
+#include "../../components/include/jwt_component.hpp" 
 
 namespace pawspective::handlers {
 
-AuthMeChecker::AuthMeChecker(services::JwtService &jwt_service)
+AuthMeChecker::AuthMeChecker(const services::JwtService &jwt_service)
     : jwt_service_(jwt_service) {
 }
 
@@ -59,7 +60,7 @@ AuthMeHandler::AuthMeHandler(
     bool is_monitor
 )
     : HttpHandlerJsonBase(config, component_context, is_monitor),
-      jwt_service_(component_context.FindComponent<services::JwtService>(
+      jwt_service_(component_context.FindComponent<components::JwtComponent>().get_service(
       ) /*,
            user_service_(component_context.FindComponent<services::UserService>())*/
       ) {

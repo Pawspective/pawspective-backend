@@ -7,6 +7,7 @@
 #include <userver/storages/secdist/provider_component.hpp>
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/utils/daemon_run.hpp>
+#include "auth_me_handler.hpp"
 #include "health_handler.hpp"
 #include "jwt_component.hpp"
 #include "pg_session_component.hpp"
@@ -20,6 +21,7 @@ int main(int argc, char *argv[]) {
             .Append<userver::clients::http::MiddlewarePipelineComponent>()
             .Append<userver::clients::dns::Component>()
             .Append<pawspective::handlers::HealthCheck>()
+            .Append<pawspective::handlers::AuthMeHandler>()
             .Append<userver::components::DefaultSecdistProvider>()
             .Append<userver::components::Secdist>()
             .Append<userver::components::Postgres>("postgres-db")

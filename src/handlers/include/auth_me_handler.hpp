@@ -4,7 +4,7 @@
 #include <userver/server/handlers/auth/auth_checker_base.hpp>
 #include <userver/server/handlers/auth/auth_checker_settings.hpp>
 #include <userver/server/handlers/http_handler_json_base.hpp>
-#include "../../services/include/jwt_service.hpp"
+#include "../../services/include/jwt_service.hpp" 
 
 // #include "../../services/include/user_service.hpp" // uncomment when
 // UserServise will be done
@@ -14,7 +14,7 @@ class AuthMeChecker final
     : public userver::server::handlers::auth::AuthCheckerBase {
 public:
     using AuthCheckerResult = userver::server::handlers::auth::AuthCheckResult;
-    explicit AuthMeChecker(services::JwtService &jwt_service);
+    explicit AuthMeChecker(const services::JwtService &jwt_service);
 
     [[nodiscard]] AuthCheckerResult CheckAuth(
         const userver::server::http::HttpRequest &request,
@@ -24,7 +24,7 @@ public:
 
 private:
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-const-or-ref-data-members)
-    services::JwtService &jwt_service_;
+    const services::JwtService &jwt_service_;
 };
 
 class AuthMeHandler final
@@ -43,7 +43,7 @@ public:
     ) const override;
 
 private:
-    services::JwtService &jwt_service_;
+    const services::JwtService &jwt_service_;
     // services::UserService& user_service_; // uncomment when UserServise will
     // be done
 };

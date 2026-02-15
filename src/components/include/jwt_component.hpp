@@ -4,7 +4,7 @@
 #include <userver/components/component_context.hpp>
 #include <userver/components/loggable_component_base.hpp>
 #include <userver/yaml_config/merge_schemas.hpp>
-#include "jwt_service.hpp"
+#include "../../services/include/jwt_service.hpp"
 
 namespace pawspective::components {
 class JwtComponent final : public userver::components::LoggableComponentBase {
