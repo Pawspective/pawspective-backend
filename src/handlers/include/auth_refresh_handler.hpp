@@ -2,7 +2,7 @@
 
 #include <userver/components/component.hpp>
 #include <userver/server/handlers/http_handler_json_base.hpp>
-#include "../../components/include/pg_session_component.hpp"
+#include "pg_session_component.hpp"
 
 namespace pawspective::handlers {
 

@@ -1,6 +1,6 @@
 #include "auth_refresh_handler.hpp"
 #include <userver/formats/json/exception.hpp>
-#include "../../components/include/pg_session_component.hpp"
+#include "pg_session_component.hpp"
 
 namespace pawspective::handlers {
 
