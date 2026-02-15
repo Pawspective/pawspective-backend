@@ -1,10 +1,13 @@
 #pragma once
-//TODO: change config?
+
 #include <userver/components/component.hpp>
 #include <userver/server/handlers/auth/auth_checker_base.hpp>
 #include <userver/server/handlers/auth/auth_checker_settings.hpp>
 #include <userver/server/handlers/http_handler_json_base.hpp>
 #include "../../services/include/jwt_service.hpp"
+
+// #include "../../services/include/user_service.hpp" // uncomment when
+// UserServise will be done
 
 namespace pawspective::handlers {
 class AuthMeChecker final
@@ -27,7 +30,7 @@ private:
 class AuthMeHandler final
     : public userver::server::handlers::HttpHandlerJsonBase {
 public:
-    constexpr static std::string_view kName = "auth-me-handler";
+    constexpr static std::string_view kName = "handler-auth-me";
     AuthMeHandler(
         const userver::components::ComponentConfig &config,
         const userver::components::ComponentContext &component_context,
@@ -41,7 +44,8 @@ public:
 
 private:
     services::JwtService &jwt_service_;
-    // services::UserService& user_service_; // uncomment when UserServise will be done
+    // services::UserService& user_service_; // uncomment when UserServise will
+    // be done
 };
 
 }  // namespace pawspective::handlers

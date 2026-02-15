@@ -59,7 +59,10 @@ AuthMeHandler::AuthMeHandler(
     bool is_monitor
 )
     : HttpHandlerJsonBase(config, component_context, is_monitor),
-      jwt_service_(component_context.FindComponent<services::JwtService>()) {
+      jwt_service_(component_context.FindComponent<services::JwtService>(
+      ) /*,
+           user_service_(component_context.FindComponent<services::UserService>())*/
+      ) {
 }
 
 userver::formats::json::Value AuthMeHandler::HandleRequestJsonThrow(
@@ -68,8 +71,13 @@ userver::formats::json::Value AuthMeHandler::HandleRequestJsonThrow(
     userver::server::request::RequestContext &context
 ) const {
     const auto &user_id = context.GetData<std::string>("user_id");
-    userver::formats::json::ValueBuilder response;  // TODO: add UserDTO
+    // auto user = user_service_.GetUserById(user_id);
+    userver::formats::json::ValueBuilder response;
     response["id"] = user_id;
+    /*response["email"] = user->email;
+    response["first_name"] = user->first_name;
+    response["last_name"] = user->last_name;
+    response["organization_id"] = user->organization_id;*/
     request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
     return response.ExtractValue();
 }
