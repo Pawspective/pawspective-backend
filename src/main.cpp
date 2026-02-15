@@ -11,6 +11,7 @@
 #include "health_handler.hpp"
 #include "jwt_component.hpp"
 #include "pg_session_component.hpp"
+#include "user_registration_handler.hpp"
 
 int main(int argc, char* argv[]) {
     auto component_list =
@@ -26,7 +27,8 @@ int main(int argc, char* argv[]) {
             .Append<userver::components::Postgres>("postgres-db")
             .Append<pawspective::components::PgSessionComponent>()
             .Append<pawspective::components::JwtComponent>()
-            .Append<pawspective::handlers::AuthRefreshHandler>();
+            .Append<pawspective::handlers::AuthRefreshHandler>()
+            .Append<pawspective::handlers::UserRegistrationHandler>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }
