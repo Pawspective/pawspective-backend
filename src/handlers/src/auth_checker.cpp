@@ -13,19 +13,14 @@
 
 namespace pawspective::handlers {
 
-AuthChecker::AuthChecker(
-    const services::JwtService &jwt_service,
-    bool is_required
-)
-    : jwt_service_(jwt_service), is_required_(is_required) {
-}
+AuthChecker::AuthChecker(const services::JwtService& jwt_service, bool is_required)
+    : jwt_service_(jwt_service), is_required_(is_required) {}
 
 AuthChecker::AuthCheckResult AuthChecker::CheckAuth(
-    const userver::server::http::HttpRequest &request,
-    userver::server::request::RequestContext &request_context
+    const userver::server::http::HttpRequest& request,
+    userver::server::request::RequestContext& request_context
 ) const {
-    const auto &auth_value =
-        request.GetHeader(userver::http::headers::kAuthorization);
+    const auto& auth_value = request.GetHeader(userver::http::headers::kAuthorization);
 
     if (auth_value.empty()) {
         if (!is_required_) {
@@ -40,8 +35,7 @@ AuthChecker::AuthCheckResult AuthChecker::CheckAuth(
     }
 
     const auto bearer_sep_pos = auth_value.find(' ');
-    if (bearer_sep_pos == std::string::npos ||
-        auth_value.substr(0, bearer_sep_pos) != "Bearer") {
+    if (bearer_sep_pos == std::string::npos || auth_value.substr(0, bearer_sep_pos) != "Bearer") {
         return AuthCheckResult{
             AuthCheckResult::Status::kTokenNotFound,
             {},
@@ -64,21 +58,13 @@ AuthChecker::AuthCheckResult AuthChecker::CheckAuth(
     return {};
 }
 
-bool AuthChecker::SupportsUserAuth() const noexcept {
-    return true;
-}
+bool AuthChecker::SupportsUserAuth() const noexcept { return true; }
 
-AuthCheckerFactory::AuthCheckerFactory(
-    const userver::components::ComponentContext &context
-)
-    : jwt_service_(
-          context.FindComponent<components::JwtComponent>().get_service()
-      ) {
-}
+AuthCheckerFactory::AuthCheckerFactory(const userver::components::ComponentContext& context)
+    : jwt_service_(context.FindComponent<components::JwtComponent>().get_service()) {}
 
-userver::server::handlers::auth::AuthCheckerBasePtr
-AuthCheckerFactory::MakeAuthChecker(
-    const userver::server::handlers::auth::HandlerAuthConfig &auth_config
+userver::server::handlers::auth::AuthCheckerBasePtr AuthCheckerFactory::MakeAuthChecker(
+    const userver::server::handlers::auth::HandlerAuthConfig& auth_config
 ) const {
     auto is_required = auth_config["required"].As<bool>(false);
     return std::make_shared<AuthChecker>(jwt_service_, is_required);

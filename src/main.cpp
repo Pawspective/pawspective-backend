@@ -15,9 +15,8 @@
 #include "jwt_component.hpp"
 #include "pg_session_component.hpp"
 
-int main(int argc, char *argv[]) {
-    userver::server::handlers::auth::RegisterAuthCheckerFactory<
-        pawspective::handlers::AuthCheckerFactory>();
+int main(int argc, char* argv[]) {
+    userver::server::handlers::auth::RegisterAuthCheckerFactory<pawspective::handlers::AuthCheckerFactory>();
     auto component_list =
         userver::components::MinimalServerComponentList()
             .Append<userver::components::TestsuiteSupport>()

@@ -15,28 +15,25 @@
 namespace pawspective::handlers {
 
 AuthMeHandler::AuthMeHandler(
-    const userver::components::ComponentConfig &config,
-    const userver::components::ComponentContext &component_context,
+    const userver::components::ComponentConfig& config,
+    const userver::components::ComponentContext& component_context,
     bool is_monitor
 )
     : HttpHandlerJsonBase(config, component_context, is_monitor),
-      jwt_service_(
-          component_context.FindComponent<components::JwtComponent>().get_service(
-          ) /*,
-               user_service_(component_context.FindComponent<services::UserService>())*/
-      ) {
-}
+      jwt_service_(component_context.FindComponent<components::JwtComponent>()
+                       .get_service() /*,
+                                         user_service_(component_context.FindComponent<services::UserService>())*/
+      ) {}
 
 userver::formats::json::Value AuthMeHandler::HandleRequestJsonThrow(
-    const userver::server::http::HttpRequest &request,
-    const userver::formats::json::Value &,
-    userver::server::request::RequestContext &context
+    const userver::server::http::HttpRequest& request,
+    const userver::formats::json::Value&,
+    userver::server::request::RequestContext& context
 ) const {
-    const auto &user_id = context.GetData<std::string>("user_id");
+    const auto& user_id = context.GetData<std::string>("user_id");
     // auto user = user_service_.GetUserById(user_id);
-    userver::formats::json::ValueBuilder
-        response;              // TODO: delete when UserService will be done
-    response["id"] = user_id;  // TODO: delete when UserService will be done
+    userver::formats::json::ValueBuilder response;  // TODO: delete when UserService will be done
+    response["id"] = user_id;                       // TODO: delete when UserService will be done
     /* dto::UserDTO user_dto;
     user_dto.id = user->id;
     user_dto.email = user->email;
@@ -44,8 +41,7 @@ userver::formats::json::Value AuthMeHandler::HandleRequestJsonThrow(
     user_dto.last_name = user->last_name;
     user_dto.organization_id = user->organization_id;*/
     request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
-    return response.ExtractValue(
-    );  // TODO: delete when UserService will be done
+    return response.ExtractValue();  // TODO: delete when UserService will be done
     // return Serialize(user_dto,
     // userver::formats::serialize::To<userver::formats::json::Value>());
 }
