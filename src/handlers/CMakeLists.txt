@@ -1,5 +1,8 @@
 set(HANDLERS_SOURCES 
     src/health_handler.cpp
+    src/auth_me_handler.cpp
+    src/auth_checker.cpp
+    
     src/auth_refresh_handler.cpp
 )
 

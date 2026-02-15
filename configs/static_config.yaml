@@ -59,6 +59,15 @@ components_manager:
             path: /health
             method: GET
             task_processor: main-task-processor
+
+        handler-auth-me:
+            path: /auth/me
+            method: GET
+            task_processor: main-task-processor
+            auth:
+                types:
+                    - jwt
+                required: true
         
         handler-auth-refresh:
             path: /auth/refresh
