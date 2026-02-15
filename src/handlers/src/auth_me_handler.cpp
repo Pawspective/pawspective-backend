@@ -4,64 +4,15 @@
 #include <userver/components/component_context.hpp>
 #include <userver/formats/json/value.hpp>
 #include <userver/formats/json/value_builder.hpp>
-#include <userver/http/common_headers.hpp>
-#include <userver/server/handlers/exceptions.hpp>
 #include <userver/server/handlers/http_handler_json_base.hpp>
 #include <userver/server/http/http_request.hpp>
 #include <userver/server/http/http_status.hpp>
 #include <userver/server/request/request_context.hpp>
 #include "../../components/include/jwt_component.hpp"
-#include "../../services/include/jwt_service.hpp"
+
+// #include "../../dto/include/user_dto.hpp"
 
 namespace pawspective::handlers {
-
-AuthMeChecker::AuthMeChecker(const services::JwtService &jwt_service)
-    : jwt_service_(jwt_service) {
-}
-
-AuthMeChecker::AuthCheckerResult AuthMeChecker::CheckAuth(
-    const userver::server::http::HttpRequest &request,
-    userver::server::request::RequestContext &request_context
-) const {
-    const auto &auth_header =
-        request.GetHeader(userver::http::headers::kAuthorization);
-    if (auth_header.empty()) {
-        return AuthCheckerResult{
-            AuthCheckerResult::Status::kTokenNotFound,
-            {},
-            "Empty Authorization header",
-            userver::server::handlers::HandlerErrorCode::kUnauthorized
-        };
-    }
-
-    const auto bearer_sep_pos = auth_header.find(' ');
-    if (bearer_sep_pos == std::string::npos ||
-        auth_header.substr(0, bearer_sep_pos) != "Bearer") {
-        return AuthCheckerResult{
-            AuthCheckerResult::Status::kTokenNotFound,
-            {},
-            "Invalid Authorization header format. Expected: Bearer <token>",
-            userver::server::handlers::HandlerErrorCode::kUnauthorized
-        };
-    }
-    const std::string token = auth_header.substr(bearer_sep_pos + 1);
-    auto payload = jwt_service_.validate_access_token(token);
-    if (!payload) {
-        return AuthCheckerResult{
-            AuthCheckerResult::Status::kForbidden,
-            {},
-            "Invalid or expired access token",
-            userver::server::handlers::HandlerErrorCode::kUnauthorized
-        };
-    }
-
-    request_context.SetData("user_id", payload->user_id);
-    return {};
-}
-
-bool AuthMeChecker::SupportsUserAuth() const noexcept {
-    return true;
-}
 
 AuthMeHandler::AuthMeHandler(
     const userver::components::ComponentConfig &config,
@@ -83,14 +34,20 @@ userver::formats::json::Value AuthMeHandler::HandleRequestJsonThrow(
 ) const {
     const auto &user_id = context.GetData<std::string>("user_id");
     // auto user = user_service_.GetUserById(user_id);
-    userver::formats::json::ValueBuilder response;
-    response["id"] = user_id;
-    /*response["email"] = user->email;
-    response["first_name"] = user->first_name;
-    response["last_name"] = user->last_name;
-    response["organization_id"] = user->organization_id;*/
+    userver::formats::json::ValueBuilder
+        response;              // TODO: delete when UserService will be done
+    response["id"] = user_id;  // TODO: delete when UserService will be done
+    /* dto::UserDTO user_dto;
+    user_dto.id = user->id;
+    user_dto.email = user->email;
+    user_dto.first_name = user->first_name;
+    user_dto.last_name = user->last_name;
+    user_dto.organization_id = user->organization_id;*/
     request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
-    return response.ExtractValue();
+    return response.ExtractValue(
+    );  // TODO: delete when UserService will be done
+    // return Serialize(user_dto,
+    // userver::formats::serialize::To<userver::formats::json::Value>());
 }
 
 }  // namespace pawspective::handlers

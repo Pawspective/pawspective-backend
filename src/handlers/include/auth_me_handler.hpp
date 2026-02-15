@@ -1,8 +1,6 @@
 #pragma once
 
 #include <userver/components/component.hpp>
-#include <userver/server/handlers/auth/auth_checker_base.hpp>
-#include <userver/server/handlers/auth/auth_checker_settings.hpp>
 #include <userver/server/handlers/http_handler_json_base.hpp>
 #include "../../services/include/jwt_service.hpp"
 
@@ -10,22 +8,6 @@
 // UserServise will be done
 
 namespace pawspective::handlers {
-class AuthMeChecker final
-    : public userver::server::handlers::auth::AuthCheckerBase {
-public:
-    using AuthCheckerResult = userver::server::handlers::auth::AuthCheckResult;
-    explicit AuthMeChecker(const services::JwtService &jwt_service);
-
-    [[nodiscard]] AuthCheckerResult CheckAuth(
-        const userver::server::http::HttpRequest &request,
-        userver::server::request::RequestContext &request_context
-    ) const override;
-    [[nodiscard]] bool SupportsUserAuth() const noexcept override;
-
-private:
-    // NOLINTNEXTLINE(cppcoreguidelines-avoid-const-or-ref-data-members)
-    const services::JwtService &jwt_service_;
-};
 
 class AuthMeHandler final
     : public userver::server::handlers::HttpHandlerJsonBase {
