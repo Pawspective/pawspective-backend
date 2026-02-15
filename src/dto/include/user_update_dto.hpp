@@ -16,7 +16,6 @@ struct UserUpdateDTO {
 };
 
 userver::formats::json::Value
-serialize(const UserUpdateDTO &data, userver::formats::serialize::To<userver::formats::json::Value>);
-UserUpdateDTO
-parse(const userver::formats::json::Value &json, userver::formats::parse::To<UserUpdateDTO>);
+Serialize(const UserUpdateDTO& data, userver::formats::serialize::To<userver::formats::json::Value>);
+UserUpdateDTO Parse(const userver::formats::json::Value& json, userver::formats::parse::To<UserUpdateDTO>);
 }  // namespace pawspective::dto

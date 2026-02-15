@@ -12,14 +12,10 @@
 
 namespace pawspective::services {
 
-RedisSessionService::RedisSessionService(
-    userver::storages::redis::ClientPtr redis_client,
-    const JwtService &jwt
-)
-    : redis_(std::move(redis_client)), jwt_(jwt) {
-}
+RedisSessionService::RedisSessionService(userver::storages::redis::ClientPtr redis_client, const JwtService& jwt)
+    : redis_(std::move(redis_client)), jwt_(jwt) {}
 
-SessionBundle RedisSessionService::create_session(std::string_view user_id) {
+SessionBundle RedisSessionService::create_session(std::string_view user_id) const {
     const auto access_token = jwt_.generate_access_token(user_id);
     const auto refresh_token = jwt_.generate_refresh_token(user_id);
 
@@ -27,18 +23,12 @@ SessionBundle RedisSessionService::create_session(std::string_view user_id) {
 
     auto hash = userver::crypto::hash::Sha256(bundle.refresh_token);
 
-    redis_
-        ->Setex(
-            "sess:" + hash, std::chrono::hours(24 * 7), std::string(user_id), {}
-        )
-        .Get();
+    redis_->Setex("sess:" + hash, std::chrono::hours(24 * 7), std::string(user_id), {}).Get();
 
     return bundle;
 }
 
-std::optional<TokenPayload> RedisSessionService::validate_session(
-    std::string_view refresh_token
-) {
+std::optional<TokenPayload> RedisSessionService::validate_session(std::string_view refresh_token) const {
     auto payload = jwt_.validate_refresh_token(refresh_token);
     if (!payload) {
         return std::nullopt;
@@ -50,7 +40,7 @@ std::optional<TokenPayload> RedisSessionService::validate_session(
     return exists ? payload : std::nullopt;
 }
 
-void RedisSessionService::revoke_session(std::string_view refresh_token) {
+void RedisSessionService::revoke_session(std::string_view refresh_token) const {
     auto hash = userver::crypto::hash::Sha256(refresh_token);
     redis_->Del("sess:" + hash, {}).Get();
 }

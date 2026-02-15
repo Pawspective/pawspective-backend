@@ -41,8 +41,7 @@ public:
      * @return A SessionBundle containing the generated access and refresh
      * tokens.
      */
-    [[nodiscard]] virtual SessionBundle create_session(std::string_view user_id
-    ) = 0;
+    [[nodiscard]] virtual SessionBundle create_session(std::string_view user_id) const = 0;
 
     /**
      * @brief Validates a session based on the provided refresh token.
@@ -55,9 +54,7 @@ public:
      * @param refresh_token JWT refresh token.
      * @return Decoded payload if valid; std::nullopt otherwise.
      */
-    [[nodiscard]] virtual std::optional<TokenPayload> validate_session(
-        std::string_view refresh_token
-    ) = 0;
+    [[nodiscard]] virtual std::optional<TokenPayload> validate_session(std::string_view refresh_token) const = 0;
 
     /**
      * @brief Revokes a session associated with the given refresh token.
@@ -66,14 +63,14 @@ public:
      *
      * @param refresh_token Refresh token to revoke.
      */
-    virtual void revoke_session(std::string_view refresh_token) = 0;
+    virtual void revoke_session(std::string_view refresh_token) const = 0;
 
     virtual ~SessionService() = default;
     SessionService() = default;
-    SessionService(const SessionService &) = delete;
-    SessionService &operator=(const SessionService &) = delete;
-    SessionService(SessionService &&) = delete;
-    SessionService &operator=(SessionService &&) = delete;
+    SessionService(const SessionService&) = delete;
+    SessionService& operator=(const SessionService&) = delete;
+    SessionService(SessionService&&) = delete;
+    SessionService& operator=(SessionService&&) = delete;
 };
 
 }  // namespace pawspective::services

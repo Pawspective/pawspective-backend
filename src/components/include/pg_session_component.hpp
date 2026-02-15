@@ -7,16 +7,15 @@
 #include "session_service.hpp"
 
 namespace pawspective::components {
-class PgSessionComponent final
-    : public userver::components::LoggableComponentBase {
+class PgSessionComponent final : public userver::components::LoggableComponentBase {
 public:
     static constexpr std::string_view kName = "session-service-pg";
     explicit PgSessionComponent(
-        const userver::components::ComponentConfig &config,
-        const userver::components::ComponentContext &context
+        const userver::components::ComponentConfig& config,
+        const userver::components::ComponentContext& context
     );
 
-    [[nodiscard]] const services::SessionService &get_service() const;
+    [[nodiscard]] const services::SessionService& get_service() const;
 
 private:
     services::PgSessionService session_service_;

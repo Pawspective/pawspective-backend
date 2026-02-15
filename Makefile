@@ -89,7 +89,7 @@ format-check:
 tidy:
 	@echo "Running clang-tidy..."
 	find src -name '*.[ch]pp' -type f | xargs $(CLANG_TIDY) -p $(TIDY_DB_DIR) \
-		-j $(shell nproc) \
+		-j $(NPROCS) \
 		-extra-arg=-Wno-unknown-argument \
 		-extra-arg=-Wno-unknown-warning-option \
 		-extra-arg="-std=c++20"

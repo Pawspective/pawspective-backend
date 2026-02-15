@@ -14,7 +14,7 @@ namespace pawspective::dto {
 
 // cppcheck-suppress unusedFunction
 [[maybe_unused]] userver::formats::json::Value
-serialize(const UserDTO &data, userver::formats::serialize::To<userver::formats::json::Value>) {
+Serialize(const UserDTO& data, userver::formats::serialize::To<userver::formats::json::Value>) {
     userver::formats::json::ValueBuilder builder;
 
     builder["id"] = data.id;
@@ -27,16 +27,14 @@ serialize(const UserDTO &data, userver::formats::serialize::To<userver::formats:
 }
 
 // cppcheck-suppress unusedFunction
-[[maybe_unused]] UserDTO
-parse(const userver::formats::json::Value &json, userver::formats::parse::To<UserDTO>) {
+[[maybe_unused]] UserDTO Parse(const userver::formats::json::Value& json, userver::formats::parse::To<UserDTO>) {
     UserDTO dto;
 
     dto.id = json["id"].As<std::int64_t>();
     dto.email = json["email"].As<std::string>();
     dto.first_name = json["first_name"].As<std::string>();
     dto.last_name = json["last_name"].As<std::string>();
-    dto.organization_id =
-        json["organization_id"].As<std::optional<std::int64_t>>();
+    dto.organization_id = json["organization_id"].As<std::optional<std::int64_t>>();
 
     return dto;
 }

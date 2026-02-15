@@ -6,7 +6,7 @@
 
 namespace pawspective::models {
 
-User User::from_register_dto(const dto::UserRegisterDTO &reg) {
+User User::from_register_dto(const dto::UserRegisterDTO& reg) {
     User user;
 
     user.email = reg.email;
@@ -19,7 +19,7 @@ User User::from_register_dto(const dto::UserRegisterDTO &reg) {
     return user;
 }
 
-User User::from_update_dto(const dto::UserUpdateDTO &upd) {
+User User::from_update_dto(const dto::UserUpdateDTO& upd) {
     User user;
 
     if (upd.email.has_value()) {
@@ -38,7 +38,7 @@ User User::from_update_dto(const dto::UserUpdateDTO &upd) {
     return user;
 }
 
-dto::UserDTO User::to_dto(const User &model) {
+dto::UserDTO User::to_dto(const User& model) {
     dto::UserDTO dto;
 
     dto.id = model.id;

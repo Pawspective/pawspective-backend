@@ -9,7 +9,7 @@
 namespace pawspective::dto {
 
 [[maybe_unused]] userver::formats::json::Value
-serialize(const UserRegisterDTO &data, userver::formats::serialize::To<userver::formats::json::Value>) {
+Serialize(const UserRegisterDTO& data, userver::formats::serialize::To<userver::formats::json::Value>) {
     userver::formats::json::ValueBuilder builder;
 
     builder["email"] = data.email;
@@ -21,7 +21,7 @@ serialize(const UserRegisterDTO &data, userver::formats::serialize::To<userver::
 }
 
 [[maybe_unused]] UserRegisterDTO
-parse(const userver::formats::json::Value &json, userver::formats::parse::To<UserRegisterDTO>) {
+Parse(const userver::formats::json::Value& json, userver::formats::parse::To<UserRegisterDTO>) {
     UserRegisterDTO dto;
 
     dto.email = json["email"].As<std::string>();

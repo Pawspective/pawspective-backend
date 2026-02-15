@@ -59,3 +59,8 @@ components_manager:
             path: /health
             method: GET
             task_processor: main-task-processor
+        
+        handler-auth-refresh:
+            path: /auth/refresh
+            method: POST
+            task_processor: main-task-processor

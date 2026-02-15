@@ -14,9 +14,8 @@ namespace pawspective::services {
  *
  */
 struct TokenPayload {
-    std::string user_id;  ///< Subject indentifier extracted from the token.
-    bool is_refresh_token{false
-    };  ///< Indicates whether the token is a refresh token or an access token.
+    std::string user_id;           ///< Subject indentifier extracted from the token.
+    bool is_refresh_token{false};  ///< Indicates whether the token is a refresh token or an access token.
 };
 
 /**
@@ -38,7 +37,7 @@ struct TokenPayload {
 class JwtService final {
 public:
     struct Config {
-        std::string secret_key;  ///< Symmetric key used for HS256 signing.
+        std::string secret_key;            ///< Symmetric key used for HS256 signing.
         std::chrono::seconds access_ttl;   ///< Lifetime of access tokens.
         std::chrono::seconds refresh_ttl;  ///< Lifetime of refresh tokens.
     };
@@ -49,7 +48,7 @@ public:
      * @param config  Configuration parameters for the JWT service, including
      * secret key and token lifetimes.
      */
-    explicit JwtService(const Config &config);
+    explicit JwtService(const Config& config);
 
     /**
      * @brief Generates a JWT access token.
@@ -61,8 +60,7 @@ public:
      * @param user_id Identifier of the authenticated user.
      * @return std::string signed JWT access token.
      */
-    [[nodiscard]] std::string generate_access_token(std::string_view user_id
-    ) const;
+    [[nodiscard]] std::string generate_access_token(std::string_view user_id) const;
 
     /**
      * @brief Generates a signed JWT refresh token.
@@ -73,8 +71,7 @@ public:
      * @param user_id Identifier of the authenticated user.
      * @return Signed JWT refresh token.
      */
-    [[nodiscard]] std::string generate_refresh_token(std::string_view user_id
-    ) const;
+    [[nodiscard]] std::string generate_refresh_token(std::string_view user_id) const;
 
     /**
      * @brief Validates an access token.
@@ -87,9 +84,7 @@ public:
      * @param token JWT string.
      * @return Decoded payload if valid; std::nullopt otherwise.
      */
-    [[nodiscard]] std::optional<TokenPayload> validate_access_token(
-        std::string_view token
-    ) const;
+    [[nodiscard]] std::optional<TokenPayload> validate_access_token(std::string_view token) const;
 
     /**
      * @brief Validates a refresh token.
@@ -102,28 +97,21 @@ public:
      * @param token JWT string.
      * @return Decoded payload if valid; std::nullopt otherwise.
      */
-    [[nodiscard]] std::optional<TokenPayload> validate_refresh_token(
-        std::string_view token
-    ) const;
+    [[nodiscard]] std::optional<TokenPayload> validate_refresh_token(std::string_view token) const;
 
 private:
     /**
      * @brief Internal helper for token creation.
      */
-    [[nodiscard]] std::string create_token(
-        std::string_view user_id,
-        bool is_refresh_token,
-        std::chrono::seconds ttl
-    ) const;
+    [[nodiscard]] std::string CreateToken(std::string_view user_id, bool is_refresh_token, std::chrono::seconds ttl)
+        const;
 
     /**
      * @brief Internal helper for signature and expiration validation.
      *
      * Does not check token type.
      */
-    [[nodiscard]] std::optional<TokenPayload> validate_token(
-        std::string_view token
-    ) const;
+    [[nodiscard]] std::optional<TokenPayload> ValidateToken(std::string_view token) const;
 
     std::chrono::seconds access_ttl_;
     std::chrono::seconds refresh_ttl_;

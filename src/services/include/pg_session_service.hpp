@@ -10,18 +10,14 @@ namespace pawspective::services {
 
 class PgSessionService final : public SessionService {
 public:
-    explicit PgSessionService(
-        userver::storages::postgres::ClusterPtr pg_cluster,
-        const JwtService &jwt
-    );
+    explicit PgSessionService(userver::storages::postgres::ClusterPtr pg_cluster, const JwtService& jwt);
 
-    SessionBundle create_session(std::string_view user_id) override;
-    std::optional<TokenPayload> validate_session(std::string_view refresh_token
-    ) override;
-    void revoke_session(std::string_view refresh_token) override;
+    SessionBundle create_session(std::string_view user_id) const override;
+    std::optional<TokenPayload> validate_session(std::string_view refresh_token) const override;
+    void revoke_session(std::string_view refresh_token) const override;
 
 private:
-    userver::storages::postgres::ClusterPtr pg_cluster_;
-    const JwtService &jwt_;
+    const userver::storages::postgres::ClusterPtr pg_cluster_;
+    const JwtService& jwt_;
 };
 }  // namespace pawspective::services
