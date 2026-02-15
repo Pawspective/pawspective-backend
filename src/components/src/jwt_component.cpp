@@ -12,16 +12,12 @@
 
 namespace pawspective::components {
 JwtComponent::JwtComponent(
-    const userver::components::ComponentConfig &config,
-    const userver::components::ComponentContext &context
+    const userver::components::ComponentConfig& config,
+    const userver::components::ComponentContext& context
 )
-    : LoggableComponentBase(config, context),
-      service_(make_service(config, context)) {
-}
+    : LoggableComponentBase(config, context), service_(MakeService(config, context)) {}
 
-const services::JwtService &JwtComponent::get_service() const {
-    return service_;
-}
+const services::JwtService& JwtComponent::get_service() const { return service_; }
 
 userver::yaml_config::Schema JwtComponent::GetStaticConfigSchema() {
     return userver::yaml_config::MergeSchemas<LoggableComponentBase>(R"(
@@ -41,16 +37,16 @@ userver::yaml_config::Schema JwtComponent::GetStaticConfigSchema() {
     )");
 }
 
-services::JwtService JwtComponent::make_service(
-    const userver::components::ComponentConfig &config,
-    const userver::components::ComponentContext &context
+services::JwtService JwtComponent::MakeService(
+    const userver::components::ComponentConfig& config,
+    const userver::components::ComponentContext& context
 ) {
-    const auto &secdist =
-        context.FindComponent<userver::components::Secdist>().Get();
-    const auto &secrets = secdist.Get<models::JwtSecrets>();
+    const auto& secdist = context.FindComponent<userver::components::Secdist>().Get();
+    const auto& secrets = secdist.Get<models::JwtSecrets>();
 
     return services::JwtService{services::JwtService::Config{
-        secrets.secret_key, config["access_ttl"].As<std::chrono::seconds>(),
+        secrets.secret_key,
+        config["access_ttl"].As<std::chrono::seconds>(),
         config["refresh_ttl"].As<std::chrono::seconds>()
     }};
 }

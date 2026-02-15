@@ -18,18 +18,24 @@ constexpr uint32_t kSaltLength = 16;
 
 }  // namespace
 
-std::string generate_hash(const std::string &data) {
+std::string GenerateHash(const std::string& data) {
     const auto salt = userver::crypto::GenerateRandomBlock(kSaltLength);
 
-    const size_t encoded_len = argon2_encodedlen(
-        kTimeCost, kMemoryCost, kParallelism, kSaltLength, kHashLength,
-        Argon2_id
-    );
+    const size_t
+        encoded_len = argon2_encodedlen(kTimeCost, kMemoryCost, kParallelism, kSaltLength, kHashLength, Argon2_id);
     std::vector<char> buffer(encoded_len);
 
     const int result = argon2id_hash_encoded(
-        kTimeCost, kMemoryCost, kParallelism, data.data(), data.size(),
-        salt.data(), kSaltLength, kHashLength, buffer.data(), buffer.size()
+        kTimeCost,
+        kMemoryCost,
+        kParallelism,
+        data.data(),
+        data.size(),
+        salt.data(),
+        kSaltLength,
+        kHashLength,
+        buffer.data(),
+        buffer.size()
     );
 
     if (result != ARGON2_OK) {
@@ -40,7 +46,7 @@ std::string generate_hash(const std::string &data) {
     return {buffer.data()};
 }
 
-bool verify_hash(const std::string &data, const std::string &hash) {
+bool VerifyHash(const std::string& data, const std::string& hash) {
     if (hash.empty()) {
         return false;
     }
@@ -54,8 +60,7 @@ bool verify_hash(const std::string &data, const std::string &hash) {
         return false;
     }
 
-    LOG_WARNING() << "Argon2 verification failed: "
-                  << argon2_error_message(result);
+    LOG_WARNING() << "Argon2 verification failed: " << argon2_error_message(result);
     return false;
 }
 

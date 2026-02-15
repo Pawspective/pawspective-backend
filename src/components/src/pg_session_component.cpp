@@ -8,18 +8,14 @@
 
 namespace pawspective::components {
 PgSessionComponent::PgSessionComponent(
-    const userver::components::ComponentConfig &config,
-    const userver::components::ComponentContext &context
+    const userver::components::ComponentConfig& config,
+    const userver::components::ComponentContext& context
 )
     : LoggableComponentBase(config, context),
       session_service_(
-          context.FindComponent<userver::components::Postgres>("postgres-db")
-              .GetCluster(),
+          context.FindComponent<userver::components::Postgres>("postgres-db").GetCluster(),
           context.FindComponent<JwtComponent>().get_service()
-      ) {
-}
+      ) {}
 
-const services::SessionService &PgSessionComponent::get_service() const {
-    return session_service_;
-}
+const services::SessionService& PgSessionComponent::get_service() const { return session_service_; }
 }  // namespace pawspective::components

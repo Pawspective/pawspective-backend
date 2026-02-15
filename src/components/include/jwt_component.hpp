@@ -12,18 +12,18 @@ public:
     static constexpr std::string_view kName = "jwt-service";
 
     explicit JwtComponent(
-        const userver::components::ComponentConfig &config,
-        const userver::components::ComponentContext &context
+        const userver::components::ComponentConfig& config,
+        const userver::components::ComponentContext& context
     );
 
-    [[nodiscard]] const services::JwtService &get_service() const;
+    [[nodiscard]] const services::JwtService& get_service() const;
 
     static userver::yaml_config::Schema GetStaticConfigSchema();
 
 private:
-    static services::JwtService make_service(
-        const userver::components::ComponentConfig &config,
-        const userver::components::ComponentContext &context
+    static services::JwtService MakeService(
+        const userver::components::ComponentConfig& config,
+        const userver::components::ComponentContext& context
     );
 
     services::JwtService service_;

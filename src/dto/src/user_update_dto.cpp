@@ -9,7 +9,7 @@
 namespace pawspective::dto {
 
 [[maybe_unused]] userver::formats::json::Value
-serialize(const UserUpdateDTO &data, userver::formats::serialize::To<userver::formats::json::Value>) {
+Serialize(const UserUpdateDTO& data, userver::formats::serialize::To<userver::formats::json::Value>) {
     userver::formats::json::ValueBuilder builder;
 
     if (data.email.has_value()) {
@@ -29,7 +29,7 @@ serialize(const UserUpdateDTO &data, userver::formats::serialize::To<userver::fo
 }
 
 [[maybe_unused]] UserUpdateDTO
-parse(const userver::formats::json::Value &json, userver::formats::parse::To<UserUpdateDTO>) {
+Parse(const userver::formats::json::Value& json, userver::formats::parse::To<UserUpdateDTO>) {
     UserUpdateDTO dto;
 
     if (json.HasMember("email")) {

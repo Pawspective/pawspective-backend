@@ -8,18 +8,14 @@
 
 namespace pawspective::components {
 RedisSessionComponent::RedisSessionComponent(
-    const userver::components::ComponentConfig &config,
-    const userver::components::ComponentContext &context
+    const userver::components::ComponentConfig& config,
+    const userver::components::ComponentContext& context
 )
     : LoggableComponentBase(config, context),
       session_service_(
-          context.FindComponent<userver::components::Redis>("redis-session")
-              .GetClient("default"),
+          context.FindComponent<userver::components::Redis>("redis-session").GetClient("default"),
           context.FindComponent<JwtComponent>().get_service()
-      ) {
-}
+      ) {}
 
-const services::SessionService &RedisSessionComponent::get_service() const {
-    return session_service_;
-}
+const services::SessionService& RedisSessionComponent::get_service() const { return session_service_; }
 }  // namespace pawspective::components

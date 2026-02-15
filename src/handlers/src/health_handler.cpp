@@ -5,8 +5,8 @@
 
 namespace pawspective::handlers {
 std::string HealthCheck::HandleRequest(
-    userver::server::http::HttpRequest & /*reqest*/,
-    userver::server::request::RequestContext & /*context*/
+    userver::server::http::HttpRequest& /*reqest*/,
+    userver::server::request::RequestContext& /*context*/
 ) const {
     return "OK";
 }
