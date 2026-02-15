@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::components::PgSessionComponent>()
             .Append<pawspective::components::JwtComponent>()
             .Append<pawspective::handlers::AuthRefreshHandler>()
-            .Append<pawspective::handlers::UserRegistrationHandler>();
+            .Append<pawspective::handlers::UserRegistrationHandler>()
             .Append<pawspective::handlers::AuthLogoutHandler>()
             .Append<pawspective::handlers::AuthLoginHandler>();
 
