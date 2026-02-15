@@ -1,7 +1,7 @@
 #include "user_registration_handler.hpp"
 
-#include <userver/server/http/http_status.hpp>
 #include <userver/formats/json/exception.hpp>
+#include <userver/server/http/http_status.hpp>
 #include "services/exception.hpp"
 #include "user_register_dto.hpp"
 #include "utils/exception.hpp"
