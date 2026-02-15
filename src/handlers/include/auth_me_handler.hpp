@@ -4,7 +4,7 @@
 #include <userver/server/handlers/auth/auth_checker_base.hpp>
 #include <userver/server/handlers/auth/auth_checker_settings.hpp>
 #include <userver/server/handlers/http_handler_json_base.hpp>
-#include "../../services/include/jwt_service.hpp" 
+#include "../../services/include/jwt_service.hpp"
 
 // #include "../../services/include/user_service.hpp" // uncomment when
 // UserServise will be done

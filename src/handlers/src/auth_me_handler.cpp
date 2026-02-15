@@ -1,8 +1,17 @@
 #include "../include/auth_me_handler.hpp"
-#include <userver/components/component.hpp>
+#include <string>
+#include <userver/components/component_config.hpp>
+#include <userver/components/component_context.hpp>
+#include <userver/formats/json/value.hpp>
+#include <userver/formats/json/value_builder.hpp>
 #include <userver/http/common_headers.hpp>
+#include <userver/server/handlers/exceptions.hpp>
+#include <userver/server/handlers/http_handler_json_base.hpp>
+#include <userver/server/http/http_request.hpp>
+#include <userver/server/http/http_status.hpp>
+#include <userver/server/request/request_context.hpp>
+#include "../../components/include/jwt_component.hpp"
 #include "../../services/include/jwt_service.hpp"
-#include "../../components/include/jwt_component.hpp" 
 
 namespace pawspective::handlers {
 
@@ -35,7 +44,7 @@ AuthMeChecker::AuthCheckerResult AuthMeChecker::CheckAuth(
             userver::server::handlers::HandlerErrorCode::kUnauthorized
         };
     }
-    std::string token = auth_header.substr(bearer_sep_pos + 1);
+    const std::string token = auth_header.substr(bearer_sep_pos + 1);
     auto payload = jwt_service_.validate_access_token(token);
     if (!payload) {
         return AuthCheckerResult{
@@ -60,9 +69,10 @@ AuthMeHandler::AuthMeHandler(
     bool is_monitor
 )
     : HttpHandlerJsonBase(config, component_context, is_monitor),
-      jwt_service_(component_context.FindComponent<components::JwtComponent>().get_service(
-      ) /*,
-           user_service_(component_context.FindComponent<services::UserService>())*/
+      jwt_service_(
+          component_context.FindComponent<components::JwtComponent>().get_service(
+          ) /*,
+               user_service_(component_context.FindComponent<services::UserService>())*/
       ) {
 }
 
