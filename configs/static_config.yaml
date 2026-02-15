@@ -68,3 +68,8 @@ components_manager:
                 types:
                     - jwt
                 required: true
+        
+        handler-auth-refresh:
+            path: /auth/refresh
+            method: POST
+            task_processor: main-task-processor

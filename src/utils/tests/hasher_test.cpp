@@ -4,48 +4,48 @@
 #include <userver/utest/utest.hpp>
 
 namespace pawspective::utils::crypto::tests {
-using ::pawspective::utils::crypto::generate_hash;
-using ::pawspective::utils::crypto::verify_hash;
+using ::pawspective::utils::crypto::GenerateHash;
+using ::pawspective::utils::crypto::VerifyHash;
 
 const std::string password = "my_secure_password_123!";
 
 UTEST(CryptoUtils, HashCreateAndVerify) {
-    const std::string hash = generate_hash(password);
+    const std::string hash = GenerateHash(password);
 
     EXPECT_FALSE(hash.empty());
     EXPECT_NE(password, hash);
 
-    EXPECT_TRUE(verify_hash(password, hash));
-    EXPECT_FALSE(verify_hash(std::string("wrong_password"), hash));
+    EXPECT_TRUE(VerifyHash(password, hash));
+    EXPECT_FALSE(VerifyHash(std::string("wrong_password"), hash));
 }
 
 UTEST(CryptoUtils, DifferentSaltsForSamePassword) {
-    const std::string hash1 = generate_hash(password);
-    const std::string hash2 = generate_hash(password);
+    const std::string hash1 = GenerateHash(password);
+    const std::string hash2 = GenerateHash(password);
 
     EXPECT_NE(hash1, hash2);
-    EXPECT_TRUE(verify_hash(password, hash1));
-    EXPECT_TRUE(verify_hash(password, hash2));
+    EXPECT_TRUE(VerifyHash(password, hash1));
+    EXPECT_TRUE(VerifyHash(password, hash2));
 }
 
 UTEST(CryptoUtils, EmptyInputs) {
-    const auto empty_hash = generate_hash("");
+    const auto empty_hash = GenerateHash("");
     EXPECT_FALSE(empty_hash.empty());
-    EXPECT_TRUE(verify_hash("", empty_hash));
+    EXPECT_TRUE(VerifyHash("", empty_hash));
 
-    EXPECT_FALSE(verify_hash("", ""));
+    EXPECT_FALSE(VerifyHash("", ""));
 }
 
 UTEST(CryptoUtils, InvalidHashFormat) {
-    EXPECT_FALSE(verify_hash(password, "not_a_hash"));
-    EXPECT_FALSE(verify_hash(password, "$2b$12$short"));
+    EXPECT_FALSE(VerifyHash(password, "not_a_hash"));
+    EXPECT_FALSE(VerifyHash(password, "$2b$12$short"));
 }
 
 UTEST(CryptoUtils, LongPassword) {
     const std::string long_password(100, 'a');
-    const auto hash = generate_hash(long_password);
+    const auto hash = GenerateHash(long_password);
 
-    EXPECT_TRUE(verify_hash(long_password, hash));
+    EXPECT_TRUE(VerifyHash(long_password, hash));
 }
 
 }  // namespace pawspective::utils::crypto::tests

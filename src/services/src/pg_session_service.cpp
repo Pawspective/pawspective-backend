@@ -12,14 +12,10 @@
 
 namespace pawspective::services {
 
-PgSessionService::PgSessionService(
-    userver::storages::postgres::ClusterPtr pg_cluster,
-    const JwtService &jwt
-)
-    : pg_cluster_(std::move(pg_cluster)), jwt_(jwt) {
-}
+PgSessionService::PgSessionService(userver::storages::postgres::ClusterPtr pg_cluster, const JwtService& jwt)
+    : pg_cluster_(std::move(pg_cluster)), jwt_(jwt) {}
 
-SessionBundle PgSessionService::create_session(std::string_view user_id) {
+SessionBundle PgSessionService::create_session(std::string_view user_id) const {
     const auto access_token = jwt_.generate_access_token(user_id);
     const auto refresh_token = jwt_.generate_refresh_token(user_id);
 
@@ -32,15 +28,14 @@ SessionBundle PgSessionService::create_session(std::string_view user_id) {
         "INSERT INTO auth_schema.sessions (user_id, refresh_token_hash, "
         "expires_at) "
         "VALUES ($1, $2, NOW() + INTERVAL '7 days')",
-        user_id, hash
+        user_id,
+        hash
     );
 
     return bundle;
 }
 
-std::optional<TokenPayload> PgSessionService::validate_session(
-    std::string_view refresh_token
-) {
+std::optional<TokenPayload> PgSessionService::validate_session(std::string_view refresh_token) const {
     auto payload = jwt_.validate_refresh_token(refresh_token);
 
     if (!payload) {
@@ -58,11 +53,12 @@ std::optional<TokenPayload> PgSessionService::validate_session(
     return res.IsEmpty() ? std::nullopt : payload;
 }
 
-void PgSessionService::revoke_session(std::string_view refresh_token) {
+void PgSessionService::revoke_session(std::string_view refresh_token) const {
     const auto hash = userver::crypto::hash::Sha256(refresh_token);
     pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster,
-        "DELETE FROM auth_schema.sessions WHERE refresh_token_hash = $1", hash
+        "DELETE FROM auth_schema.sessions WHERE refresh_token_hash = $1",
+        hash
     );
 }
 

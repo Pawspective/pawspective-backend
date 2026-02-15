@@ -3,6 +3,7 @@ set(HANDLERS_SOURCES
     src/auth_me_handler.cpp
     src/auth_checker.cpp
     
+    src/auth_refresh_handler.cpp
 )
 
 add_library(pawspective_handlers STATIC ${HANDLERS_SOURCES})
@@ -14,4 +15,6 @@ target_include_directories(pawspective_handlers PUBLIC
 target_link_libraries(pawspective_handlers
     PUBLIC
     userver::core
+    pawspective_components
+    pawspective_services
 )

@@ -1,18 +1,28 @@
-BasedOnStyle: Chromium
+BasedOnStyle: Google
+DerivePointerAlignment: false
+IncludeBlocks: Preserve
+AttributeMacros: ["noexcept"]
+IndentRequiresClause: false
+ColumnLimit: 120
 IndentWidth: 4
+TabWidth: 4
 AccessModifierOffset: -4
-PointerAlignment: Right
-IncludeBlocks: Merge
-AllowShortBlocksOnASingleLine: false
-AllowShortFunctionsOnASingleLine: false
-AllowShortIfStatementsOnASingleLine: false
-AllowShortLoopsOnASingleLine: false
-
-# Only from clang-format 14.0.0
+BinPackParameters: false
+BinPackArguments: false
 AlignAfterOpenBracket: BlockIndent
-QualifierAlignment: Left
-SeparateDefinitionBlocks: Always
-EmptyLineAfterAccessModifier: Never
-
-# Only after clang-format 15.0.0
+AlwaysBreakAfterDefinitionReturnType: None
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowAllArgumentsOnNextLine: false
+BreakBeforeBraces: Custom
+BraceWrapping:
+    AfterControlStatement: MultiLine
+PenaltyBreakOpenParenthesis: 5000000
+PenaltyIndentedWhitespace: 100000
+PenaltyBreakFirstLessLess: 0
+PenaltyBreakScopeResolution: 20000000
+PenaltyBreakAssignment: 10000
+PenaltyExcessCharacter: 1000000000
+PenaltyBreakBeforeFirstCallParameter: 1
+PenaltyReturnTypeOnItsOwnLine: 10000000
 InsertBraces: true
+IndentWrappedFunctionNames: false
