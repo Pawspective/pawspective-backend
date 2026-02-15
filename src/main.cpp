@@ -7,6 +7,7 @@
 #include <userver/storages/secdist/provider_component.hpp>
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/utils/daemon_run.hpp>
+#include "auth_login_handler.hpp"
 #include "auth_refresh_handler.hpp"
 #include "health_handler.hpp"
 #include "jwt_component.hpp"
@@ -26,7 +27,8 @@ int main(int argc, char* argv[]) {
             .Append<userver::components::Postgres>("postgres-db")
             .Append<pawspective::components::PgSessionComponent>()
             .Append<pawspective::components::JwtComponent>()
-            .Append<pawspective::handlers::AuthRefreshHandler>();
+            .Append<pawspective::handlers::AuthRefreshHandler>()
+            .Append<pawspective::handlers::AuthLoginHandler>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }

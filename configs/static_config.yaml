@@ -64,3 +64,8 @@ components_manager:
             path: /auth/refresh
             method: POST
             task_processor: main-task-processor
+        
+        handler-auth-login:
+            path: /auth/login
+            method: POST
+            task_processor: main-task-processor
