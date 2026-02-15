@@ -5,6 +5,7 @@ set(HANDLERS_SOURCES
     
     src/auth_refresh_handler.cpp
     src/auth_login_handler.cpp
+    src/auth_logout_handler.cpp
 )
 
 add_library(pawspective_handlers STATIC ${HANDLERS_SOURCES})
