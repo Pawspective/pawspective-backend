@@ -1,4 +1,4 @@
-#include "../include/hasher.hpp"
+#include "utils/hasher.hpp"
 #include <gtest/gtest.h>
 #include <string>
 #include <userver/utest/utest.hpp>

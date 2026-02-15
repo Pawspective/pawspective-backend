@@ -4,6 +4,7 @@ set(HANDLERS_SOURCES
     src/auth_checker.cpp
     
     src/auth_refresh_handler.cpp
+    src/user_registration_handler.cpp
     src/auth_login_handler.cpp
     src/auth_logout_handler.cpp
 )
@@ -17,6 +18,8 @@ target_include_directories(pawspective_handlers PUBLIC
 target_link_libraries(pawspective_handlers
     PUBLIC
     userver::core
+    pawspective_dto
     pawspective_components
     pawspective_services
+    pawspective_utils
 )
