@@ -27,3 +27,8 @@ components_manager:
             path: /health
             method: GET
             task_processor: main-task-processor
+
+        handler-auth-me:
+            path: /auth/me
+            method: GET
+            task_processor: main-task-processor
