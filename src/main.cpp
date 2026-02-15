@@ -8,12 +8,9 @@
 #include <userver/storages/secdist/provider_component.hpp>
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/utils/daemon_run.hpp>
-<<<<<<< HEAD
-#include "auth_login_handler.hpp"
-=======
 #include "auth_checker.hpp"
+#include "auth_login_handler.hpp"
 #include "auth_me_handler.hpp"
->>>>>>> main
 #include "auth_refresh_handler.hpp"
 #include "health_handler.hpp"
 #include "jwt_component.hpp"
