@@ -6,6 +6,7 @@
 #include "jwt_service.hpp"
 #include "session_service.hpp"
 
+// DO NOT USE THIS SERVICE, IT IS NOT PRODUCTION-READY
 namespace pawspective::services {
 
 class RedisSessionService final : public SessionService {

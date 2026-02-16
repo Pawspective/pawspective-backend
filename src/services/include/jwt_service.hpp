@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -62,6 +63,8 @@ public:
      */
     [[nodiscard]] std::string generate_access_token(std::string_view user_id) const;
 
+    [[nodiscard]] std::string generate_access_token(std::int64_t user_id) const;
+
     /**
      * @brief Generates a signed JWT refresh token.
      *
@@ -72,6 +75,8 @@ public:
      * @return Signed JWT refresh token.
      */
     [[nodiscard]] std::string generate_refresh_token(std::string_view user_id) const;
+
+    [[nodiscard]] std::string generate_refresh_token(std::int64_t user_id) const;
 
     /**
      * @brief Validates an access token.

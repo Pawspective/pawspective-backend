@@ -25,6 +25,14 @@ std::string JwtService::generate_refresh_token(const std::string_view user_id) c
     return CreateToken(user_id, true, refresh_ttl_);
 }
 
+std::string JwtService::generate_access_token(const std::int64_t user_id) const {
+    return generate_access_token(std::to_string(user_id));
+}
+
+std::string JwtService::generate_refresh_token(const std::int64_t user_id) const {
+    return generate_refresh_token(std::to_string(user_id));
+}
+
 std::string JwtService::CreateToken(const std::string_view user_id, bool is_refresh_token, std::chrono::seconds ttl)
     const {
     auto now = userver::utils::datetime::Now();

@@ -1,4 +1,5 @@
 #include "pg_session_service.hpp"
+#include <cstdint>
 #include <optional>
 #include <string_view>
 #include <userver/crypto/hash.hpp>
@@ -33,6 +34,10 @@ SessionBundle PgSessionService::create_session(std::string_view user_id) const {
     );
 
     return bundle;
+}
+
+SessionBundle PgSessionService::create_session(std::int64_t user_id) const {
+    return create_session(std::to_string(user_id));
 }
 
 std::optional<TokenPayload> PgSessionService::validate_session(std::string_view refresh_token) const {
