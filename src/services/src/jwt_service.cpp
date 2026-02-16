@@ -17,20 +17,20 @@ JwtService::JwtService(const Config& config)
       signer_(config.secret_key),
       verifier_(config.secret_key) {}
 
-std::string JwtService::generate_access_token(const std::string_view user_id) const {
+std::string JwtService::GenerateAccessToken(const std::string_view user_id) const {
     return CreateToken(user_id, false, access_ttl_);
 }
 
-std::string JwtService::generate_refresh_token(const std::string_view user_id) const {
+std::string JwtService::GenerateRefreshToken(const std::string_view user_id) const {
     return CreateToken(user_id, true, refresh_ttl_);
 }
 
-std::string JwtService::generate_access_token(const std::int64_t user_id) const {
-    return generate_access_token(std::to_string(user_id));
+std::string JwtService::GenerateAccessToken(const std::int64_t user_id) const {
+    return GenerateAccessToken(std::to_string(user_id));
 }
 
-std::string JwtService::generate_refresh_token(const std::int64_t user_id) const {
-    return generate_refresh_token(std::to_string(user_id));
+std::string JwtService::GenerateRefreshToken(const std::int64_t user_id) const {
+    return GenerateRefreshToken(std::to_string(user_id));
 }
 
 std::string JwtService::CreateToken(const std::string_view user_id, bool is_refresh_token, std::chrono::seconds ttl)

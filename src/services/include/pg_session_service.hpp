@@ -13,7 +13,6 @@ class PgSessionService final : public SessionService {
 public:
     explicit PgSessionService(userver::storages::postgres::ClusterPtr pg_cluster, const JwtService& jwt);
 
-    SessionBundle create_session(std::string_view user_id) const override;
     SessionBundle create_session(std::int64_t user_id) const override;
     std::optional<TokenPayload> validate_session(std::string_view refresh_token) const override;
     void revoke_session(std::string_view refresh_token) const override;

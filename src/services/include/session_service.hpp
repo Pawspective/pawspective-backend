@@ -42,7 +42,6 @@ public:
      * @return A SessionBundle containing the generated access and refresh
      * tokens.
      */
-    [[nodiscard]] virtual SessionBundle create_session(std::string_view user_id) const = 0;
 
     [[nodiscard]] virtual SessionBundle create_session(std::int64_t user_id) const = 0;
 

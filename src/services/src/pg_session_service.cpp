@@ -16,9 +16,9 @@ namespace pawspective::services {
 PgSessionService::PgSessionService(userver::storages::postgres::ClusterPtr pg_cluster, const JwtService& jwt)
     : pg_cluster_(std::move(pg_cluster)), jwt_(jwt) {}
 
-SessionBundle PgSessionService::create_session(std::string_view user_id) const {
-    const auto access_token = jwt_.generate_access_token(user_id);
-    const auto refresh_token = jwt_.generate_refresh_token(user_id);
+SessionBundle PgSessionService::create_session(std::int64_t user_id) const {
+    const auto access_token = jwt_.GenerateAccessToken(user_id);
+    const auto refresh_token = jwt_.GenerateRefreshToken(user_id);
 
     SessionBundle bundle{access_token, refresh_token};
 
@@ -34,10 +34,6 @@ SessionBundle PgSessionService::create_session(std::string_view user_id) const {
     );
 
     return bundle;
-}
-
-SessionBundle PgSessionService::create_session(std::int64_t user_id) const {
-    return create_session(std::to_string(user_id));
 }
 
 std::optional<TokenPayload> PgSessionService::validate_session(std::string_view refresh_token) const {
