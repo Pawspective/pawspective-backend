@@ -17,12 +17,20 @@ JwtService::JwtService(const Config& config)
       signer_(config.secret_key),
       verifier_(config.secret_key) {}
 
-std::string JwtService::generate_access_token(const std::string_view user_id) const {
+std::string JwtService::GenerateAccessToken(const std::string_view user_id) const {
     return CreateToken(user_id, false, access_ttl_);
 }
 
-std::string JwtService::generate_refresh_token(const std::string_view user_id) const {
+std::string JwtService::GenerateRefreshToken(const std::string_view user_id) const {
     return CreateToken(user_id, true, refresh_ttl_);
+}
+
+std::string JwtService::GenerateAccessToken(const std::int64_t user_id) const {
+    return GenerateAccessToken(std::to_string(user_id));
+}
+
+std::string JwtService::GenerateRefreshToken(const std::int64_t user_id) const {
+    return GenerateRefreshToken(std::to_string(user_id));
 }
 
 std::string JwtService::CreateToken(const std::string_view user_id, bool is_refresh_token, std::chrono::seconds ttl)
@@ -87,7 +95,7 @@ std::optional<TokenPayload> JwtService::ValidateToken(const std::string_view tok
             return std::nullopt;
         }
 
-        return TokenPayload{payload_json["sub"].As<std::string>(), payload_json["ref"].As<bool>()};
+        return TokenPayload{payload_json["sub"].As<std::int64_t>(), payload_json["ref"].As<bool>()};
     } catch (...) {
         return std::nullopt;
     }

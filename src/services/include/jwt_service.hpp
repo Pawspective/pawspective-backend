@@ -1,6 +1,7 @@
 #pragma once
 
 #include <chrono>
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -13,8 +14,9 @@ namespace pawspective::services {
  * @brief Decoded JWT payload returned after successful validation.
  *
  */
-struct TokenPayload {
-    std::string user_id;           ///< Subject indentifier extracted from the token.
+struct TokenPayload {              // NOLINT [cppcoreguidelines-pro-type-member-init] - members are initialized in
+                                   // JwtService::ValidateToken
+    std::int64_t user_id;          ///< Subject indentifier extracted from the token.
     bool is_refresh_token{false};  ///< Indicates whether the token is a refresh token or an access token.
 };
 
@@ -60,7 +62,8 @@ public:
      * @param user_id Identifier of the authenticated user.
      * @return std::string signed JWT access token.
      */
-    [[nodiscard]] std::string generate_access_token(std::string_view user_id) const;
+
+    [[nodiscard]] std::string GenerateAccessToken(std::int64_t user_id) const;
 
     /**
      * @brief Generates a signed JWT refresh token.
@@ -71,7 +74,8 @@ public:
      * @param user_id Identifier of the authenticated user.
      * @return Signed JWT refresh token.
      */
-    [[nodiscard]] std::string generate_refresh_token(std::string_view user_id) const;
+
+    [[nodiscard]] std::string GenerateRefreshToken(std::int64_t user_id) const;
 
     /**
      * @brief Validates an access token.
@@ -105,6 +109,10 @@ private:
      */
     [[nodiscard]] std::string CreateToken(std::string_view user_id, bool is_refresh_token, std::chrono::seconds ttl)
         const;
+
+    [[nodiscard]] std::string GenerateRefreshToken(std::string_view user_id) const;
+
+    [[nodiscard]] std::string GenerateAccessToken(std::string_view user_id) const;
 
     /**
      * @brief Internal helper for signature and expiration validation.

@@ -42,7 +42,7 @@ userver::formats::json::Value AuthLoginHandler::HandleRequestJsonThrow(
             "Invalid login or password"
         });
     }
-    const std::string user_id = "123e4567-e89b-12d3-a456-426614174000";  // delete when UserServise will be done
+    const std::int64_t user_id = 1234567890;  // delete when UserServise will be done
     // const std::string user_id = std::to_string(user->id); // uncomment when UserServise will be done
 
     auto session = session_component_.get_service().create_session(user_id);
