@@ -95,7 +95,7 @@ std::optional<TokenPayload> JwtService::ValidateToken(const std::string_view tok
             return std::nullopt;
         }
 
-        return TokenPayload{payload_json["sub"].As<std::string>(), payload_json["ref"].As<bool>()};
+        return TokenPayload{payload_json["sub"].As<std::int64_t>(), payload_json["ref"].As<bool>()};
     } catch (...) {
         return std::nullopt;
     }

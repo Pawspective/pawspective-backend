@@ -15,7 +15,7 @@ namespace pawspective::services {
  *
  */
 struct TokenPayload {
-    std::string user_id;           ///< Subject indentifier extracted from the token.
+    std::int64_t user_id;           ///< Subject indentifier extracted from the token.
     bool is_refresh_token{false};  ///< Indicates whether the token is a refresh token or an access token.
 };
 
