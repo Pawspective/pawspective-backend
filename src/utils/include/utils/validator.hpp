@@ -3,7 +3,7 @@
 #include <userver/utils/regex.hpp>
 #include <vector>
 #include "utils/exception.hpp"
-namespace pawspective::utils {
+namespace pawspective::utils::validation {
 
 class Validator {
 public:
@@ -28,4 +28,4 @@ private:
     std::vector<ValidationException::FieldError> errors_;
 };
 
-}  // namespace pawspective::utils
+}  // namespace pawspective::utils::validation

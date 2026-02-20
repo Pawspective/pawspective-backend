@@ -3,7 +3,7 @@
 #include <userver/utils/regex.hpp>
 #include "utils/exception.hpp"
 
-namespace pawspective::utils {
+namespace pawspective::utils::validation {
 
 Validator& Validator::Field(std::string name, std::string value) {
     current_field_ = std::move(name);
@@ -45,4 +45,6 @@ void Validator::ThrowIfInvalid() {
     }
 }
 
-}  // namespace pawspective::utils
+void Validator::AddError(std::string msg) { errors_.push_back({current_field_, std::move(msg)}); }
+
+}  // namespace pawspective::utils::validation
