@@ -1,5 +1,5 @@
 set(REPOSITORIES_SOURCES 
-    src/dummy.cpp
+    src/user_repository.cpp
 )
 
 add_library(pawspective_repositories STATIC ${REPOSITORIES_SOURCES})
