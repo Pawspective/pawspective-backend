@@ -40,6 +40,9 @@ components_manager:
         
         session-service-pg:
             load-enabled: true 
+        
+        user-repository: 
+            load-enabled: true
 
 
         server:

@@ -21,7 +21,7 @@ struct User {
     std::optional<std::int64_t> organization_id;  // NOLINT
     std::string password_hash;                    // NOLINT
 
-    auto introspect() { return std::tie(id, email, first_name, last_name, organization_id, password_hash); }
+    auto introspect() const { return std::tie(id, email, first_name, last_name, organization_id, password_hash); }
 };
 
 }  // namespace pawspective::models
