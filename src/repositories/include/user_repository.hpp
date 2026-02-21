@@ -21,11 +21,8 @@ public:
     models::User update_user(std::int64_t id, const models::User& user_upd) const;
     models::User link_organization(std::int64_t id, std::int64_t org_id) const;
     models::User set_password_hash(std::int64_t id, const std::string& password_hash) const;
-    bool delete_user(std::int64_t id) const;
     // NOLINTEND(modernize-use-nodiscard)
     [[nodiscard]] bool check_can_create_shelter(std::int64_t id) const;
-    // std::optional<models::Organization>
-    // get_organization_by_user_id(std::int64_t id); // TODO: Uncomment after
-    // creation Organization
+    [[nodiscard]] std::optional<std::int64_t> get_organization_by_user_id(std::int64_t id) const;
 };
 }  // namespace pawspective::repositories

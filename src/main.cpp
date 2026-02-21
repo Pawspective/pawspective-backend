@@ -17,6 +17,7 @@
 #include "jwt_component.hpp"
 #include "pg_session_component.hpp"
 #include "user_registration_handler.hpp"
+#include "user_repository_component.hpp"
 
 int main(int argc, char* argv[]) {
     userver::server::handlers::auth::RegisterAuthCheckerFactory<pawspective::handlers::AuthCheckerFactory>();
@@ -34,6 +35,7 @@ int main(int argc, char* argv[]) {
             .Append<userver::components::Postgres>("postgres-db")
             .Append<pawspective::components::PgSessionComponent>()
             .Append<pawspective::components::JwtComponent>()
+            .Append<pawspective::components::UserRepositoryComponent>()
             .Append<pawspective::handlers::AuthRefreshHandler>()
             .Append<pawspective::handlers::UserRegistrationHandler>()
             .Append<pawspective::handlers::AuthLogoutHandler>()
