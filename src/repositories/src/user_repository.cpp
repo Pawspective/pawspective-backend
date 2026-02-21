@@ -11,27 +11,27 @@ UserRepository::UserRepository(userver::storages::postgres::ClusterPtr pg_cluste
 [[nodiscard]] std::optional<models::User> UserRepository::get_by_id(std::int64_t id) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
-        "SELECT id, email, first_name, last_name, organization_id, password_hash"
+        "SELECT id, email, first_name, last_name, organization_id, password_hash "
         "FROM users WHERE id = $1",
         id
     );
     if (result.IsEmpty()) {
         return std::nullopt;
     }
-    return result.AsSingleRow<models::User>((userver::storages::postgres::kRowTag));
+    return result.AsSingleRow<models::User>(userver::storages::postgres::kRowTag);
 }
 
 [[nodiscard]] std::optional<models::User> UserRepository::get_by_email(const std::string& email) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
-        "SELECT id, email, first_name, last_name, organization_id, password_hash"
+        "SELECT id, email, first_name, last_name, organization_id, password_hash "
         "FROM users WHERE email = $1",
         email
     );
     if (result.IsEmpty()) {
         return std::nullopt;
     }
-    return result.AsSingleRow<models::User>((userver::storages::postgres::kRowTag));
+    return result.AsSingleRow<models::User>(userver::storages::postgres::kRowTag);
 }
 
 models::User UserRepository::create_user(const models::User& user) const {
