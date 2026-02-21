@@ -4,7 +4,7 @@
 
 class ValidatorTest : public ::testing::Test {
 protected:
-    pawspective::utils::validation::Validator validator_;
+    pawspective::utils::Validator validator_;
 };
 
 TEST_F(ValidatorTest, ValidInputDoesNotThrow) {

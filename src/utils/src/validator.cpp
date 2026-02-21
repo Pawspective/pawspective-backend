@@ -3,7 +3,7 @@
 #include <userver/utils/regex.hpp>
 #include "utils/exception.hpp"
 
-namespace pawspective::utils::validation {
+namespace pawspective::utils {
 
 Validator& Validator::Field(std::string name, std::string value) {
     current_field_ = std::move(name);
@@ -34,7 +34,17 @@ Validator& Validator::Matches(const userver::utils::regex& re, std::string msg) 
 
 Validator& Validator::IsOneOf(const std::vector<std::string>& allowed) {
     if (std::find(allowed.begin(), allowed.end(), current_value_) == allowed.end()) {
-        AddError("must be one of: " + std::to_string(allowed.size()) + " allowed values");
+        std::ostringstream oss;
+        oss << "must be one of: [";
+        for (size_t i = 0; i < allowed.size(); ++i) {
+            if (i > 0) {
+                oss << ", ";
+            }
+            oss << allowed[i];
+        }
+        oss << "]";
+
+        AddError("must be one of: " + oss.str() + " allowed values");
     }
     return *this;
 }
@@ -47,4 +57,4 @@ void Validator::ThrowIfInvalid() {
 
 void Validator::AddError(std::string msg) { errors_.push_back({current_field_, std::move(msg)}); }
 
-}  // namespace pawspective::utils::validation
+}  // namespace pawspective::utils
