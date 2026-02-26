@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include <string>
+#include <userver/formats/json/value.hpp>
 #include <vector>
 
 namespace pawspective::utils {
@@ -13,6 +14,8 @@ public:
         std::string error_message;
     };
     explicit ValidationException(std::vector<FieldError> errors);
+
+    userver::formats::json::Value GetExternalResponse() const;
 
     const std::vector<FieldError>& GetErrors() const;
 
