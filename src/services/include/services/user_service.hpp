@@ -1,0 +1,24 @@
+#pragma once
+
+#include <cstdint>
+#include "user.hpp"
+#include "user_register_dto.hpp"
+#include "user_repository.hpp"
+#include "user_update_dto.hpp"
+
+namespace pawspective::services {
+class UserService {
+public:
+    explicit UserService(const repositories::UserRepository& user_repository);
+
+    models::User GetUserById(std::int64_t user_id) const;
+    models::User RegisterUser(const dto::UserRegisterDTO& dto) const;
+    models::User AuthenticateUser(const std::string& email, const std::string& password) const;
+    std::optional<std::int64_t> GetOrganizationId(std::int64_t user_id) const;
+    models::User UpdateUser(std::int64_t user_id, const dto::UserUpdateDTO& dto) const;
+    bool CanUserCreateOrganization(std::int64_t user_id) const;
+
+private:
+    const repositories::UserRepository& user_repository_;
+};
+}  // namespace pawspective::services

@@ -8,7 +8,7 @@ namespace pawspective::repositories {
 UserRepository::UserRepository(userver::storages::postgres::ClusterPtr pg_cluster)
     : pg_cluster_(std::move(pg_cluster)) {}
 
-[[nodiscard]] std::optional<models::User> UserRepository::get_by_id(std::int64_t id) const {
+[[nodiscard]] std::optional<models::User> UserRepository::get_by_id(const std::int64_t id) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
         "SELECT id, email, first_name, last_name, organization_id, password_hash "
@@ -67,6 +67,10 @@ models::User UserRepository::update_user(std::int64_t id, const models::User& us
         updates.push_back("last_name = $" + std::to_string(param_index++));
         parameters.PushBack(upd_last_name);
     }
+    if (!upd_password_hash.empty()) {
+        updates.push_back("password_hash = $" + std::to_string(param_index++));
+        parameters.PushBack(upd_password_hash);
+    }
     if (updates.empty()) {
         return *get_by_id(id);
     }
@@ -86,18 +90,6 @@ models::User UserRepository::link_organization(std::int64_t id, std::int64_t org
         "RETURNING id, email, first_name, last_name, organization_id, password_hash",
         id,
         org_id
-    );
-    return result.AsSingleRow<models::User>(userver::storages::postgres::kRowTag);
-}
-
-models::User UserRepository::set_password_hash(std::int64_t id, const std::string& password_hash) const {
-    auto result = pg_cluster_->Execute(
-        userver::storages::postgres::ClusterHostType::kMaster,
-        "UPDATE users SET password_hash = $2 "
-        "WHERE id = $1 "
-        "RETURNING id, email, first_name, last_name, organization_id, password_hash",
-        id,
-        password_hash
     );
     return result.AsSingleRow<models::User>(userver::storages::postgres::kRowTag);
 }
