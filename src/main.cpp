@@ -18,6 +18,7 @@
 #include "pg_session_component.hpp"
 #include "user_registration_handler.hpp"
 #include "user_repository_component.hpp"
+#include "components/user_service_component.hpp"
 
 int main(int argc, char* argv[]) {
     userver::server::handlers::auth::RegisterAuthCheckerFactory<pawspective::handlers::AuthCheckerFactory>();
@@ -39,7 +40,8 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::handlers::AuthRefreshHandler>()
             .Append<pawspective::handlers::UserRegistrationHandler>()
             .Append<pawspective::handlers::AuthLogoutHandler>()
-            .Append<pawspective::handlers::AuthLoginHandler>();
+            .Append<pawspective::handlers::AuthLoginHandler>()
+            .Append<pawspective::components::UserServiceComponent>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }
