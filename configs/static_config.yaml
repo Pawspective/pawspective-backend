@@ -44,6 +44,8 @@ components_manager:
         user-repository: 
             load-enabled: true
 
+        user-service:
+            load-enabled: true
 
         server:
             listener:
