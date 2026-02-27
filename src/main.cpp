@@ -13,12 +13,12 @@
 #include "auth_logout_handler.hpp"
 #include "auth_me_handler.hpp"
 #include "auth_refresh_handler.hpp"
+#include "components/user_service_component.hpp"
 #include "health_handler.hpp"
 #include "jwt_component.hpp"
 #include "pg_session_component.hpp"
 #include "user_registration_handler.hpp"
 #include "user_repository_component.hpp"
-#include "components/user_service_component.hpp"
 
 int main(int argc, char* argv[]) {
     userver::server::handlers::auth::RegisterAuthCheckerFactory<pawspective::handlers::AuthCheckerFactory>();
