@@ -1,5 +1,6 @@
 #include "../include/user.hpp"
 #include <optional>
+#include <userver/formats/json/value_builder.hpp>
 #include "../../dto/include/user_dto.hpp"
 #include "../../dto/include/user_register_dto.hpp"
 #include "../../dto/include/user_update_dto.hpp"

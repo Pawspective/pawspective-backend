@@ -4,6 +4,9 @@
 #include <optional>
 #include <string>
 #include <tuple>
+#include <userver/formats/json/value_builder.hpp>
+#include <userver/formats/serialize/common_containers.hpp>
+#include <userver/formats/serialize/to.hpp>
 #include "../../dto/include/user_dto.hpp"
 #include "../../dto/include/user_register_dto.hpp"
 #include "../../dto/include/user_update_dto.hpp"
@@ -23,5 +26,18 @@ struct User {
 
     auto introspect() const { return std::tie(id, email, first_name, last_name, organization_id, password_hash); }
 };
+
+inline userver::formats::json::Value
+Serialize(const User& user, userver::formats::serialize::To<userver::formats::json::Value>) {
+    userver::formats::json::ValueBuilder builder;
+    builder["id"] = user.id;
+    builder["email"] = user.email;
+    builder["first_name"] = user.first_name;
+    builder["last_name"] = user.last_name;
+    builder["organization_id"] = user.organization_id;
+    builder["password_hash"] = user.password_hash;
+
+    return builder.ExtractValue();
+}
 
 }  // namespace pawspective::models
