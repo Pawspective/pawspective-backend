@@ -2,6 +2,7 @@ set(COMPONENTS_SOURCES
     src/jwt_component.cpp
     src/pg_session_component.cpp
     src/user_repository_component.cpp
+    src/user_service_component.cpp
 )
 
 add_library(pawspective_components STATIC ${COMPONENTS_SOURCES})

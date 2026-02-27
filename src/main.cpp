@@ -13,6 +13,7 @@
 #include "auth_logout_handler.hpp"
 #include "auth_me_handler.hpp"
 #include "auth_refresh_handler.hpp"
+#include "components/user_service_component.hpp"
 #include "health_handler.hpp"
 #include "jwt_component.hpp"
 #include "pg_session_component.hpp"
@@ -39,7 +40,8 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::handlers::AuthRefreshHandler>()
             .Append<pawspective::handlers::UserRegistrationHandler>()
             .Append<pawspective::handlers::AuthLogoutHandler>()
-            .Append<pawspective::handlers::AuthLoginHandler>();
+            .Append<pawspective::handlers::AuthLoginHandler>()
+            .Append<pawspective::components::UserServiceComponent>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }
