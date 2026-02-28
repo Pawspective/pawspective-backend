@@ -10,7 +10,7 @@ def make_unique_email(prefix='user'):
 async def test_register_success(service_client):
     """Test successful registration"""
     email = make_unique_email('register')
-    
+
     response = await service_client.post(
         '/user/register',
         json={
@@ -20,7 +20,7 @@ async def test_register_success(service_client):
             'last_name': 'Doe',
         },
     )
-    
+
     assert response.status == 201
     data = response.json()
     assert data['email'] == email
@@ -32,7 +32,7 @@ async def test_register_success(service_client):
 async def test_register_duplicate_email(service_client):
     """Test registering with duplicate email"""
     email = make_unique_email('dupe')
-    
+
     first = await service_client.post(
         '/user/register',
         json={
@@ -43,7 +43,7 @@ async def test_register_duplicate_email(service_client):
         },
     )
     assert first.status == 201
-    
+
     second = await service_client.post(
         '/user/register',
         json={
@@ -53,7 +53,7 @@ async def test_register_duplicate_email(service_client):
             'last_name': 'Smith',
         },
     )
-    
+
     assert second.status == 409
     payload = second.json()
     assert payload['code'] == '409'
@@ -71,7 +71,7 @@ async def test_register_invalid_email(service_client):
             'last_name': 'Doe',
         },
     )
-    
+
     assert response.status == 400
     payload = response.json()
     assert payload['code'] == '400'
@@ -88,7 +88,7 @@ async def test_register_missing_required_field(service_client):
             'last_name': 'Doe',
         },
     )
-    
+
     assert response.status == 400
     payload = response.json()
     assert payload['code'] == '400'
@@ -102,7 +102,7 @@ async def test_register_invalid_json(service_client):
         data='invalid json',
         headers={'Content-Type': 'application/json'},
     )
-    
+
     assert response.status == 400
     payload = response.json()
     assert payload['code'] == '400'

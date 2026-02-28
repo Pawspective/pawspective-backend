@@ -13,7 +13,7 @@ async def authenticated_user(service_client):
     """Fixture to create and login a user for testing"""
     email = make_unique_email('owner')
     password = 'TestPassword123'
-    
+
     register_response = await service_client.post(
         '/user/register',
         json={
@@ -25,11 +25,11 @@ async def authenticated_user(service_client):
     )
     assert register_response.status == 201
     user_data = register_response.json()
-    
+
     login_response = await service_client.post('/auth/login', json={'email': email, 'password': password})
     assert login_response.status == 200
     tokens = login_response.json()
-    
+
     result = {
         'id': user_data['id'],
         'email': email,
@@ -43,7 +43,7 @@ async def test_user_update_success(service_client, authenticated_user):
     new_email = make_unique_email('updated')
     user_id = authenticated_user['id']
     token = authenticated_user['token']
-    
+
     response = await service_client.put(
         f"/user/{user_id}",
         json={
@@ -53,7 +53,7 @@ async def test_user_update_success(service_client, authenticated_user):
         },
         headers={'Authorization': f"Bearer {token}"},
     )
-    
+
     assert response.status == 200
     data = response.json()
     assert data['id'] == user_id
@@ -65,7 +65,7 @@ async def test_user_update_success(service_client, authenticated_user):
 async def test_user_update_requires_auth(service_client, authenticated_user):
     """Test that update requires authentication"""
     user_id = authenticated_user['id']
-    
+
     response = await service_client.put(
         f"/user/{user_id}",
         json={
@@ -92,7 +92,7 @@ async def test_user_update_other_user_forbidden(service_client, authenticated_us
     )
     assert other_register.status == 201
     other = other_register.json()
-    
+
     response = await service_client.put(
         f"/user/{other['id']}",
         json={
@@ -116,7 +116,7 @@ async def test_user_update_invalid_path_id(service_client, authenticated_user):
         },
         headers={'Authorization': f"Bearer {authenticated_user['token']}"},
     )
-    
+
     assert response.status == 400
 
 
@@ -134,7 +134,7 @@ async def test_user_update_duplicate_email(service_client, authenticated_user):
         },
     )
     assert register.status == 201
-    
+
     response = await service_client.put(
         f"/user/{authenticated_user['id']}",
         json={
@@ -144,5 +144,5 @@ async def test_user_update_duplicate_email(service_client, authenticated_user):
         },
         headers={'Authorization': f"Bearer {authenticated_user['token']}"},
     )
-    
+
     assert response.status == 409
