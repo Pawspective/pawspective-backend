@@ -1,5 +1,4 @@
 #include <string>
-#include <string_view>
 #include <userver/utils/regex.hpp>
 #include <vector>
 #include "utils/exception.hpp"
@@ -10,7 +9,8 @@ public:
     explicit Validator() = default;
 
     Validator& Field(std::string name, std::string value);
-    Validator& NotEmpty();
+
+    Validator& NotBlank();
 
     Validator& MinLength(std::size_t min);
 

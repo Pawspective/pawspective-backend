@@ -11,10 +11,9 @@ protected:
 TEST_F(ValidatorTest, ValidInputDoesNotThrow) {
     EXPECT_NO_THROW({
         validator_.Field("email", "test@example.com")
-            .NotEmpty()
+            .NotBlank()
             .Matches(userver::utils::regex(R"(^\S+@\S+\.\S+$)"), "Bad email")
             .Field("age", "25")
-            .NotEmpty()
             .ThrowIfInvalid();
     });
 }
@@ -23,15 +22,15 @@ TEST_F(ValidatorTest, IsOneOfSuccess) {
     EXPECT_NO_THROW({ validator_.Field("role", "admin").IsOneOf({"admin", "user", "guest"}).ThrowIfInvalid(); });
 }
 
-TEST_F(ValidatorTest, NotEmptyFailure) {
+TEST_F(ValidatorTest, NotBlankFailure) {
     try {
-        validator_.Field("username", "").NotEmpty().ThrowIfInvalid();
+        validator_.Field("username", "").NotBlank().ThrowIfInvalid();
         FAIL() << "Validator should have thrown ValidationException";
     } catch (const pawspective::utils::ValidationException& e) {
         const auto& errors = e.GetErrors();
         ASSERT_EQ(errors.size(), 1);
         EXPECT_EQ(errors[0].field_name, "username");
-        EXPECT_EQ(errors[0].error_message, "must not be empty");
+        EXPECT_EQ(errors[0].error_message, "must not be empty or whitespace-only");
     }
 }
 

@@ -5,6 +5,7 @@
 #include <string>
 #include <string_view>
 #include <userver/crypto/base64.hpp>
+#include <userver/crypto/random.hpp>
 #include <userver/formats/json/serialize.hpp>
 #include <userver/formats/json/value_builder.hpp>
 #include <userver/utils/datetime_light.hpp>
@@ -38,11 +39,12 @@ std::string JwtService::CreateToken(const std::string_view user_id, bool is_refr
     auto now = userver::utils::datetime::Now();
     auto expiry = now + ttl;
     userver::formats::json::ValueBuilder payload;
-    payload["sub"] = user_id;
+    payload["sub"] = std::stoll(std::string{user_id});
     payload["iat"] = std::chrono::duration_cast<std::chrono::seconds>(now.time_since_epoch()).count();
     payload["exp"] = std::chrono::duration_cast<std::chrono::seconds>(expiry.time_since_epoch()).count();
     payload["ref"] = is_refresh_token;
     payload["iss"] = "auth-service";
+    payload["jti"] = userver::crypto::base64::Base64UrlEncode(userver::crypto::GenerateRandomBlock(16));
 
     const std::string payload_json = userver::formats::json::ToString(payload.ExtractValue());
     const std::string payload_b64 = userver::crypto::base64::Base64UrlEncode(payload_json);
@@ -70,7 +72,7 @@ std::optional<TokenPayload> JwtService::ValidateToken(const std::string_view tok
     try {
         const std::string signature = userver::crypto::base64::Base64UrlDecode(signature_b64);
         verifier_.Verify({signed_area}, signature);
-    } catch (...) {
+    } catch (const std::exception& /*e*/) {
         return std::nullopt;
     }
 
@@ -95,8 +97,15 @@ std::optional<TokenPayload> JwtService::ValidateToken(const std::string_view tok
             return std::nullopt;
         }
 
-        return TokenPayload{payload_json["sub"].As<std::int64_t>(), payload_json["ref"].As<bool>()};
-    } catch (...) {
+        std::int64_t subject_id{};
+        try {
+            subject_id = payload_json["sub"].As<std::int64_t>();
+        } catch (const std::exception& /*e*/) {
+            subject_id = std::stoll(payload_json["sub"].As<std::string>());
+        }
+
+        return TokenPayload{subject_id, payload_json["ref"].As<bool>()};
+    } catch (const std::exception& /*e*/) {
         return std::nullopt;
     }
 }

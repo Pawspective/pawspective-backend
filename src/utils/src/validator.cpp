@@ -1,4 +1,6 @@
 #include "utils/validator.hpp"
+#include <algorithm>
+#include <cctype>
 #include <string>
 #include <userver/utils/regex.hpp>
 #include "utils/exception.hpp"
@@ -11,9 +13,11 @@ Validator& Validator::Field(std::string name, std::string value) {
     return *this;
 }
 
-Validator& Validator::NotEmpty() {
-    if (current_value_.empty()) {
-        AddError("must not be empty");
+Validator& Validator::NotBlank() {
+    if (current_value_.empty() ||
+        std::all_of(current_value_.begin(), current_value_.end(), [](unsigned char c) { return std::isspace(c); }))
+    {
+        AddError("must not be empty or whitespace-only");
     }
     return *this;
 }
