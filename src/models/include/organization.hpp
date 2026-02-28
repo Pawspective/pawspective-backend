@@ -26,17 +26,4 @@ struct Organization {
     auto introspect() const { return std::tie(id, name, description, city); }
 };
 
-inline userver::formats::json::Value
-Serialize(const Organization& org, userver::formats::serialize::To<userver::formats::json::Value>) {
-    userver::formats::json::ValueBuilder builder;
-    builder["id"] = org.id;
-    builder["name"] = org.name;
-    if (org.description.has_value()) {
-        builder["description"] = *org.description;
-    }
-    builder["city"] = org.city;
-
-    return builder.ExtractValue();
-}
-
 }  // namespace pawspective::models
