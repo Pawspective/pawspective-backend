@@ -89,6 +89,11 @@ components_manager:
             method: POST
             task_processor: main-task-processor
 
+        handler-user-update:
+            path: /user/{id}
+            method: PUT
+            task_processor: main-task-processor
+
         handler-auth-logout:
             path: /auth/logout
             method: POST

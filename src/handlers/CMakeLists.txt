@@ -5,6 +5,7 @@ set(HANDLERS_SOURCES
     
     src/auth_refresh_handler.cpp
     src/user_registration_handler.cpp
+    src/user_update_handler.cpp
     src/auth_login_handler.cpp
     src/auth_logout_handler.cpp
 )
