@@ -1,6 +1,7 @@
 #include "utils/exception.hpp"
 #include <userver/formats/json/value.hpp>
 #include <userver/formats/json/value_builder.hpp>
+#include "utils/error_response.hpp"
 
 namespace pawspective::utils {
 ValidationException::ValidationException(std::vector<FieldError> errors)
@@ -10,8 +11,8 @@ const std::vector<ValidationException::FieldError>& ValidationException::GetErro
 
 userver::formats::json::Value ValidationException::GetExternalResponse() const {
     userver::formats::json::ValueBuilder builder;
-    builder["status"] = "error";
-    builder["message"] = "Validation constraints violated";
+    builder["error"]["code"] = error_code::kValidationError;
+    builder["error"]["message"] = "Validation constraints violated";
 
     userver::formats::json::ValueBuilder details(userver::formats::common::Type::kArray);
     for (const auto& error : errors_) {
@@ -20,7 +21,7 @@ userver::formats::json::Value ValidationException::GetExternalResponse() const {
         item["error"] = error.error_message;
         details.PushBack(std::move(item));
     }
-    builder["details"] = details;
+    builder["error"]["details"] = details;
     return builder.ExtractValue();
 }
 
