@@ -2,6 +2,7 @@ set(UTILS_SOURCES
     src/hasher.cpp
     src/exception.cpp
     src/validator.cpp
+    src/error_response.cpp
 )
 
 add_library(pawspective_utils STATIC ${UTILS_SOURCES})

@@ -1,0 +1,32 @@
+#include "utils/error_response.hpp"
+
+#include <userver/formats/json/value_builder.hpp>
+#include <userver/logging/log.hpp>
+
+namespace pawspective::utils {
+
+ErrorResponse::ErrorResponse(const std::string_view& code, const std::string& message)
+    : code_(code), message_(message) {}
+
+userver::formats::json::Value ErrorResponse::GetJson() const {
+    userver::formats::json::ValueBuilder error;
+    error["error"]["code"] = code_;
+    error["error"]["message"] = message_;
+    return error.ExtractValue();
+}
+
+std::string ErrorResponse::GetString() const { return userver::formats::json::ToString(GetJson()); }
+
+void ErrorResponse::ThrowClientError() const {
+    throw userver::server::handlers::ClientError{userver::server::handlers::ExternalBody{GetString()}};
+}
+
+void ErrorResponse::ThrowUnauthorized() const {
+    throw userver::server::handlers::Unauthorized{userver::server::handlers::ExternalBody{GetString()}};
+}
+
+void ErrorResponse::ThrowConflict() const {
+    throw userver::server::handlers::ConflictError{userver::server::handlers::ExternalBody{GetString()}};
+}
+
+}  // namespace pawspective::utils
