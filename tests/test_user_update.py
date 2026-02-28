@@ -127,8 +127,8 @@ async def test_user_update_duplicate_email(service_client, authenticated_user):
     register = await service_client.post(
         '/user/register',
         json={
-            'email': existing_email,
-            'password': existing_password,
+            'email': email,
+            'password': password,
             'first_name': 'Existing',
             'last_name': 'User',
         },
@@ -138,7 +138,7 @@ async def test_user_update_duplicate_email(service_client, authenticated_user):
     response = await service_client.put(
         f"/user/{authenticated_user['id']}",
         json={
-            'email': existing_email,
+            'email': email,
             'first_name': 'Owner',
             'last_name': 'User',
         },
