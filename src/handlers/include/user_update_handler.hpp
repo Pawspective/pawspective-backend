@@ -1,10 +1,10 @@
 #pragma once
 
-#include <userver/server/handlers/http_handler_base.hpp>
+#include <userver/server/handlers/http_handler_json_base.hpp>
 #include "services/user_service.hpp"
 
 namespace pawspective::handlers {
-class UserUpdateHandler final : public userver::server::handlers::HttpHandlerBase {
+class UserUpdateHandler final : public userver::server::handlers::HttpHandlerJsonBase {
 public:
     static constexpr std::string_view kName = "handler-user-update";
 
@@ -13,8 +13,9 @@ public:
         const userver::components::ComponentContext& context
     );
 
-    std::string HandleRequestThrow(
+    userver::formats::json::Value HandleRequestJsonThrow(
         const userver::server::http::HttpRequest& request,
+        const userver::formats::json::Value& request_body,
         userver::server::request::RequestContext& context
     ) const override;
 
