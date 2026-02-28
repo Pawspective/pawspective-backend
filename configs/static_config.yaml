@@ -93,6 +93,10 @@ components_manager:
             path: /user/{id}
             method: PUT
             task_processor: main-task-processor
+            auth:
+                types:
+                    - jwt
+                required: true
 
         handler-auth-logout:
             path: /auth/logout

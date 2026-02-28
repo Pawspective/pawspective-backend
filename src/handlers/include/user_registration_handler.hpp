@@ -1,6 +1,7 @@
 #pragma once
 
 #include <userver/server/handlers/http_handler_json_base.hpp>
+#include "components/user_service_component.hpp"
 
 namespace pawspective::handlers {
 
@@ -21,7 +22,6 @@ public:
     ) const override;
 
 private:
-    // TOOO: add user service component
-    // const UserServiceComponent& user_service_;
+    const components::UserServiceComponent& user_service_;
 };
 }  // namespace pawspective::handlers

@@ -2,10 +2,8 @@
 
 #include <userver/components/component.hpp>
 #include <userver/server/handlers/http_handler_json_base.hpp>
-#include "../../services/include/jwt_service.hpp"
-
-// #include "../../services/include/user_service.hpp" // uncomment when
-// UserServise will be done
+#include "jwt_service.hpp"
+#include "services/user_service.hpp"
 
 namespace pawspective::handlers {
 
@@ -25,8 +23,7 @@ public:
 
 private:
     const services::JwtService& jwt_service_;
-    // services::UserService& user_service_; // uncomment when UserServise will
-    // be done
+    const services::UserService& user_service_;
 };
 
 }  // namespace pawspective::handlers

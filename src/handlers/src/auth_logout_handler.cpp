@@ -2,8 +2,7 @@
 #include <userver/formats/json/exception.hpp>
 #include <userver/logging/log.hpp>
 #include <userver/server/handlers/exceptions.hpp>
-
-// #include "../../dto/include/user_dto.hpp"
+#include "utils/error_response.hpp"
 
 namespace pawspective::handlers {
 
@@ -14,28 +13,30 @@ AuthLogoutHandler::AuthLogoutHandler(
 )
     : HttpHandlerJsonBase(config, component_context, is_monitor),
       session_component_(component_context.FindComponent<components::PgSessionComponent>()) {
-    LOG_INFO() << "AuthLoginHandler initialized";
+    LOG_INFO() << "AuthLogoutHandler initialized";
 }
 
 userver::formats::json::Value AuthLogoutHandler::HandleRequestJsonThrow(
-    const userver::server::http::HttpRequest& request,
+    const userver::server::http::HttpRequest& /*request*/,
     const userver::formats::json::Value& request_json,
     userver::server::request::RequestContext& context
 ) const {
-    const auto& user_id = context.GetData<std::string>("user_id");
+    int64_t user_id = context.GetData<int64_t>("user_id");
     std::string refresh_token;
 
     try {
         refresh_token = request_json["refresh_token"].As<std::string>();
-    } catch (const userver::formats::json::MemberMissingException&) {
-        LOG_WARNING() << "Missing refresh_token in request body for user: " << user_id;
-        throw userver::server::handlers::Unauthorized(userver::server::handlers::ExternalBody{"Missing refresh_token"});
+    } catch (const userver::formats::json::ParseException& e) {
+        LOG_WARNING() << "Failed to parse login data: " << e.what();
+        utils::ErrorResponse(utils::error_code::kInvalidJsonFormat, "Invalid JSON format").ThrowClientError();
+    } catch (const userver::formats::json::MemberMissingException& e) {
+        LOG_WARNING() << "Missing required field in login data: " << e.what();
+        utils::ErrorResponse(utils::error_code::kMissingField, "Missing required field").ThrowClientError();
     }
 
     session_component_.get_service().revoke_session(refresh_token);
 
     LOG_INFO() << "User logged out: " << user_id;
-    request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
     return userver::formats::json::ValueBuilder{}.ExtractValue();
 }
 

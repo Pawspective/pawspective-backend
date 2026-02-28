@@ -4,6 +4,7 @@
 #include "services/user_service.hpp"
 
 namespace pawspective::handlers {
+
 class UserUpdateHandler final : public userver::server::handlers::HttpHandlerJsonBase {
 public:
     static constexpr std::string_view kName = "handler-user-update";
@@ -22,4 +23,5 @@ public:
 private:
     const services::UserService& user_service_;
 };
+
 }  // namespace pawspective::handlers
