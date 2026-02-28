@@ -19,14 +19,29 @@ userver::formats::json::
         HandleRequestJsonThrow(const userver::server::http::HttpRequest& request, const userver::formats::json::Value& request_body, userver::server::request::RequestContext&)
             const {
     const auto& id_str = request.GetPathArg("id");
-    auto user_id = std::stoll(id_str);
 
-    auto user_update_dot = request_body.As<dto::UserUpdateDTO>();
+    std::int64_t user_id = 0;
+    try {
+        user_id = std::stoll(id_str);
 
-    auto updated_user = user_service_.UpdateUser(user_id, user_update_dot);
+    } catch (const std::exception& e) {
+        throw userver::server::handlers::ClientError(userver::server::handlers::ExternalBody{"Invalid user ID format"});
+    }
 
-    request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
+    try {
+        auto update_dto = request_body.As<pawspective::dto::UserUpdateDTO>();
 
-    return userver::formats::json::ValueBuilder{updated_user}.ExtractValue();
+        auto updated_model = user_service_.UpdateUser(user_id, update_dto);
+
+        auto response_dto = models::User::to_dto(updated_model);
+
+        request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
+
+        return userver::formats::json::ValueBuilder(response_dto).ExtractValue();
+    } catch (const std::exception& e) {
+        throw userver::server::handlers::InternalServerError(userver::server::handlers::ExternalBody{
+            "Failed to update user: " + std::string(e.what())
+        });
+    }
 }
 }  // namespace pawspective::handlers
