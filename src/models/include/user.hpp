@@ -27,17 +27,4 @@ struct User {
     auto introspect() const { return std::tie(id, email, first_name, last_name, organization_id, password_hash); }
 };
 
-inline userver::formats::json::Value
-Serialize(const User& user, userver::formats::serialize::To<userver::formats::json::Value>) {
-    userver::formats::json::ValueBuilder builder;
-    builder["id"] = user.id;
-    builder["email"] = user.email;
-    builder["first_name"] = user.first_name;
-    builder["last_name"] = user.last_name;
-    builder["organization_id"] = user.organization_id;
-    builder["password_hash"] = user.password_hash;
-
-    return builder.ExtractValue();
-}
-
 }  // namespace pawspective::models
