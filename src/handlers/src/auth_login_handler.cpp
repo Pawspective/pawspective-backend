@@ -1,4 +1,6 @@
 #include "../include/auth_login_handler.hpp"
+#include <algorithm>
+#include <cctype>
 #include <userver/formats/json/exception.hpp>
 #include <userver/logging/log.hpp>
 #include <userver/server/handlers/exceptions.hpp>
@@ -31,21 +33,24 @@ userver::formats::json::Value AuthLoginHandler::HandleRequestJsonThrow(
     try {
         email = request_json["email"].As<std::string>("");
         password = request_json["password"].As<std::string>("");
+
+        std::transform(email.begin(), email.end(), email.begin(), [](unsigned char c) { return std::tolower(c); });
+
         utils::Validator validator;
         validator.Field("email", email)
-            .NotEmpty()
+            .NotBlank()
             .Matches(
                 userver::utils::regex{R"(^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$)"},
                 "Invalid email format"
             );
-        validator.Field("password", password).NotEmpty().MinLength(8);
+        validator.Field("password", password).NotBlank().MinLength(8);
         validator.ThrowIfInvalid();
-    } catch (const userver::formats::json::ParseException& e) {
-        LOG_WARNING() << "Failed to parse login data: " << e.what();
-        utils::ErrorResponse(utils::error_code::kInvalidJsonFormat, "Invalid JSON format").ThrowClientError();
     } catch (const userver::formats::json::MemberMissingException& e) {
         LOG_WARNING() << "Missing required field in login data: " << e.what();
         utils::ErrorResponse(utils::error_code::kMissingField, "Missing required field").ThrowClientError();
+    } catch (const userver::formats::json::Exception& e) {
+        LOG_WARNING() << "Invalid JSON format: " << e.what();
+        utils::ErrorResponse(utils::error_code::kInvalidJsonFormat, "Invalid JSON format").ThrowClientError();
     } catch (const utils::ValidationException& e) {
         LOG_WARNING() << "Validation failed for login data";
         throw userver::server::handlers::ClientError{

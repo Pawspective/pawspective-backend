@@ -1,6 +1,7 @@
 #include "services/user_service.hpp"
 
 #include <optional>
+#include <userver/storages/postgres/exceptions.hpp>
 #include "services/exception.hpp"
 #include "user.hpp"
 #include "utils/hasher.hpp"
@@ -22,7 +23,11 @@ models::User UserService::RegisterUser(const dto::UserRegisterDTO& dto) const {
     }
     models::User user = models::User::from_register_dto(dto);
     user.password_hash = utils::crypto::GenerateHash(dto.password);
-    return user_repository_.create_user(user);
+    try {
+        return user_repository_.create_user(user);
+    } catch (const userver::storages::postgres::UniqueViolation&) {
+        throw UserAlreadyExistsException();
+    }
 }
 
 models::User UserService::AuthenticateUser(const std::string& email, const std::string& password) const {
@@ -45,7 +50,11 @@ models::User UserService::UpdateUser(std::int64_t user_id, const dto::UserUpdate
     if (auto opt = user_repository_.get_by_id(user_id); !opt.has_value()) {
         throw UserNotFoundException();
     }
-    return user_repository_.update_user(user_id, new_data);
+    try {
+        return user_repository_.update_user(user_id, new_data);
+    } catch (const userver::storages::postgres::UniqueViolation&) {
+        throw UserAlreadyExistsException();
+    }
 }
 
 bool UserService::CanUserCreateOrganization(std::int64_t user_id) const {

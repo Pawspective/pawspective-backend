@@ -1,5 +1,7 @@
 #include "user_update_handler.hpp"
 
+#include <algorithm>
+#include <cctype>
 #include <userver/components/component_context.hpp>
 #include <userver/formats/json/exception.hpp>
 #include <userver/formats/json/value.hpp>
@@ -48,20 +50,29 @@ userver::formats::json::Value UserUpdateHandler::HandleRequestJsonThrow(
     try {
         update_dto = request_body.As<dto::UserUpdateDTO>();
 
+        if (update_dto.email) {
+            std::transform(
+                update_dto.email->begin(),
+                update_dto.email->end(),
+                update_dto.email->begin(),
+                [](unsigned char c) { return std::tolower(c); }
+            );
+        }
+
         utils::Validator validator;
-        if (!update_dto.email) {
+        if (update_dto.email) {
             validator.Field("email", *update_dto.email)
-                .NotEmpty()
+                .NotBlank()
                 .Matches(
                     userver::utils::regex{R"(^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$)"},
                     "Invalid email format"
                 );
         }
-        if (!update_dto.first_name) {
-            validator.Field("first_name", *update_dto.first_name).NotEmpty();
+        if (update_dto.first_name) {
+            validator.Field("first_name", *update_dto.first_name).NotBlank();
         }
-        if (!update_dto.last_name) {
-            validator.Field("last_name", *update_dto.last_name).NotEmpty();
+        if (update_dto.last_name) {
+            validator.Field("last_name", *update_dto.last_name).NotBlank();
         }
         validator.ThrowIfInvalid();
 
@@ -74,12 +85,12 @@ userver::formats::json::Value UserUpdateHandler::HandleRequestJsonThrow(
         LOG_INFO() << "User " << target_user_id << " updated successfully";
         return userver::formats::json::ValueBuilder(response_dto).ExtractValue();
 
-    } catch (const userver::formats::json::ParseException& e) {
-        LOG_WARNING() << "Failed to parse update data: " << e.what();
-        utils::ErrorResponse(utils::error_code::kInvalidJsonFormat, "Invalid JSON format").ThrowClientError();
     } catch (const userver::formats::json::MemberMissingException& e) {
         LOG_WARNING() << "Missing required field in update data: " << e.what();
         utils::ErrorResponse(utils::error_code::kMissingField, "Missing required field").ThrowClientError();
+    } catch (const userver::formats::json::Exception& e) {
+        LOG_WARNING() << "Invalid JSON format: " << e.what();
+        utils::ErrorResponse(utils::error_code::kInvalidJsonFormat, "Invalid JSON format").ThrowClientError();
     } catch (const utils::ValidationException& e) {
         LOG_WARNING() << "Validation failed for user update";
         throw userver::server::handlers::ClientError{

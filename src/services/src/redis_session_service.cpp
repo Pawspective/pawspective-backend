@@ -15,15 +15,15 @@ namespace pawspective::services {
 RedisSessionService::RedisSessionService(userver::storages::redis::ClientPtr redis_client, const JwtService& jwt)
     : redis_(std::move(redis_client)), jwt_(jwt) {}
 
-SessionBundle RedisSessionService::create_session(std::string_view user_id) const {
-    const auto access_token = jwt_.generate_access_token(user_id);
-    const auto refresh_token = jwt_.generate_refresh_token(user_id);
+SessionBundle RedisSessionService::create_session(std::int64_t user_id) const {
+    const auto access_token = jwt_.GenerateAccessToken(user_id);
+    const auto refresh_token = jwt_.GenerateRefreshToken(user_id);
 
     SessionBundle bundle{access_token, refresh_token};
 
     auto hash = userver::crypto::hash::Sha256(bundle.refresh_token);
 
-    redis_->Setex("sess:" + hash, std::chrono::hours(24 * 7), std::string(user_id), {}).Get();
+    redis_->Setex("sess:" + hash, std::chrono::hours(24 * 7), std::to_string(user_id), {}).Get();
 
     return bundle;
 }
