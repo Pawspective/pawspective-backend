@@ -2,6 +2,9 @@ set(DTO_SOURCES
     src/user_dto.cpp
     src/user_register_dto.cpp
     src/user_update_dto.cpp
+    src/organization_dto.cpp
+    src/organization_register_dto.cpp
+    src/organization_update_dto.cpp
 )
 
 add_library(pawspective_dto STATIC ${DTO_SOURCES})

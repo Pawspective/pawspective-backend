@@ -1,6 +1,7 @@
 set(MODELS_SOURCES 
     src/user.cpp
     src/jwt_secrets.cpp
+    src/organization.cpp
 )
 
 add_library(pawspective_models STATIC ${MODELS_SOURCES})
