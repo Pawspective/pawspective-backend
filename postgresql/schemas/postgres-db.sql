@@ -51,3 +51,24 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_sessions_refresh_hash
 
 CREATE INDEX IF NOT EXISTS idx_sessions_user_id
     ON auth_schema.sessions (user_id);
+
+CREATE TYPE animal_size AS ENUM
+    ('small', 'medium', 'large');
+
+CREATE TYPE animal_gender AS ENUM
+    ('male', 'female', 'unknown');
+
+CREATE TYPE care_level AS ENUM 
+    ('easy', 'moderate', 'difficult', 'special_needs');
+
+CREATE TYPE good_with AS ENUM 
+    ('dogs', 'cats', 'children', 'elderly');
+
+CREATE TYPE animal_color AS ENUM 
+    ('black', 'white', 'brown', 'grey', 'orange', 'cream', 'tan', 'golden', 'spotted', 'striped', 'brindle', 'mixed');
+
+CREATE TYPE animal_status AS ENUM 
+    ('available', 'adopted', 'unavailable');
+
+CREATE TYPE animal_type AS ENUM 
+    ('dog', 'cat', 'other');
