@@ -3,6 +3,7 @@ set(MODELS_SOURCES
     src/jwt_secrets.cpp
     src/organization.cpp
     src/animal.cpp
+    src/animal_enums.cpp
     src/breed.cpp
 )
 

@@ -6,6 +6,8 @@ set(DTO_SOURCES
     src/organization_register_dto.cpp
     src/organization_update_dto.cpp
     src/animal_dto.cpp
+    src/animal_register_dto.cpp
+    src/animal_update_dto.cpp
     src/breed_dto.cpp
 )
 

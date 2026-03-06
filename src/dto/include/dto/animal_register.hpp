@@ -1,20 +1,16 @@
-#pragma once
+#pragma once 
 
 #include <cstdint>
-#include <optional>
 #include <string>
-#include <userver/formats/json/value.hpp>
-
-#include "dto/breed.hpp"
+#include "models/animal_enums.hpp"
 
 namespace pawspective::dto {
 
-struct AnimalDTO {
-    std::int64_t id{};
+struct AnimalRegisterDTO {
     std::int64_t organization_id{};
     std::string name;
     // std::optional<std::string> photo_url;
-    BreedDTO breed;
+    std::int64_t breed_id{};
     models::AnimalSize size = models::AnimalSize::kMedium;
     models::AnimalGender gender = models::AnimalGender::kUnknown;
     models::CareLevel care_level = models::CareLevel::kEasy;
@@ -26,7 +22,7 @@ struct AnimalDTO {
 };
 
 userver::formats::json::Value
-Serialize(const AnimalDTO& data, userver::formats::serialize::To<userver::formats::json::Value>);
-AnimalDTO Parse(const userver::formats::json::Value& json, userver::formats::parse::To<AnimalDTO>);
+Serialize(const AnimalRegisterDTO& data, userver::formats::serialize::To<userver::formats::json::Value>);
+AnimalRegisterDTO Parse(const userver::formats::json::Value& json, userver::formats::parse::To<AnimalRegisterDTO>);
 
-}  // namespace pawspective::dto
+} // namespace pawspective::dto
