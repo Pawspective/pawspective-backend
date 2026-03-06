@@ -21,8 +21,8 @@ Serialize(const OrganizationUpdateDTO& data, userver::formats::serialize::To<use
     if (data.description.has_value()) {
         builder["description"] = *data.description;
     }
-    if (data.city.has_value()) {
-        builder["city"] = *data.city;
+    if (data.city_id.has_value()) {
+        builder["city_id"] = *data.city_id;
     }
 
     return builder.ExtractValue();
@@ -36,10 +36,11 @@ Parse(const userver::formats::json::Value& json, userver::formats::parse::To<Org
         dto.name = json["name"].As<std::optional<std::string>>();
     }
     if (json.HasMember("description")) {
+        dto.description_updated = true;
         dto.description = json["description"].As<std::optional<std::string>>();
     }
-    if (json.HasMember("city")) {
-        dto.city = json["city"].As<std::optional<City>>();
+    if (json.HasMember("city_id")) {
+        dto.city_id = json["city_id"].As<std::optional<std::int64_t>>();
     }
 
     return dto;

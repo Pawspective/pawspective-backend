@@ -7,13 +7,13 @@
 
 namespace pawspective::dto {
 
-struct City {
+struct CityDTO {
     std::int64_t id{};
     std::string name;
 };
 
 userver::formats::json::Value
-Serialize(const City& data, userver::formats::serialize::To<userver::formats::json::Value>);
-City Parse(const userver::formats::json::Value& json, userver::formats::parse::To<City>);
+Serialize(const CityDTO& data, userver::formats::serialize::To<userver::formats::json::Value>);
+CityDTO Parse(const userver::formats::json::Value& json, userver::formats::parse::To<CityDTO>);
 
 }  // namespace pawspective::dto

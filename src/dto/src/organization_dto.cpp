@@ -31,7 +31,7 @@ Parse(const userver::formats::json::Value& json, userver::formats::parse::To<Org
     dto.id = json["id"].As<std::int64_t>();
     dto.name = json["name"].As<std::string>();
     dto.description = json["description"].As<std::optional<std::string>>();
-    dto.city = json["city"].As<City>();
+    dto.city = json["city"].As<CityDTO>();
 
     return dto;
 }

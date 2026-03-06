@@ -5,6 +5,7 @@ set(DTO_SOURCES
     src/organization_dto.cpp
     src/organization_register_dto.cpp
     src/organization_update_dto.cpp
+    src/city_dto.cpp
 )
 
 add_library(pawspective_dto STATIC ${DTO_SOURCES})
