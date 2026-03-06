@@ -3,19 +3,37 @@ CREATE TABLE IF NOT EXISTS service_table (
     value TEXT
 );
 
+-- Begin Extensions
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+-- End Extensions
+
+CREATE TABLE IF NOT EXISTS cities (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS organizations (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    city_id BIGINT NOT NULL,
+    CONSTRAINT fk_organizations_city FOREIGN KEY (city_id) REFERENCES cities(id) ON DELETE RESTRICT
+);
+
 CREATE TABLE IF NOT EXISTS users (
     id BIGSERIAL PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
     organization_id BIGINT,
-    password_hash VARCHAR(255) NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    password_hash TEXT NOT NULL,
+    CONSTRAINT fk_users_organization FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE SET NULL
 );
 
 CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
 CREATE INDEX IF NOT EXISTS idx_users_organization_id ON users (organization_id);
+CREATE INDEX IF NOT EXISTS idx_organizations_city_id ON organizations (city_id);
+CREATE INDEX IF NOT EXISTS idx_org_name_trgm ON organizations USING gin (name gin_trgm_ops);
 
 CREATE SCHEMA IF NOT EXISTS auth_schema;
 
@@ -24,7 +42,8 @@ CREATE TABLE IF NOT EXISTS auth_schema.sessions (
     user_id BIGINT NOT NULL,
     refresh_token_hash VARCHAR(64) NOT NULL,
     expires_at TIMESTAMPTZ NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT fk_sessions_user FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_sessions_refresh_hash
