@@ -52,6 +52,7 @@ AnimalUpdate::AnimalUpdate(const dto::AnimalUpdateDTO& upd)
       color(upd.color),
       good_with(upd.good_with),
       age(upd.age),
+      description_updated(upd.description_updated),
       description(upd.description),
       status(upd.status) {}
 
