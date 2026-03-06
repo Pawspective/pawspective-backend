@@ -7,15 +7,16 @@
 
 namespace pawspective::models {
 
-enum class AnimalSize : std::uint8_t { kSmall, kMedium, kLarge };
+enum class AnimalSize : std::uint8_t { kUnspecified, kSmall, kMedium, kLarge };
 
-enum class AnimalGender : std::uint8_t { kMale, kFemale, kUnknown };
+enum class AnimalGender : std::uint8_t { kUnspecified, kMale, kFemale, kUnknown };
 
-enum class CareLevel : std::uint8_t { kEasy, kModerate, kDifficult, kSpecialNeeds };
+enum class CareLevel : std::uint8_t { kUnspecified, kEasy, kModerate, kDifficult, kSpecialNeeds };
 
-enum class GoodWith : std::uint8_t { kDogs, kCats, kChildren, kElderly };
+enum class GoodWith : std::uint8_t { kUnspecified, kDogs, kCats, kChildren, kElderly };
 
 enum class AnimalColor : std::uint8_t {
+    kUnspecified,
     kBlack,
     kWhite,
     kBrown,
@@ -30,9 +31,9 @@ enum class AnimalColor : std::uint8_t {
     kMixed
 };
 
-enum class AnimalStatus : std::uint8_t { kAvailable, kAdopted, kUnavailable };
+enum class AnimalStatus : std::uint8_t { kUnspecified, kAvailable, kAdopted, kUnavailable };
 
-enum class AnimalType : std::uint8_t { kDog, kCat, kOther };
+enum class AnimalType : std::uint8_t { kUnspecified, kDog, kCat, kOther };
 
 // JSON Parse/Serialize declarations
 userver::formats::json::Value

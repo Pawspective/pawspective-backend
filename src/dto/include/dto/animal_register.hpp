@@ -11,11 +11,11 @@ struct AnimalRegisterDTO {
     std::string name;
     // std::optional<std::string> photo_url;
     std::int64_t breed_id{};
-    models::AnimalSize size = models::AnimalSize::kMedium;
-    models::AnimalGender gender = models::AnimalGender::kUnknown;
-    models::CareLevel care_level = models::CareLevel::kEasy;
-    models::AnimalColor color = models::AnimalColor::kMixed;
-    models::GoodWith good_with = models::GoodWith::kChildren;
+    models::AnimalSize size = models::AnimalSize::kUnspecified;
+    models::AnimalGender gender = models::AnimalGender::kUnspecified;
+    models::CareLevel care_level = models::CareLevel::kUnspecified;
+    models::AnimalColor color = models::AnimalColor::kUnspecified;
+    models::GoodWith good_with = models::GoodWith::kUnspecified;
     std::int32_t age{};
     std::optional<std::string> description;
     models::AnimalStatus status = models::AnimalStatus::kAvailable;
