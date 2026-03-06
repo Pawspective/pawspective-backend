@@ -14,6 +14,8 @@ Serialize(AnimalSize value, userver::formats::serialize::To<userver::formats::js
             return ValueBuilder("medium").ExtractValue();
         case AnimalSize::kLarge:
             return ValueBuilder("large").ExtractValue();
+        default:
+            throw userver::formats::json::Exception("Invalid AnimalSize enum value");
     }
 }
 
@@ -41,6 +43,8 @@ Serialize(AnimalGender value, userver::formats::serialize::To<userver::formats::
             return ValueBuilder("female").ExtractValue();
         case AnimalGender::kUnknown:
             return ValueBuilder("unknown").ExtractValue();
+        default:
+            throw userver::formats::json::Exception("Invalid AnimalGender enum value");
     }
 }
 
@@ -70,6 +74,8 @@ Serialize(CareLevel value, userver::formats::serialize::To<userver::formats::jso
             return ValueBuilder("difficult").ExtractValue();
         case CareLevel::kSpecialNeeds:
             return ValueBuilder("special_needs").ExtractValue();
+        default:
+            throw userver::formats::json::Exception("Invalid CareLevel enum value");
     }
 }
 
@@ -102,6 +108,8 @@ Serialize(GoodWith value, userver::formats::serialize::To<userver::formats::json
             return ValueBuilder("children").ExtractValue();
         case GoodWith::kElderly:
             return ValueBuilder("elderly").ExtractValue();
+        default:
+            throw userver::formats::json::Exception("Invalid GoodWith enum value");
     }
 }
 
@@ -150,6 +158,8 @@ Serialize(AnimalColor value, userver::formats::serialize::To<userver::formats::j
             return ValueBuilder("brindle").ExtractValue();
         case AnimalColor::kMixed:
             return ValueBuilder("mixed").ExtractValue();
+        default:
+            throw userver::formats::json::Exception("Invalid AnimalColor enum value");
     }
 }
 
@@ -204,6 +214,8 @@ Serialize(AnimalStatus value, userver::formats::serialize::To<userver::formats::
             return ValueBuilder("adopted").ExtractValue();
         case AnimalStatus::kUnavailable:
             return ValueBuilder("unavailable").ExtractValue();
+        default:
+            throw userver::formats::json::Exception("Invalid AnimalStatus enum value");
     }
 }
 
@@ -231,6 +243,8 @@ Serialize(AnimalType value, userver::formats::serialize::To<userver::formats::js
             return ValueBuilder("cat").ExtractValue();
         case AnimalType::kOther:
             return ValueBuilder("other").ExtractValue();
+        default:
+            throw userver::formats::json::Exception("Invalid AnimalType enum value");
     }
 }
 

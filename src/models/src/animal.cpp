@@ -46,17 +46,35 @@ dto::AnimalDTO Animal::to_dto(const Animal& model, const dto::BreedDTO& breed) {
     return dto;
 }
 
-AnimalUpdate::AnimalUpdate(const dto::AnimalUpdateDTO& upd)
-    : name(upd.name),
-      breed_id(upd.breed_id),
-      size(upd.size),
-      gender(upd.gender),
-      care_level(upd.care_level),
-      color(upd.color),
-      good_with(upd.good_with),
-      age(upd.age),
-      description_updated(upd.description_updated),
-      description(upd.description),
-      status(upd.status) {}
+Animal Animal::from_update_dto(std::int64_t id, const dto::AnimalUpdateDTO& upd) {
+    return Animal(
+        id,
+        -1,  // organization_id will not be updated
+        upd.name.value_or(""),
+        // std::nullopt, --- IGNORE ---
+        upd.breed_id.value_or(-1),
+        upd.size.value_or(AnimalSize::kUnspecified),
+        upd.gender.value_or(AnimalGender::kUnspecified),
+        upd.care_level.value_or(CareLevel::kUnspecified),
+        upd.color.value_or(AnimalColor::kUnspecified),
+        upd.good_with.value_or(GoodWith::kUnspecified),
+        upd.age.value_or(-1),
+        upd.description,
+        upd.status.value_or(AnimalStatus::kUnspecified)
+    );
+}
+
+// AnimalUpdate::AnimalUpdate(const dto::AnimalUpdateDTO& upd)
+//     : name(upd.name),
+//       breed_id(upd.breed_id),
+//       size(upd.size),
+//       gender(upd.gender),
+//       care_level(upd.care_level),
+//       color(upd.color),
+//       good_with(upd.good_with),
+//       age(upd.age),
+//       description_updated(upd.description_updated),
+//       description(upd.description),
+//       status(upd.status) {}
 
 }  // namespace pawspective::models
