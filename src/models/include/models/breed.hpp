@@ -22,6 +22,4 @@ struct Breed {
     auto introspect() const { return std::tie(id, animal_type, name); }
 };
 
-
 }  // namespace pawspective::models
-

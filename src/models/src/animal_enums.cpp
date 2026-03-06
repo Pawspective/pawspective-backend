@@ -248,5 +248,4 @@ AnimalType Parse(const userver::formats::json::Value& value, userver::formats::p
     throw userver::formats::json::Exception("Invalid AnimalType: " + str);
 }
 
-
-} // namespace pawspective::models
+}  // namespace pawspective::models

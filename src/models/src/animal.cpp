@@ -1,9 +1,9 @@
 #include "models/animal.hpp"
 
 #include <userver/formats/json/value_builder.hpp>
+#include "dto/animal.hpp"
 #include "dto/animal_register.hpp"
 #include "dto/animal_update.hpp"
-#include "dto/animal.hpp"
 
 namespace pawspective::models {
 

@@ -14,7 +14,6 @@
 
 namespace pawspective::models {
 
-
 struct Animal {
     static Animal from_register_dto(const dto::AnimalRegisterDTO& reg);
     static dto::AnimalDTO to_dto(const Animal& model, const dto::BreedDTO& breed);
