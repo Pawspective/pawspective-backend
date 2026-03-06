@@ -5,13 +5,13 @@
 #include <userver/storages/postgres/io/io_fwd.hpp>
 #include <userver/storages/postgres/io/pg_types.hpp>
 
-namespace pawspective::models { 
+namespace pawspective::models {
 
-enum class AnimalSize : std::uint8_t { kSmall, kMedium, kLarge }; 
+enum class AnimalSize : std::uint8_t { kSmall, kMedium, kLarge };
 
-enum class AnimalGender : std::uint8_t { kMale, kFemale, kUnknown }; 
+enum class AnimalGender : std::uint8_t { kMale, kFemale, kUnknown };
 
-enum class CareLevel : std::uint8_t { kEasy, kModerate, kDifficult, kSpecialNeeds }; 
+enum class CareLevel : std::uint8_t { kEasy, kModerate, kDifficult, kSpecialNeeds };
 
 enum class GoodWith : std::uint8_t { kDogs, kCats, kChildren, kElderly };
 
@@ -33,7 +33,6 @@ enum class AnimalColor : std::uint8_t {
 enum class AnimalStatus : std::uint8_t { kAvailable, kAdopted, kUnavailable };
 
 enum class AnimalType : std::uint8_t { kDog, kCat, kOther };
-
 
 // JSON Parse/Serialize declarations
 userver::formats::json::Value
@@ -65,14 +64,12 @@ Serialize(AnimalStatus value, userver::formats::serialize::To<userver::formats::
 
 AnimalStatus Parse(const userver::formats::json::Value& value, userver::formats::parse::To<AnimalStatus>);
 
-
 userver::formats::json::Value
 Serialize(AnimalType value, userver::formats::serialize::To<userver::formats::json::Value>);
 
 AnimalType Parse(const userver::formats::json::Value& value, userver::formats::parse::To<AnimalType>);
 
-
-} // namespace pawspective::models
+}  // namespace pawspective::models
 
 namespace userver::storages::postgres::io {
 

@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 #include <cstdint>
 #include <string>
@@ -25,4 +25,4 @@ userver::formats::json::Value
 Serialize(const AnimalRegisterDTO& data, userver::formats::serialize::To<userver::formats::json::Value>);
 AnimalRegisterDTO Parse(const userver::formats::json::Value& json, userver::formats::parse::To<AnimalRegisterDTO>);
 
-} // namespace pawspective::dto
+}  // namespace pawspective::dto

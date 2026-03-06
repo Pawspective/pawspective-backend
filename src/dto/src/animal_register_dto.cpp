@@ -42,4 +42,4 @@ Serialize(const AnimalRegisterDTO& data, userver::formats::serialize::To<userver
     return builder.ExtractValue();
 }
 
-} // namespace pawspective::dto
+}  // namespace pawspective::dto
