@@ -10,9 +10,6 @@
 namespace pawspective::dto {
 
 struct AnimalDTO {
-    // static Animal from_dto(const dto::AnimalDTO& dto);
-    // static dto::AnimalDTO to_dto(const Animal& model);
-
     std::int64_t id{};
     std::int64_t organization_id{};
     std::string name;
