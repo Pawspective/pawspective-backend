@@ -11,4 +11,5 @@ target_include_directories(pawspective_repositories PUBLIC
 target_link_libraries(pawspective_repositories
     PUBLIC
     userver::core
+    pawspective_models
 )

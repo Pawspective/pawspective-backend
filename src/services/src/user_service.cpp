@@ -42,7 +42,7 @@ models::User UserService::AuthenticateUser(const std::string& email, const std::
 }
 
 std::optional<std::int64_t> UserService::GetOrganizationId(std::int64_t user_id) const {
-    return user_repository_.get_organization_by_user_id(user_id);
+    return user_repository_.get_organization_id_by_user_id(user_id);
 }
 
 models::User UserService::UpdateUser(std::int64_t user_id, const dto::UserUpdateDTO& dto) const {

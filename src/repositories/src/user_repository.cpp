@@ -106,7 +106,7 @@ models::User UserRepository::link_organization(std::int64_t id, std::int64_t org
     return !result[0][0].IsNull();
 }
 
-[[nodiscard]] std::optional<std::int64_t> UserRepository::get_organization_by_user_id(std::int64_t id) const {
+[[nodiscard]] std::optional<std::int64_t> UserRepository::get_organization_id_by_user_id(std::int64_t id) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
         "SELECT organization_id FROM users WHERE id = $1",
@@ -118,5 +118,22 @@ models::User UserRepository::link_organization(std::int64_t id, std::int64_t org
     }
 
     return result.AsSingleRow<std::int64_t>();
+}
+
+[[nodiscard]] std::optional<models::Organization> UserRepository::get_organization_by_user_id(std::int64_t id) const {
+    auto result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kSlave,
+        "SELECT o.id, o.name, o.description, o.city_id "
+        "FROM users u "
+        "JOIN organizations o ON u.organization_id = o.id "
+        "WHERE u.id = $1",
+        id
+    );
+
+    if (result.IsEmpty()) {
+        return std::nullopt;
+    }
+
+    return result.AsSingleRow<models::Organization>(userver::storages::postgres::kRowTag);
 }
 }  // namespace pawspective::repositories
