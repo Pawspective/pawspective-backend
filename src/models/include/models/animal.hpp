@@ -78,7 +78,7 @@ struct Animal {
 
 struct AnimalUpdate {
     explicit AnimalUpdate(const dto::AnimalUpdateDTO& upd);
-
+    int64_t id{};
     std::optional<std::string> name;
     std::optional<std::int64_t> breed_id;
     std::optional<AnimalSize> size;
@@ -87,6 +87,7 @@ struct AnimalUpdate {
     std::optional<AnimalColor> color;
     std::optional<GoodWith> good_with;
     std::optional<std::int32_t> age;
+    bool description_updated = false;
     std::optional<std::string> description;
     std::optional<AnimalStatus> status;
 };

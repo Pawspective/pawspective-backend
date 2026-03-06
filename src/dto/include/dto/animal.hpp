@@ -1,7 +1,9 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include <string>
+#include <userver/formats/json/value.hpp>
 #include "dto/breed.hpp"
 #include "models/animal.hpp"
 
@@ -40,6 +42,7 @@ struct AnimalUpdateDTO {
     std::optional<models::AnimalColor> color;
     std::optional<models::GoodWith> good_with;
     std::optional<std::int32_t> age{};
+    bool description_updated = false;
     std::optional<std::string> description;
     std::optional<models::AnimalStatus> status;
 };
