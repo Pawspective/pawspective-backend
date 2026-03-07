@@ -18,7 +18,7 @@ struct AnimalRegisterDTO {
     models::GoodWith good_with = models::GoodWith::kUnspecified;
     std::int32_t age{};
     std::optional<std::string> description;
-    models::AnimalStatus status = models::AnimalStatus::kAvailable;
+    models::AnimalStatus status = models::AnimalStatus::kUnspecified;
 };
 
 userver::formats::json::Value
