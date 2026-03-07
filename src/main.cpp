@@ -16,6 +16,7 @@
 #include "components/user_service_component.hpp"
 #include "health_handler.hpp"
 #include "jwt_component.hpp"
+#include "organization_repository_component.hpp"
 #include "pg_session_component.hpp"
 #include "user_registration_handler.hpp"
 #include "user_repository_component.hpp"
@@ -43,7 +44,8 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::handlers::AuthLogoutHandler>()
             .Append<pawspective::handlers::AuthLoginHandler>()
             .Append<pawspective::components::UserServiceComponent>()
-            .Append<pawspective::handlers::UserUpdateHandler>();
+            .Append<pawspective::handlers::UserUpdateHandler>()
+            .Append<pawspective::components::OrganizationRepositoryComponent>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }

@@ -3,6 +3,7 @@ set(COMPONENTS_SOURCES
     src/pg_session_component.cpp
     src/user_repository_component.cpp
     src/user_service_component.cpp
+    src/organization_repository_component.cpp
 )
 
 add_library(pawspective_components STATIC ${COMPONENTS_SOURCES})
