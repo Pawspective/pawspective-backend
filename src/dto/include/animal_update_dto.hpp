@@ -18,7 +18,6 @@ struct AnimalUpdateDTO {
     std::optional<models::AnimalColor> color;
     std::optional<models::GoodWith> good_with;
     std::optional<std::int32_t> age{};
-    bool description_updated = false;
     std::optional<std::string> description;
     std::optional<models::AnimalStatus> status;
 };

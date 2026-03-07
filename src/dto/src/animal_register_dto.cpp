@@ -1,4 +1,4 @@
-#include "dto/animal_register.hpp"
+#include "animal_register_dto.hpp"
 
 #include <userver/formats/json/value.hpp>
 #include <userver/formats/parse/common_containers.hpp>

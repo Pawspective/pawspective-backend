@@ -1,9 +1,9 @@
 #include "models/animal.hpp"
 
 #include <userver/formats/json/value_builder.hpp>
-#include "dto/animal.hpp"
-#include "dto/animal_register.hpp"
-#include "dto/animal_update.hpp"
+#include "animal_dto.hpp"
+#include "animal_register_dto.hpp"
+#include "animal_update_dto.hpp"
 
 namespace pawspective::models {
 
@@ -63,18 +63,5 @@ Animal Animal::from_update_dto(std::int64_t id, const dto::AnimalUpdateDTO& upd)
         upd.status.value_or(AnimalStatus::kUnspecified)
     );
 }
-
-// AnimalUpdate::AnimalUpdate(const dto::AnimalUpdateDTO& upd)
-//     : name(upd.name),
-//       breed_id(upd.breed_id),
-//       size(upd.size),
-//       gender(upd.gender),
-//       care_level(upd.care_level),
-//       color(upd.color),
-//       good_with(upd.good_with),
-//       age(upd.age),
-//       description_updated(upd.description_updated),
-//       description(upd.description),
-//       status(upd.status) {}
 
 }  // namespace pawspective::models

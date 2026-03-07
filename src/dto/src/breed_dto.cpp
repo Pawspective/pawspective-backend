@@ -1,4 +1,4 @@
-#include "dto/breed.hpp"
+#include "breed_dto.hpp"
 
 namespace pawspective::dto {
 userver::formats::json::Value

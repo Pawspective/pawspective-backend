@@ -1,4 +1,4 @@
-#include "dto/animal_update.hpp"
+#include "animal_update_dto.hpp"
 
 #include <userver/formats/parse/common_containers.hpp>
 #include <userver/formats/serialize/common_containers.hpp>

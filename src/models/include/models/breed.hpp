@@ -8,7 +8,7 @@
 #include <userver/storages/postgres/io/io_fwd.hpp>
 #include <userver/storages/postgres/io/pg_types.hpp>
 
-#include "dto/breed.hpp"
+#include "breed_dto.hpp"
 #include "models/animal_enums.hpp"
 
 namespace pawspective::models {
