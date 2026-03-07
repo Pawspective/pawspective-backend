@@ -1,4 +1,4 @@
-#include "repositories/organization.hpp"
+#include "organization_repository.hpp"
 
 #include <fmt/format.h>
 #include <boost/algorithm/string/join.hpp>
@@ -58,21 +58,21 @@ models::Organization OrganizationRepository::Create(const models::Organization& 
     return result.AsSingleRow<models::Organization>(userver::storages::postgres::kRowTag);
 }
 
-models::Organization OrganizationRepository::Update(const models::OrganizationUpdate& org) const {
+models::Organization OrganizationRepository::Update(const models::Organization& org) const {
     userver::storages::postgres::ParameterStore parameters;
     std::vector<std::string> updates;
     parameters.PushBack(org.id);
-    if (org.name.has_value()) {
+    if (!org.name.empty()) {
         updates.push_back(fmt::format("name = ${}", parameters.Size() + 1));
-        parameters.PushBack(*org.name);
+        parameters.PushBack(org.name);
     }
-    if (org.description_updated) {
+    if (org.description.has_value()) {
         updates.push_back(fmt::format("description = ${}", parameters.Size() + 1));
-        parameters.PushBack(org.description);
+        parameters.PushBack(org.description->empty() ? std::nullopt : org.description);
     }
-    if (org.city_id.has_value()) {
+    if (org.city_id != -1) {
         updates.push_back(fmt::format("city_id = ${}", parameters.Size() + 1));
-        parameters.PushBack(*org.city_id);
+        parameters.PushBack(org.city_id);
     }
     auto query = fmt::format(
         "UPDATE organizations SET {} WHERE id = $1 "

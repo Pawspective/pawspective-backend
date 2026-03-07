@@ -36,7 +36,6 @@ Parse(const userver::formats::json::Value& json, userver::formats::parse::To<Org
         dto.name = json["name"].As<std::optional<std::string>>();
     }
     if (json.HasMember("description")) {
-        dto.description_updated = true;
         dto.description = json["description"].As<std::optional<std::string>>();
     }
     if (json.HasMember("city_id")) {

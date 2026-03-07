@@ -3,7 +3,7 @@
 #include <optional>
 #include <userver/storages/postgres/cluster.hpp>
 #include <vector>
-#include "models/organization.hpp"
+#include "organization.hpp"
 
 namespace pawspective::repositories {
 
@@ -13,7 +13,7 @@ public:
 
     [[nodiscard]] std::optional<models::Organization> GetById(int64_t organization_id) const;
     models::Organization Create(const models::Organization& organization) const;
-    models::Organization Update(const models::OrganizationUpdate& organization) const;
+    models::Organization Update(const models::Organization& organization) const;
     [[nodiscard]] std::vector<models::Organization> FindByNameContaining(std::string_view name) const;
 
 private:

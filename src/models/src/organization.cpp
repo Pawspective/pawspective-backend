@@ -1,4 +1,4 @@
-#include "models/organization.hpp"
+#include "organization.hpp"
 #include <optional>
 #include <userver/formats/json/value_builder.hpp>
 #include "../../dto/include/organization_dto.hpp"
@@ -27,11 +27,7 @@ dto::OrganizationDTO Organization::to_dto(const Organization& model, const dto::
     return dto;
 }
 
-OrganizationUpdate::OrganizationUpdate(const std::int64_t id, const dto::OrganizationUpdateDTO& upd)
-    : id(id),
-      name(upd.name),
-      description_updated(upd.description_updated),
-      description(upd.description),
-      city_id(upd.city_id) {}
-
+Organization Organization::from_update_dto(int64_t id, const dto::OrganizationUpdateDTO& upd) {
+    return Organization(id, upd.name.value_or(""), upd.description, upd.city_id.value_or(-1));
+}
 }  // namespace pawspective::models

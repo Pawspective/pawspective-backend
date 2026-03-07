@@ -1,4 +1,4 @@
-#include "models/city.hpp"
+#include "city.hpp"
 
 namespace pawspective::models {
 City City::FromDTO(const dto::CityDTO& city_dto) {

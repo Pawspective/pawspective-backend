@@ -4,8 +4,8 @@
 #include <optional>
 #include <string>
 #include <userver/storages/postgres/cluster.hpp>
-#include "../../models/include/user.hpp"
-#include "models/organization.hpp"
+#include "organization.hpp"
+#include "user.hpp"
 
 namespace pawspective::repositories {
 
