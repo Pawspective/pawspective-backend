@@ -1,6 +1,6 @@
+#include "animal_dto.hpp"
 #include <userver/formats/parse/common_containers.hpp>
 #include <userver/formats/serialize/common_containers.hpp>
-#include "animal_dto.hpp"
 
 namespace pawspective::dto {
 
