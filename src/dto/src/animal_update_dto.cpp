@@ -17,7 +17,6 @@ AnimalUpdateDTO Parse(const userver::formats::json::Value& json, userver::format
     dto.good_with = json["good_with"].As<std::optional<pawspective::models::GoodWith>>();
     dto.age = json["age"].As<std::optional<std::int32_t>>();
     if (json.HasMember("description")) {
-        dto.description_updated = true;
         dto.description = json["description"].As<std::optional<std::string>>();
     }
     dto.status = json["status"].As<std::optional<pawspective::models::AnimalStatus>>();
