@@ -53,9 +53,7 @@ userver::formats::json::Value AuthLoginHandler::HandleRequestJsonThrow(
         utils::ErrorResponse(utils::error_code::kInvalidJsonFormat, "Invalid JSON format").ThrowClientError();
     } catch (const utils::ValidationException& e) {
         LOG_WARNING() << "Validation failed for login data";
-        throw userver::server::handlers::ClientError{
-            userver::server::handlers::ExternalBody{userver::formats::json::ToString(e.GetExternalResponse())}
-        };
+        e.ThrowClientError();
     }
 
     models::User user;

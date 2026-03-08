@@ -9,6 +9,12 @@ ValidationException::ValidationException(std::vector<FieldError> errors)
 
 const std::vector<ValidationException::FieldError>& ValidationException::GetErrors() const { return errors_; }
 
+void ValidationException::ThrowClientError() const {
+    throw userver::server::handlers::ClientError{
+        FormattedErrorBody{userver::formats::json::ToString(GetExternalResponse())}
+    };
+}
+
 userver::formats::json::Value ValidationException::GetExternalResponse() const {
     userver::formats::json::ValueBuilder builder;
     builder["error"]["code"] = error_code::kValidationError;

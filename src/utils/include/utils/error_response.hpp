@@ -7,6 +7,22 @@
 namespace pawspective::utils {
 
 /**
+ * @brief userver message builder that marks the external body as already
+ * formatted, preventing the framework from wrapping it in its own error
+ * envelope (e.g. LegacyJsonErrorBuilder's {"code":…,"message":…} wrapper).
+ */
+struct FormattedErrorBody {
+    static constexpr bool kIsExternalBodyFormatted = true;
+
+    explicit FormattedErrorBody(std::string body) : body_(std::move(body)) {}
+
+    [[nodiscard]] std::string GetExternalBody() const { return body_; }
+
+private:
+    std::string body_;
+};
+
+/**
  * @brief Builder for constructing standardized error responses
  */
 class ErrorResponse {
@@ -19,24 +35,29 @@ public:
     [[nodiscard]] userver::formats::json::Value GetJson() const;
 
     /**
-     * @brief Get the error response as string for ExternalBody
+     * @brief Get the error response as serialized JSON string
      */
     [[nodiscard]] std::string GetString() const;
 
     /**
-     * @brief Throw ClientError with this error response
+     * @brief Throw ClientError (HTTP 400) with this error response
      */
     [[noreturn]] void ThrowClientError() const;
 
     /**
-     * @brief Throw Unauthorized with this error response
+     * @brief Throw Unauthorized (HTTP 401) with this error response
      */
     [[noreturn]] void ThrowUnauthorized() const;
 
     /**
-     * @brief Throw ConflictError with this error response
+     * @brief Throw ConflictError (HTTP 409) with this error response
      */
     [[noreturn]] void ThrowConflict() const;
+
+    /**
+     * @brief Throw ResourceNotFound (HTTP 404) with this error response
+     */
+    [[noreturn]] void ThrowNotFound() const;
 
 private:
     std::string code_;
