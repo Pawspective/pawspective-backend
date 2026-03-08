@@ -1,4 +1,4 @@
-#include "models/animal.hpp"
+#include "animal.hpp"
 
 #include <userver/formats/json/value_builder.hpp>
 #include "animal_dto.hpp"

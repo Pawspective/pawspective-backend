@@ -1,4 +1,4 @@
-#include "models/breed.hpp"
+#include "breed.hpp"
 
 namespace pawspective::models {
 

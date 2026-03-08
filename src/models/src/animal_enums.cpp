@@ -1,4 +1,4 @@
-#include "models/animal_enums.hpp"
+#include "animal_enums.hpp"
 
 #include <userver/formats/json/value.hpp>
 

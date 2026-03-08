@@ -8,7 +8,7 @@
 #include <userver/formats/serialize/common_containers.hpp>
 #include <userver/formats/serialize/to.hpp>
 #include "breed_dto.hpp"
-#include "models/animal_enums.hpp"
+#include "animal_enums.hpp"
 
 #include "animal_fwd_dto.hpp"
 

@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <string>
 
-#include "models/animal_enums.hpp"
+#include "animal_enums.hpp"
 
 namespace pawspective::dto {
 struct BreedDTO {

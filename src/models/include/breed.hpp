@@ -9,7 +9,7 @@
 #include <userver/storages/postgres/io/pg_types.hpp>
 
 #include "breed_dto.hpp"
-#include "models/animal_enums.hpp"
+#include "animal_enums.hpp"
 
 namespace pawspective::models {
 
