@@ -138,8 +138,8 @@ async def test_login_with_wrong_password(service_client, registered_user):
 
     assert response.status == 401
     payload = response.json()
-    assert payload['code'] == '401'
-    assert 'INVALID_CREDENTIALS' in payload.get('message', '')
+    assert payload['error']['code'] == 401
+    assert payload['error']['message'] == 'Invalid email or password'
 
 
 async def test_login_with_nonexistent_user(service_client):
@@ -154,8 +154,8 @@ async def test_login_with_nonexistent_user(service_client):
 
     assert response.status == 401
     payload = response.json()
-    assert payload['code'] == '401'
-    assert 'INVALID_CREDENTIALS' in payload.get('message', '')
+    assert payload['error']['code'] == 401
+    assert payload['error']['message'] == 'Invalid email or password'
 
 
 async def test_login_with_empty_email(service_client):
@@ -164,8 +164,8 @@ async def test_login_with_empty_email(service_client):
 
     assert response.status == 400
     payload = response.json()
-    assert payload['code'] == '400'
-    assert 'VALIDATION_ERROR' in payload.get('message', '')
+    assert payload['error']['code'] == 400
+    assert 'Validation' in payload['error']['message']
 
 
 async def test_login_with_empty_password(service_client, registered_user):
@@ -176,8 +176,8 @@ async def test_login_with_empty_password(service_client, registered_user):
 
     assert response.status == 400
     payload = response.json()
-    assert payload['code'] == '400'
-    assert 'VALIDATION_ERROR' in payload.get('message', '')
+    assert payload['error']['code'] == 400
+    assert 'Validation' in payload['error']['message']
 
 
 async def test_login_with_invalid_email_format(service_client):
@@ -186,8 +186,8 @@ async def test_login_with_invalid_email_format(service_client):
 
     assert response.status == 400
     payload = response.json()
-    assert payload['code'] == '400'
-    assert 'VALIDATION_ERROR' in payload.get('message', '')
+    assert payload['error']['code'] == 400
+    assert 'Validation' in payload['error']['message']
 
 
 async def test_login_with_short_password(service_client):
@@ -199,8 +199,8 @@ async def test_login_with_short_password(service_client):
 
     assert response.status == 400
     payload = response.json()
-    assert payload['code'] == '400'
-    assert 'VALIDATION_ERROR' in payload.get('message', '')
+    assert payload['error']['code'] == 400
+    assert 'Validation' in payload['error']['message']
 
 
 async def test_refresh_with_invalid_token(service_client):

@@ -27,17 +27,17 @@ private:
  */
 class ErrorResponse {
 public:
-    explicit ErrorResponse(const std::string_view& code, const std::string& message);
+    explicit ErrorResponse(const std::string& message);
 
     /**
-     * @brief Get the error response as JSON value
+     * @brief Get the error response as JSON value with the given HTTP status code
      */
-    [[nodiscard]] userver::formats::json::Value GetJson() const;
+    [[nodiscard]] userver::formats::json::Value GetJson(int http_status) const;
 
     /**
-     * @brief Get the error response as serialized JSON string
+     * @brief Get the error response as serialized JSON string with the given HTTP status code
      */
-    [[nodiscard]] std::string GetString() const;
+    [[nodiscard]] std::string GetString(int http_status) const;
 
     /**
      * @brief Throw ClientError (HTTP 400) with this error response
@@ -60,21 +60,7 @@ public:
     [[noreturn]] void ThrowNotFound() const;
 
 private:
-    std::string code_;
     std::string message_;
 };
-
-/**
- * @brief Common error codes
- */
-namespace error_code {
-inline constexpr std::string_view kInvalidJsonFormat = "INVALID_JSON_FORMAT";
-inline constexpr std::string_view kMissingField = "MISSING_FIELD";
-inline constexpr std::string_view kValidationError = "VALIDATION_ERROR";
-inline constexpr std::string_view kInvalidCredentials = "INVALID_CREDENTIALS";
-inline constexpr std::string_view kUserNotFound = "USER_NOT_FOUND";
-inline constexpr std::string_view kUserAlreadyExists = "USER_ALREADY_EXISTS";
-inline constexpr std::string_view kInvalidRefreshToken = "INVALID_REFRESH_TOKEN";
-}  // namespace error_code
 
 }  // namespace pawspective::utils

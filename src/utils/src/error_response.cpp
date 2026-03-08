@@ -5,32 +5,33 @@
 
 namespace pawspective::utils {
 
-ErrorResponse::ErrorResponse(const std::string_view& code, const std::string& message)
-    : code_(code), message_(message) {}
+ErrorResponse::ErrorResponse(const std::string& message) : message_(message) {}
 
-userver::formats::json::Value ErrorResponse::GetJson() const {
+userver::formats::json::Value ErrorResponse::GetJson(int http_status) const {
     userver::formats::json::ValueBuilder error;
-    error["error"]["code"] = code_;
+    error["error"]["code"] = http_status;
     error["error"]["message"] = message_;
     return error.ExtractValue();
 }
 
-std::string ErrorResponse::GetString() const { return userver::formats::json::ToString(GetJson()); }
+std::string ErrorResponse::GetString(int http_status) const {
+    return userver::formats::json::ToString(GetJson(http_status));
+}
 
 void ErrorResponse::ThrowClientError() const {
-    throw userver::server::handlers::ClientError{FormattedErrorBody{GetString()}};
+    throw userver::server::handlers::ClientError{FormattedErrorBody{GetString(400)}};
 }
 
 void ErrorResponse::ThrowUnauthorized() const {
-    throw userver::server::handlers::Unauthorized{FormattedErrorBody{GetString()}};
+    throw userver::server::handlers::Unauthorized{FormattedErrorBody{GetString(401)}};
 }
 
 void ErrorResponse::ThrowConflict() const {
-    throw userver::server::handlers::ConflictError{FormattedErrorBody{GetString()}};
+    throw userver::server::handlers::ConflictError{FormattedErrorBody{GetString(409)}};
 }
 
 void ErrorResponse::ThrowNotFound() const {
-    throw userver::server::handlers::ResourceNotFound{FormattedErrorBody{GetString()}};
+    throw userver::server::handlers::ResourceNotFound{FormattedErrorBody{GetString(404)}};
 }
 
 }  // namespace pawspective::utils

@@ -17,7 +17,7 @@ void ValidationException::ThrowClientError() const {
 
 userver::formats::json::Value ValidationException::GetExternalResponse() const {
     userver::formats::json::ValueBuilder builder;
-    builder["error"]["code"] = error_code::kValidationError;
+    builder["error"]["code"] = 400;
     builder["error"]["message"] = "Validation constraints violated";
 
     userver::formats::json::ValueBuilder details(userver::formats::common::Type::kArray);
