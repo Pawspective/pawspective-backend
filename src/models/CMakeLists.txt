@@ -3,6 +3,9 @@ set(MODELS_SOURCES
     src/jwt_secrets.cpp
     src/organization.cpp
     src/city.cpp
+    src/animal.cpp
+    src/animal_enums.cpp
+    src/breed.cpp
 )
 
 add_library(pawspective_models STATIC ${MODELS_SOURCES})
