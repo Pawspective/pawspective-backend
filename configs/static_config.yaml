@@ -118,3 +118,12 @@ components_manager:
                 types:
                     - jwt
                 required: true
+
+        handler-org-registration:
+            path: /orgs
+            method: POST
+            task_processor: main-task-processor
+            auth:
+                types:
+                    - jwt
+                required: true

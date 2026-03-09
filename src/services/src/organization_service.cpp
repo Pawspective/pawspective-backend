@@ -11,8 +11,8 @@ OrganizationService::OrganizationService(
     : repository_(repo), city_service_(city_service) {}
 
 dto::OrganizationDTO OrganizationService::Register(const dto::OrganizationRegisterDTO& dto) const {
+    auto city_dto = city_service_.Get(dto.city_id);
     models::Organization org = repository_.Create(models::Organization::from_register_dto(dto));
-    auto city_dto = city_service_.Get(org.city_id);
 
     return models::Organization::to_dto(org, city_dto);
 }

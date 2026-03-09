@@ -18,6 +18,7 @@
 #include "components/user_service_component.hpp"
 #include "health_handler.hpp"
 #include "jwt_component.hpp"
+#include "org_registration_handler.hpp"
 #include "organization_repository_component.hpp"
 #include "organization_service_component.hpp"
 #include "pg_session_component.hpp"
@@ -51,7 +52,8 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::components::CityRepositoryComponent>()
             .Append<pawspective::components::CityServiceComponent>()
             .Append<pawspective::components::OrganizationRepositoryComponent>()
-            .Append<pawspective::components::OrganizationServiceComponent>();
+            .Append<pawspective::components::OrganizationServiceComponent>()
+            .Append<pawspective::handlers::OrgRegistrationHandler>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }
