@@ -103,7 +103,7 @@ models::User UserRepository::link_organization(std::int64_t id, std::int64_t org
     if (result.IsEmpty()) {
         return false;
     }
-    return !result[0][0].IsNull();
+    return result[0][0].IsNull();
 }
 
 [[nodiscard]] std::optional<std::int64_t> UserRepository::get_organization_id_by_user_id(std::int64_t id) const {

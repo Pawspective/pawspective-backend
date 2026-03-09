@@ -14,6 +14,7 @@ public:
     models::User GetUserById(std::int64_t user_id) const;
     models::User RegisterUser(const dto::UserRegisterDTO& dto) const;
     models::User AuthenticateUser(const std::string& email, const std::string& password) const;
+    models::User LinkOrganization(std::int64_t user_id, std::int64_t organization_id) const;
     std::optional<std::int64_t> GetOrganizationId(std::int64_t user_id) const;
     models::User UpdateUser(std::int64_t user_id, const dto::UserUpdateDTO& dto) const;
     bool CanUserCreateOrganization(std::int64_t user_id) const;
