@@ -18,4 +18,9 @@ public:
     explicit InvalidCredentialsException();
 };
 
+class OrganizationNotFoundException : public std::runtime_error {
+public:
+    explicit OrganizationNotFoundException();
+};
+
 }  // namespace pawspective::services

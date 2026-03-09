@@ -58,7 +58,7 @@ models::Organization OrganizationRepository::Create(const models::Organization& 
     return result.AsSingleRow<models::Organization>(userver::storages::postgres::kRowTag);
 }
 
-models::Organization OrganizationRepository::Update(const models::Organization& org) const {
+std::optional<models::Organization> OrganizationRepository::Update(const models::Organization& org) const {
     userver::storages::postgres::ParameterStore parameters;
     std::vector<std::string> updates;
     parameters.PushBack(org.id);
@@ -80,6 +80,9 @@ models::Organization OrganizationRepository::Update(const models::Organization& 
         fmt::join(updates, ", ")
     );
     auto result = pg_cluster_->Execute(userver::storages::postgres::ClusterHostType::kMaster, query, parameters);
+    if (result.IsEmpty()) {
+        return std::nullopt;
+    }
     return result.AsSingleRow<models::Organization>(userver::storages::postgres::kRowTag);
 }
 

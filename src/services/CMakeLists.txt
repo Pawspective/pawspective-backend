@@ -3,6 +3,7 @@ set(SERVICES_SOURCES
     src/pg_session_service.cpp
     src/exception.cpp
     src/user_service.cpp
+    src/organization_service.cpp
 )
 
 add_library(pawspective_services STATIC ${SERVICES_SOURCES})
