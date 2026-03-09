@@ -51,8 +51,6 @@ userver::formats::json::Value OrgUpdateHandler::HandleRequestJsonThrow(
         LOG_INFO() << "Updating organization " << org_id;
         auto updated_org = organization_service_.Update(org_id, update_dto);
 
-        request.SetResponseStatus(userver::server::http::HttpStatus::kOk);
-
         LOG_INFO() << "Organization " << org_id << " updated successfully";
         return userver::formats::json::ValueBuilder(updated_org).ExtractValue();
 
