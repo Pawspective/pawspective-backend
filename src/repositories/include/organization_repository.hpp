@@ -13,7 +13,7 @@ public:
 
     [[nodiscard]] std::optional<models::Organization> GetById(int64_t organization_id) const;
     models::Organization Create(const models::Organization& organization) const;
-    models::Organization Update(const models::Organization& organization) const;
+    std::optional<models::Organization> Update(const models::Organization& organization) const;
     [[nodiscard]] std::vector<models::Organization> FindByNameContaining(std::string_view name) const;
 
 private:
