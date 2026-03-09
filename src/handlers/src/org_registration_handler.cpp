@@ -4,9 +4,9 @@
 #include <userver/formats/json/exception.hpp>
 #include <userver/server/http/http_status.hpp>
 #include "city_dto.hpp"
-#include "organization_service_component.hpp"
 #include "organization.hpp"
 #include "organization_register_dto.hpp"
+#include "organization_service_component.hpp"
 #include "utils/error_response.hpp"
 #include "utils/exception.hpp"
 #include "utils/validator.hpp"
