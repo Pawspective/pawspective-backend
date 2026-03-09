@@ -28,10 +28,10 @@ userver::formats::json::Value AuthLogoutHandler::HandleRequestJsonThrow(
         refresh_token = request_json["refresh_token"].As<std::string>();
     } catch (const userver::formats::json::ParseException& e) {
         LOG_WARNING() << "Failed to parse login data: " << e.what();
-        utils::ErrorResponse("Invalid JSON format").ThrowClientError();
+        utils::ErrorResponse(utils::error_code::kInvalidJsonFormat, "Invalid JSON format").ThrowClientError();
     } catch (const userver::formats::json::MemberMissingException& e) {
         LOG_WARNING() << "Missing required field in login data: " << e.what();
-        utils::ErrorResponse("Missing required field").ThrowClientError();
+        utils::ErrorResponse(utils::error_code::kMissingField, "Missing required field").ThrowClientError();
     }
 
     session_component_.get_service().revoke_session(refresh_token);

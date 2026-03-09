@@ -51,16 +51,17 @@ userver::formats::json::Value UserRegistrationHandler::HandleRequestJsonThrow(
         user = user_service_.get_service().RegisterUser(user_data);
     } catch (const userver::formats::json::MemberMissingException& e) {
         LOG_WARNING() << "Missing required field in login data: " << e.what();
-        utils::ErrorResponse("Missing required field").ThrowClientError();
+        utils::ErrorResponse(utils::error_code::kMissingField, "Missing required field").ThrowClientError();
     } catch (const userver::formats::json::Exception& e) {
         LOG_WARNING() << "Invalid JSON format: " << e.what();
-        utils::ErrorResponse("Invalid JSON format").ThrowClientError();
+        utils::ErrorResponse(utils::error_code::kInvalidJsonFormat, "Invalid JSON format").ThrowClientError();
     } catch (const utils::ValidationException& e) {
         LOG_WARNING() << "Validation failed for user registration.";
         e.ThrowClientError();
     } catch (services::UserAlreadyExistsException& /*e*/) {
         LOG_WARNING() << "Attempt to register with an existing email " << user_data.email;
-        utils::ErrorResponse("User with this email already exists").ThrowConflict();
+        utils::ErrorResponse(utils::error_code::kUserAlreadyExists, "User with this email already exists")
+            .ThrowConflict();
     }
     request.SetResponseStatus(userver::server::http::HttpStatus::kCreated);
     return userver::formats::json::ValueBuilder{models::User::to_dto(user)}.ExtractValue();

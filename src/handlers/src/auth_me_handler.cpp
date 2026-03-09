@@ -40,7 +40,7 @@ userver::formats::json::Value AuthMeHandler::HandleRequestJsonThrow(
         user = user_service_.GetUserById(user_id);
     } catch (const services::UserNotFoundException& e) {
         LOG_WARNING() << "User not found for id: " << user_id;
-        utils::ErrorResponse("User not found").ThrowNotFound();
+        utils::ErrorResponse(utils::error_code::kUserNotFound, "User not found").ThrowNotFound();
     }
 
     userver::formats::json::ValueBuilder response = models::User::to_dto(user);

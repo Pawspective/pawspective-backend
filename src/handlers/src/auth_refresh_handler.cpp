@@ -25,16 +25,16 @@ userver::formats::json::Value AuthRefreshHandler::HandleRequestJsonThrow(
         refresh_token = request_json["refresh_token"].As<std::string>();
     } catch (const userver::formats::json::ParseException& e) {
         LOG_WARNING() << "Failed to parse refresh token: " << e.what();
-        utils::ErrorResponse("Invalid JSON format").ThrowClientError();
+        utils::ErrorResponse(utils::error_code::kInvalidJsonFormat, "Invalid JSON format").ThrowClientError();
     } catch (const userver::formats::json::MemberMissingException& e) {
-        LOG_WARNING() << "Missing required field in data: " << e.what();
-        utils::ErrorResponse("Missing required field").ThrowClientError();
+        LOG_WARNING() << "Missing required field in login data: " << e.what();
+        utils::ErrorResponse(utils::error_code::kMissingField, "Missing required field").ThrowClientError();
     }
 
     auto payload = session_component_.get_service().validate_session(refresh_token);
     if (payload == std::nullopt) {
         LOG_WARNING() << "Invalid refresh token attempt";
-        utils::ErrorResponse("Invalid refresh token").ThrowUnauthorized();
+        utils::ErrorResponse(utils::error_code::kInvalidRefreshToken, "Invalid refresh token").ThrowUnauthorized();
     }
 
     session_component_.get_service().revoke_session(refresh_token);

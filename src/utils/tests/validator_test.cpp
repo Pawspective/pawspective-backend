@@ -1,6 +1,7 @@
 #include "utils/validator.hpp"
 #include <gtest/gtest.h>
 #include <userver/formats/json/serialize.hpp>
+#include "utils/error_response.hpp"
 
 class ValidatorTest : public ::testing::Test {
 protected:
@@ -57,8 +58,12 @@ TEST_F(ValidatorTest, ExceptionJsonStructure) {
     } catch (const pawspective::utils::ValidationException& e) {
         auto json_res = e.GetExternalResponse();
 
-        EXPECT_EQ(json_res["error"]["code"].As<int>(), 400);
-        EXPECT_TRUE(json_res["error"]["details"].IsArray());
-        EXPECT_EQ(json_res["error"]["details"][0]["field"].As<std::string>(), "status");
+        EXPECT_EQ(
+            json_res["error"]["code"].As<std::string>(),
+            std::string{pawspective::utils::error_code::kValidationError}
+        );
+        EXPECT_EQ(json_res["error"]["message"].As<std::string>(), "Validation failed");
+        EXPECT_TRUE(json_res["error"]["details"].IsObject());
+        EXPECT_FALSE(json_res["error"]["details"]["status"].As<std::string>().empty());
     }
 }

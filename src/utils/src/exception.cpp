@@ -17,15 +17,12 @@ void ValidationException::ThrowClientError() const {
 
 userver::formats::json::Value ValidationException::GetExternalResponse() const {
     userver::formats::json::ValueBuilder builder;
-    builder["error"]["code"] = 400;
-    builder["error"]["message"] = "Validation constraints violated";
+    builder["error"]["code"] = error_code::kValidationError;
+    builder["error"]["message"] = "Validation failed";
 
-    userver::formats::json::ValueBuilder details(userver::formats::common::Type::kArray);
+    userver::formats::json::ValueBuilder details(userver::formats::common::Type::kObject);
     for (const auto& error : errors_) {
-        userver::formats::json::ValueBuilder item;
-        item["field"] = error.field_name;
-        item["error"] = error.error_message;
-        details.PushBack(std::move(item));
+        details[error.field_name] = error.error_message;
     }
     builder["error"]["details"] = details;
     return builder.ExtractValue();

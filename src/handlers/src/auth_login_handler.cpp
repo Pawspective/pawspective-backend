@@ -47,10 +47,10 @@ userver::formats::json::Value AuthLoginHandler::HandleRequestJsonThrow(
         validator.ThrowIfInvalid();
     } catch (const userver::formats::json::MemberMissingException& e) {
         LOG_WARNING() << "Missing required field in login data: " << e.what();
-        utils::ErrorResponse("Missing required field").ThrowClientError();
+        utils::ErrorResponse(utils::error_code::kMissingField, "Missing required field").ThrowClientError();
     } catch (const userver::formats::json::Exception& e) {
         LOG_WARNING() << "Invalid JSON format: " << e.what();
-        utils::ErrorResponse("Invalid JSON format").ThrowClientError();
+        utils::ErrorResponse(utils::error_code::kInvalidJsonFormat, "Invalid JSON format").ThrowClientError();
     } catch (const utils::ValidationException& e) {
         LOG_WARNING() << "Validation failed for login data";
         e.ThrowClientError();
@@ -61,10 +61,10 @@ userver::formats::json::Value AuthLoginHandler::HandleRequestJsonThrow(
         user = user_service_component_.get_service().AuthenticateUser(email, password);
     } catch (const services::InvalidCredentialsException& e) {
         LOG_WARNING() << "Failed login attempt for email: " << email;
-        utils::ErrorResponse("Invalid email or password").ThrowUnauthorized();
+        utils::ErrorResponse(utils::error_code::kInvalidCredentials, "Invalid email or password").ThrowUnauthorized();
     } catch (const services::UserNotFoundException& e) {
         LOG_WARNING() << "Failed login attempt for email: " << email;
-        utils::ErrorResponse("Invalid email or password").ThrowUnauthorized();
+        utils::ErrorResponse(utils::error_code::kInvalidCredentials, "Invalid email or password").ThrowUnauthorized();
     }
 
     auto session = session_component_.get_service().create_session(user.id);

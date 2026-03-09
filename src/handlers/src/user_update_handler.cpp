@@ -36,13 +36,14 @@ userver::formats::json::Value UserUpdateHandler::HandleRequestJsonThrow(
         target_user_id = std::stoll(id_str);
     } catch (const std::exception& e) {
         LOG_WARNING() << "Invalid user ID format in path: " << id_str;
-        utils::ErrorResponse("Invalid user ID format").ThrowClientError();
+        utils::ErrorResponse(utils::error_code::kUserNotFound, "Invalid user ID format").ThrowClientError();
     }
 
     if (auth_user_id != target_user_id) {
         LOG_WARNING()
             << "Unauthorized update attempt. User " << auth_user_id << " tried to update user " << target_user_id;
-        utils::ErrorResponse("Cannot update other user's profile").ThrowUnauthorized();
+        utils::ErrorResponse(utils::error_code::kInvalidCredentials, "Cannot update other user's profile")
+            .ThrowUnauthorized();
     }
 
     dto::UserUpdateDTO update_dto;
@@ -86,19 +87,19 @@ userver::formats::json::Value UserUpdateHandler::HandleRequestJsonThrow(
 
     } catch (const userver::formats::json::MemberMissingException& e) {
         LOG_WARNING() << "Missing required field in update data: " << e.what();
-        utils::ErrorResponse("Missing required field").ThrowClientError();
+        utils::ErrorResponse(utils::error_code::kMissingField, "Missing required field").ThrowClientError();
     } catch (const userver::formats::json::Exception& e) {
         LOG_WARNING() << "Invalid JSON format: " << e.what();
-        utils::ErrorResponse("Invalid JSON format").ThrowClientError();
+        utils::ErrorResponse(utils::error_code::kInvalidJsonFormat, "Invalid JSON format").ThrowClientError();
     } catch (const utils::ValidationException& e) {
         LOG_WARNING() << "Validation failed for user update";
         e.ThrowClientError();
     } catch (const services::UserNotFoundException& e) {
         LOG_WARNING() << "User not found: " << target_user_id;
-        utils::ErrorResponse("User not found").ThrowClientError();
+        utils::ErrorResponse(utils::error_code::kUserNotFound, "User not found").ThrowClientError();
     } catch (const services::UserAlreadyExistsException& e) {
         LOG_WARNING() << "Email already exists for another user";
-        utils::ErrorResponse("Email already in use").ThrowConflict();
+        utils::ErrorResponse(utils::error_code::kUserAlreadyExists, "Email already in use").ThrowConflict();
     }
 }
 }  // namespace pawspective::handlers
