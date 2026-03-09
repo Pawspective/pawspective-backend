@@ -9,4 +9,6 @@ UserNotFoundException::UserNotFoundException() : std::runtime_error("User not fo
 
 InvalidCredentialsException::InvalidCredentialsException() : std::runtime_error("Invalid credentials") {}
 
+OrganizationNotFoundException::OrganizationNotFoundException() : std::runtime_error("Organization not found") {}
+
 }  // namespace pawspective::services
