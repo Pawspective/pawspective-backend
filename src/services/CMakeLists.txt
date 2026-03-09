@@ -1,4 +1,5 @@
 set(SERVICES_SOURCES 
+    src/city_service.cpp
     src/jwt_service.cpp
     src/pg_session_service.cpp
     src/exception.cpp

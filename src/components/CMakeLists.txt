@@ -1,6 +1,8 @@
 set(COMPONENTS_SOURCES 
     src/jwt_component.cpp
     src/pg_session_component.cpp
+    src/city_repository_component.cpp
+    src/city_service_component.cpp
     src/user_repository_component.cpp
     src/user_service_component.cpp
     src/organization_repository_component.cpp
