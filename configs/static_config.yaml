@@ -59,6 +59,12 @@ components_manager:
         user-service:
             load-enabled: true
 
+        animal-repository: 
+            load-enabled: true
+
+        breed-repository: 
+            load-enabled: true
+
         server:
             listener:
                 port: $server-port

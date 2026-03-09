@@ -7,6 +7,8 @@ set(COMPONENTS_SOURCES
     src/user_service_component.cpp
     src/organization_repository_component.cpp
     src/organization_service_component.cpp
+    src/animal_repository_component.cpp
+    src/breed_repository_component.cpp
 )
 
 add_library(pawspective_components STATIC ${COMPONENTS_SOURCES})

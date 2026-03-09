@@ -1,0 +1,26 @@
+#pragma once
+
+#include <optional>
+#include <userver/storages/postgres/cluster.hpp>
+#include <vector>
+
+#include "../../models/include/animal.hpp"
+
+namespace pawspective::repositories {
+
+class AnimalRepository {
+public:
+    explicit AnimalRepository(userver::storages::postgres::ClusterPtr pg_cluster);
+
+    [[nodiscard]] std::optional<models::Animal> GetById(std::int64_t id) const;
+    [[nodiscard]] std::vector<models::Animal> GetByOrganizationId(std::int64_t org_id) const;
+    models::Animal Create(const models::Animal& animal) const;
+    std::optional<models::Animal> Update(const models::Animal& animal) const;
+
+    // void Delete(std::int64_t id) const; //TODO: add delete method when needed
+
+private:
+    const userver::storages::postgres::ClusterPtr pg_cluster_;
+};
+
+}  // namespace pawspective::repositories

@@ -12,6 +12,31 @@ CREATE TABLE IF NOT EXISTS cities (
     name VARCHAR(255) NOT NULL UNIQUE
 );
 
+CREATE TABLE IF NOT EXISTS breeds (
+    id BIGSERIAL PRIMARY KEY,
+    animal_type animal_type NOT NULL,
+    name VARCHAR(255) NOT NULL UNIQUE
+    UNIQUE(animal_type, name)
+);
+
+CREATE TABLE IF NOT EXISTS animals (
+    id BIGSERIAL PRIMARY KEY,
+    organization_id BIGINT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    breed_id BIGINT NOT NULL,
+    size animal_size NOT NULL,        -- Enum: 'small', 'medium', 'large'
+    gender animal_gender NOT NULL,    -- Enum: 'male', 'female', 'unknown'
+    care_level care_level NOT NULL,   -- Enum: 'easy', 'moderate', 'difficult', 'special_needs'
+    good_with good_with NOT NULL,     -- Enum: 'dogs', 'cats', 'children', 'elderly'
+    color animal_color NOT NULL,      -- Enum: 'black', 'white', 'brown', etc.
+    age INT NOT NULL,
+    description TEXT,
+    status animal_status NOT NULL DEFAULT 'available',
+    
+    CONSTRAINT fk_animals_organization FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE,
+    CONSTRAINT fk_animals_breed FOREIGN KEY (breed_id) REFERENCES breeds(id) ON DELETE RESTRICT
+);
+
 CREATE TABLE IF NOT EXISTS organizations (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -34,6 +59,9 @@ CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
 CREATE INDEX IF NOT EXISTS idx_users_organization_id ON users (organization_id);
 CREATE INDEX IF NOT EXISTS idx_organizations_city_id ON organizations (city_id);
 CREATE INDEX IF NOT EXISTS idx_org_name_trgm ON organizations USING gin (name gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS idx_animals_org_id ON animals(organization_id);
+CREATE INDEX IF NOT EXISTS idx_animals_breed_id ON animals(breed_id);
+CREATE INDEX IF NOT EXISTS idx_animals_status ON animals(status);
 
 CREATE SCHEMA IF NOT EXISTS auth_schema;
 

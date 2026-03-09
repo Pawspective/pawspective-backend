@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <userver/formats/json/value_builder.hpp>
+#include <userver/storages/postgres/io/enum_types.hpp>
 #include <userver/storages/postgres/io/io_fwd.hpp>
 #include <userver/storages/postgres/io/pg_types.hpp>
 
@@ -75,90 +76,83 @@ AnimalType Parse(const userver::formats::json::Value& value, userver::formats::p
 namespace userver::storages::postgres::io {
 
 template <>
-struct CppToUserPg<pawspective::models::AnimalSize> {
-    static constexpr userver::storages::postgres::DBTypeName postgres_name = "animal_size";
-    static constexpr auto enumerators = [](auto selector) {
-        return selector()
-            .Case("small", pawspective::models::AnimalSize::kSmall)
-            .Case("medium", pawspective::models::AnimalSize::kMedium)
-            .Case("large", pawspective::models::AnimalSize::kLarge);
+struct CppToUserPg<pawspective::models::AnimalSize> : EnumMappingBase<pawspective::models::AnimalSize> {
+    static constexpr DBTypeName postgres_name = "animal_size";
+    static constexpr EnumeratorList enumerators{
+        {pawspective::models::AnimalSize::kSmall, "small"},
+        {pawspective::models::AnimalSize::kMedium, "medium"},
+        {pawspective::models::AnimalSize::kLarge, "large"}
     };
 };
 
 template <>
-struct CppToUserPg<pawspective::models::AnimalGender> {
-    static constexpr userver::storages::postgres::DBTypeName postgres_name = "animal_gender";
-    static constexpr auto enumerators = [](auto selector) {
-        return selector()
-            .Case("male", pawspective::models::AnimalGender::kMale)
-            .Case("female", pawspective::models::AnimalGender::kFemale)
-            .Case("unknown", pawspective::models::AnimalGender::kUnknown);
+struct CppToUserPg<pawspective::models::AnimalGender> : EnumMappingBase<pawspective::models::AnimalGender> {
+    static constexpr DBTypeName postgres_name = "animal_gender";
+    static constexpr EnumeratorList enumerators{
+        {pawspective::models::AnimalGender::kMale, "male"},
+        {pawspective::models::AnimalGender::kFemale, "female"},
+        {pawspective::models::AnimalGender::kUnknown, "unknown"}
     };
 };
 
 template <>
-struct CppToUserPg<pawspective::models::CareLevel> {
-    static constexpr userver::storages::postgres::DBTypeName postgres_name = "care_level";
-    static constexpr auto enumerators = [](auto selector) {
-        return selector()
-            .Case("easy", pawspective::models::CareLevel::kEasy)
-            .Case("moderate", pawspective::models::CareLevel::kModerate)
-            .Case("difficult", pawspective::models::CareLevel::kDifficult)
-            .Case("special_needs", pawspective::models::CareLevel::kSpecialNeeds);
+struct CppToUserPg<pawspective::models::CareLevel> : EnumMappingBase<pawspective::models::CareLevel> {
+    static constexpr DBTypeName postgres_name = "care_level";
+    static constexpr EnumeratorList enumerators{
+        {pawspective::models::CareLevel::kEasy, "easy"},
+        {pawspective::models::CareLevel::kModerate, "moderate"},
+        {pawspective::models::CareLevel::kDifficult, "difficult"},
+        {pawspective::models::CareLevel::kSpecialNeeds, "special_needs"}
     };
 };
 
 template <>
-struct CppToUserPg<pawspective::models::GoodWith> {
-    static constexpr userver::storages::postgres::DBTypeName postgres_name = "good_with";
-    static constexpr auto enumerators = [](auto selector) {
-        return selector()
-            .Case("dogs", pawspective::models::GoodWith::kDogs)
-            .Case("cats", pawspective::models::GoodWith::kCats)
-            .Case("children", pawspective::models::GoodWith::kChildren)
-            .Case("elderly", pawspective::models::GoodWith::kElderly);
+struct CppToUserPg<pawspective::models::GoodWith> : EnumMappingBase<pawspective::models::GoodWith> {
+    static constexpr DBTypeName postgres_name = "good_with";
+    static constexpr EnumeratorList enumerators{
+        {pawspective::models::GoodWith::kDogs, "dogs"},
+        {pawspective::models::GoodWith::kCats, "cats"},
+        {pawspective::models::GoodWith::kChildren, "children"},
+        {pawspective::models::GoodWith::kElderly, "elderly"}
     };
 };
 
 template <>
-struct CppToUserPg<pawspective::models::AnimalColor> {
-    static constexpr userver::storages::postgres::DBTypeName postgres_name = "animal_color";
-    static constexpr auto enumerators = [](auto selector) {
-        return selector()
-            .Case("black", pawspective::models::AnimalColor::kBlack)
-            .Case("white", pawspective::models::AnimalColor::kWhite)
-            .Case("brown", pawspective::models::AnimalColor::kBrown)
-            .Case("grey", pawspective::models::AnimalColor::kGrey)
-            .Case("orange", pawspective::models::AnimalColor::kOrange)
-            .Case("cream", pawspective::models::AnimalColor::kCream)
-            .Case("tan", pawspective::models::AnimalColor::kTan)
-            .Case("golden", pawspective::models::AnimalColor::kGolden)
-            .Case("spotted", pawspective::models::AnimalColor::kSpotted)
-            .Case("striped", pawspective::models::AnimalColor::kStriped)
-            .Case("brindle", pawspective::models::AnimalColor::kBrindle)
-            .Case("mixed", pawspective::models::AnimalColor::kMixed);
+struct CppToUserPg<pawspective::models::AnimalColor> : EnumMappingBase<pawspective::models::AnimalColor> {
+    static constexpr DBTypeName postgres_name = "animal_color";
+    static constexpr EnumeratorList enumerators{
+        {pawspective::models::AnimalColor::kBlack, "black"},
+        {pawspective::models::AnimalColor::kWhite, "white"},
+        {pawspective::models::AnimalColor::kBrown, "brown"},
+        {pawspective::models::AnimalColor::kGrey, "grey"},
+        {pawspective::models::AnimalColor::kOrange, "orange"},
+        {pawspective::models::AnimalColor::kCream, "cream"},
+        {pawspective::models::AnimalColor::kTan, "tan"},
+        {pawspective::models::AnimalColor::kGolden, "golden"},
+        {pawspective::models::AnimalColor::kSpotted, "spotted"},
+        {pawspective::models::AnimalColor::kStriped, "striped"},
+        {pawspective::models::AnimalColor::kBrindle, "brindle"},
+        {pawspective::models::AnimalColor::kMixed, "mixed"}
     };
 };
 
 template <>
-struct CppToUserPg<pawspective::models::AnimalStatus> {
-    static constexpr userver::storages::postgres::DBTypeName postgres_name = "animal_status";
-    static constexpr auto enumerators = [](auto selector) {
-        return selector()
-            .Case("available", pawspective::models::AnimalStatus::kAvailable)
-            .Case("adopted", pawspective::models::AnimalStatus::kAdopted)
-            .Case("unavailable", pawspective::models::AnimalStatus::kUnavailable);
+struct CppToUserPg<pawspective::models::AnimalStatus> : EnumMappingBase<pawspective::models::AnimalStatus> {
+    static constexpr DBTypeName postgres_name = "animal_status";
+    static constexpr EnumeratorList enumerators{
+        {pawspective::models::AnimalStatus::kAvailable, "available"},
+        {pawspective::models::AnimalStatus::kAdopted, "adopted"},
+        {pawspective::models::AnimalStatus::kUnavailable, "unavailable"}
     };
 };
 
 template <>
-struct CppToUserPg<pawspective::models::AnimalType> {
-    static constexpr userver::storages::postgres::DBTypeName postgres_name = "animal_type";
-    static constexpr auto enumerators = [](auto selector) {
-        return selector()
-            .Case("dog", pawspective::models::AnimalType::kDog)
-            .Case("cat", pawspective::models::AnimalType::kCat)
-            .Case("other", pawspective::models::AnimalType::kOther);
+struct CppToUserPg<pawspective::models::AnimalType> : EnumMappingBase<pawspective::models::AnimalType> {
+    static constexpr DBTypeName postgres_name = "animal_type";
+    static constexpr EnumeratorList enumerators{
+        {pawspective::models::AnimalType::kDog, "dog"},
+        {pawspective::models::AnimalType::kCat, "cat"},
+        {pawspective::models::AnimalType::kOther, "other"}
     };
 };
 
