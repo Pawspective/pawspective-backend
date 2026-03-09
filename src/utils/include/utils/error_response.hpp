@@ -75,6 +75,7 @@ inline constexpr std::string_view kInvalidCredentials = "INVALID_CREDENTIALS";
 inline constexpr std::string_view kUserNotFound = "USER_NOT_FOUND";
 inline constexpr std::string_view kUserAlreadyExists = "USER_ALREADY_EXISTS";
 inline constexpr std::string_view kInvalidRefreshToken = "INVALID_REFRESH_TOKEN";
+inline constexpr std::string_view kCityNotFound = "CITY_NOT_FOUND";
 }  // namespace error_code
 
 }  // namespace pawspective::utils

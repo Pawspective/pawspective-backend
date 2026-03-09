@@ -3,10 +3,9 @@
 #include <userver/components/component_context.hpp>
 #include <userver/formats/json/exception.hpp>
 #include <userver/server/http/http_status.hpp>
-#include "city_dto.hpp"
-#include "organization.hpp"
 #include "organization_register_dto.hpp"
 #include "organization_service_component.hpp"
+#include "services/exception.hpp"
 #include "utils/error_response.hpp"
 #include "utils/exception.hpp"
 #include "utils/validator.hpp"
@@ -26,8 +25,8 @@ userver::formats::json::Value OrgRegistrationHandler::HandleRequestJsonThrow(
     const userver::formats::json::Value& request_json,
     userver::server::request::RequestContext& /*context*/
 ) const {
-    models::Organization org;
     dto::OrganizationRegisterDTO org_data;
+    dto::OrganizationDTO org_dto;
     try {
         org_data = request_json.As<dto::OrganizationRegisterDTO>();
 
@@ -35,7 +34,7 @@ userver::formats::json::Value OrgRegistrationHandler::HandleRequestJsonThrow(
         validator.Field("name", org_data.name).NotBlank();
         validator.ThrowIfInvalid();
 
-        org = org_service_.get_service().Register(org_data);
+        org_dto = org_service_.get_service().Register(org_data);
     } catch (const userver::formats::json::MemberMissingException& e) {
         LOG_WARNING() << "Missing required field in organization registration data: " << e.what();
         utils::ErrorResponse(utils::error_code::kMissingField, "Missing required field").ThrowClientError();
@@ -45,12 +44,13 @@ userver::formats::json::Value OrgRegistrationHandler::HandleRequestJsonThrow(
     } catch (const utils::ValidationException& e) {
         LOG_WARNING() << "Validation failed for organization registration.";
         e.ThrowClientError();
+    } catch (const services::CityNotFoundException&) {
+        LOG_WARNING() << "City not found for city_id: " << org_data.city_id;
+        utils::ErrorResponse(utils::error_code::kCityNotFound, "City not found").ThrowNotFound();
     }
 
-    // Stub: city name is not fetched — only city_id is available from the created record.
-    dto::CityDTO city_dto{org.city_id, ""};
     request.SetResponseStatus(userver::server::http::HttpStatus::kCreated);
-    return userver::formats::json::ValueBuilder{models::Organization::to_dto(org, city_dto)}.ExtractValue();
+    return userver::formats::json::ValueBuilder{org_dto}.ExtractValue();
 }
 
 }  // namespace pawspective::handlers

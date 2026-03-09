@@ -65,6 +65,7 @@ async def test_register_org_success(service_client, authenticated_user, city):
     assert data['description'] == 'A shelter for happy paws'
     assert 'id' in data
     assert data['city']['id'] == city['id']
+    assert data['city']['name'] == city['name']
 
 
 async def test_register_org_success_without_description(service_client, authenticated_user, city):
@@ -145,6 +146,23 @@ async def test_register_org_blank_name(service_client, authenticated_user, city)
     payload = response.json()
     assert payload['error']['code'] == 'VALIDATION_ERROR'
     assert payload['error']['message'] == 'Validation failed'
+
+
+async def test_register_org_invalid_city_id(service_client, authenticated_user):
+    """Test that a non-existent city_id returns 404"""
+    response = await service_client.post(
+        '/orgs',
+        json={
+            'name': 'Ghost City Org',
+            'city_id': 999999999,
+        },
+        headers={'Authorization': f"Bearer {authenticated_user['token']}"},
+    )
+
+    assert response.status == 404
+    payload = response.json()
+    assert payload['error']['code'] == 'CITY_NOT_FOUND'
+    assert payload['error']['message'] == 'City not found'
 
 
 async def test_register_org_invalid_json(service_client, authenticated_user):
