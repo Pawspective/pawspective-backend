@@ -9,17 +9,20 @@ ValidationException::ValidationException(std::vector<FieldError> errors)
 
 const std::vector<ValidationException::FieldError>& ValidationException::GetErrors() const { return errors_; }
 
+void ValidationException::ThrowClientError() const {
+    throw userver::server::handlers::ClientError{
+        FormattedErrorBody{userver::formats::json::ToString(GetExternalResponse())}
+    };
+}
+
 userver::formats::json::Value ValidationException::GetExternalResponse() const {
     userver::formats::json::ValueBuilder builder;
     builder["error"]["code"] = error_code::kValidationError;
-    builder["error"]["message"] = "Validation constraints violated";
+    builder["error"]["message"] = "Validation failed";
 
-    userver::formats::json::ValueBuilder details(userver::formats::common::Type::kArray);
+    userver::formats::json::ValueBuilder details(userver::formats::common::Type::kObject);
     for (const auto& error : errors_) {
-        userver::formats::json::ValueBuilder item;
-        item["field"] = error.field_name;
-        item["error"] = error.error_message;
-        details.PushBack(std::move(item));
+        details[error.field_name] = error.error_message;
     }
     builder["error"]["details"] = details;
     return builder.ExtractValue();

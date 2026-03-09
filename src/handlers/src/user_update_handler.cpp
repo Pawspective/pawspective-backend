@@ -93,9 +93,7 @@ userver::formats::json::Value UserUpdateHandler::HandleRequestJsonThrow(
         utils::ErrorResponse(utils::error_code::kInvalidJsonFormat, "Invalid JSON format").ThrowClientError();
     } catch (const utils::ValidationException& e) {
         LOG_WARNING() << "Validation failed for user update";
-        throw userver::server::handlers::ClientError{
-            userver::server::handlers::ExternalBody{userver::formats::json::ToString(e.GetExternalResponse())}
-        };
+        e.ThrowClientError();
     } catch (const services::UserNotFoundException& e) {
         LOG_WARNING() << "User not found: " << target_user_id;
         utils::ErrorResponse(utils::error_code::kUserNotFound, "User not found").ThrowClientError();

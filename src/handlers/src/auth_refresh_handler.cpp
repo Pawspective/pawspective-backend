@@ -27,7 +27,7 @@ userver::formats::json::Value AuthRefreshHandler::HandleRequestJsonThrow(
         LOG_WARNING() << "Failed to parse refresh token: " << e.what();
         utils::ErrorResponse(utils::error_code::kInvalidJsonFormat, "Invalid JSON format").ThrowClientError();
     } catch (const userver::formats::json::MemberMissingException& e) {
-        LOG_WARNING() << "Missing required field in data: " << e.what();
+        LOG_WARNING() << "Missing required field in login data: " << e.what();
         utils::ErrorResponse(utils::error_code::kMissingField, "Missing required field").ThrowClientError();
     }
 

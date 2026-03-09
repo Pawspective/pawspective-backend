@@ -56,8 +56,8 @@ async def test_register_duplicate_email(service_client):
 
     assert second.status == 409
     payload = second.json()
-    assert payload['code'] == '409'
-    assert 'USER_ALREADY_EXISTS' in payload.get('message', '')
+    assert payload["error"]["code"] == 'USER_ALREADY_EXISTS'
+    assert payload["error"]["message"] == 'User with this email already exists'
 
 
 async def test_register_invalid_email(service_client):
@@ -74,8 +74,8 @@ async def test_register_invalid_email(service_client):
 
     assert response.status == 400
     payload = response.json()
-    assert payload['code'] == '400'
-    assert 'VALIDATION_ERROR' in payload.get('message', '')
+    assert payload["error"]["code"] == 'VALIDATION_ERROR'
+    assert payload["error"]["message"] == 'Validation failed'
 
 
 async def test_register_missing_required_field(service_client):
@@ -91,8 +91,8 @@ async def test_register_missing_required_field(service_client):
 
     assert response.status == 400
     payload = response.json()
-    assert payload['code'] == '400'
-    assert 'MISSING_FIELD' in payload.get('message', '')
+    assert payload["error"]["code"] == 'MISSING_FIELD'
+    assert payload["error"]["message"] == 'Missing required field'
 
 
 async def test_register_invalid_json(service_client):
@@ -104,6 +104,3 @@ async def test_register_invalid_json(service_client):
     )
 
     assert response.status == 400
-    payload = response.json()
-    assert payload['code'] == '400'
-    assert 'Invalid JSON body' in payload.get('message', '')

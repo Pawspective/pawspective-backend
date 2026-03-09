@@ -19,6 +19,11 @@ public:
 
     const std::vector<FieldError>& GetErrors() const;
 
+    /**
+     * @brief Throw ClientError (HTTP 400) with the validation error response
+     */
+    [[noreturn]] void ThrowClientError() const;
+
 private:
     const std::vector<FieldError> errors_;
 };

@@ -57,9 +57,7 @@ userver::formats::json::Value UserRegistrationHandler::HandleRequestJsonThrow(
         utils::ErrorResponse(utils::error_code::kInvalidJsonFormat, "Invalid JSON format").ThrowClientError();
     } catch (const utils::ValidationException& e) {
         LOG_WARNING() << "Validation failed for user registration.";
-        throw userver::server::handlers::ClientError{
-            userver::server::handlers::ExternalBody{userver::formats::json::ToString(e.GetExternalResponse())}
-        };
+        e.ThrowClientError();
     } catch (services::UserAlreadyExistsException& /*e*/) {
         LOG_WARNING() << "Attempt to register with an existing email " << user_data.email;
         utils::ErrorResponse(utils::error_code::kUserAlreadyExists, "User with this email already exists")

@@ -18,15 +18,19 @@ userver::formats::json::Value ErrorResponse::GetJson() const {
 std::string ErrorResponse::GetString() const { return userver::formats::json::ToString(GetJson()); }
 
 void ErrorResponse::ThrowClientError() const {
-    throw userver::server::handlers::ClientError{userver::server::handlers::ExternalBody{GetString()}};
+    throw userver::server::handlers::ClientError{FormattedErrorBody{GetString()}};
 }
 
 void ErrorResponse::ThrowUnauthorized() const {
-    throw userver::server::handlers::Unauthorized{userver::server::handlers::ExternalBody{GetString()}};
+    throw userver::server::handlers::Unauthorized{FormattedErrorBody{GetString()}};
 }
 
 void ErrorResponse::ThrowConflict() const {
-    throw userver::server::handlers::ConflictError{userver::server::handlers::ExternalBody{GetString()}};
+    throw userver::server::handlers::ConflictError{FormattedErrorBody{GetString()}};
+}
+
+void ErrorResponse::ThrowNotFound() const {
+    throw userver::server::handlers::ResourceNotFound{FormattedErrorBody{GetString()}};
 }
 
 }  // namespace pawspective::utils
