@@ -23,8 +23,10 @@ OrgRegistrationHandler::OrgRegistrationHandler(
 userver::formats::json::Value OrgRegistrationHandler::HandleRequestJsonThrow(
     const userver::server::http::HttpRequest& request,
     const userver::formats::json::Value& request_json,
-    userver::server::request::RequestContext& /*context*/
+    userver::server::request::RequestContext& context
 ) const {
+    const auto& user_id = context.GetData<int64_t>("user_id");
+
     dto::OrganizationRegisterDTO org_data;
     dto::OrganizationDTO org_dto;
     try {
@@ -34,7 +36,7 @@ userver::formats::json::Value OrgRegistrationHandler::HandleRequestJsonThrow(
         validator.Field("name", org_data.name).NotBlank();
         validator.ThrowIfInvalid();
 
-        org_dto = org_service_.get_service().Register(org_data);
+        org_dto = org_service_.get_service().Register(user_id, org_data);
     } catch (const userver::formats::json::MemberMissingException& e) {
         LOG_WARNING() << "Missing required field in organization registration data: " << e.what();
         utils::ErrorResponse(utils::error_code::kMissingField, "Missing required field").ThrowClientError();
@@ -44,6 +46,10 @@ userver::formats::json::Value OrgRegistrationHandler::HandleRequestJsonThrow(
     } catch (const utils::ValidationException& e) {
         LOG_WARNING() << "Validation failed for organization registration.";
         e.ThrowClientError();
+    } catch (const services::ForbiddenException& e) {
+        LOG_WARNING() << "User " << user_id << " is not allowed to create organization: " << e.what();
+        utils::ErrorResponse(utils::error_code::kForbidden, "User is not allowed to create an organization")
+            .ThrowForbidden();
     } catch (const services::CityNotFoundException&) {
         LOG_WARNING() << "City not found for city_id: " << org_data.city_id;
         utils::ErrorResponse(utils::error_code::kCityNotFound, "City not found").ThrowNotFound();
