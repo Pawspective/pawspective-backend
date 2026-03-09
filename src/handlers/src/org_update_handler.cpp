@@ -69,7 +69,7 @@ userver::formats::json::Value OrgUpdateHandler::HandleRequestJsonThrow(
     } catch (const services::ForbiddenException& e) {
         LOG_WARNING() << "User " << user_id << " tried to update organization " << org_id << " without permission";
         utils::ErrorResponse(utils::error_code::kForbidden, "You are not allowed to update this organization")
-            .ThrowClientError();
+            .ThrowForbidden();
     }
 }
 }  // namespace pawspective::handlers
