@@ -25,6 +25,13 @@ void ErrorResponse::ThrowUnauthorized() const {
     throw userver::server::handlers::Unauthorized{FormattedErrorBody{GetString()}};
 }
 
+void ErrorResponse::ThrowForbidden() const {
+    throw userver::server::handlers::ClientError{
+        userver::server::handlers::ExternalBody{GetString()},
+        userver::server::handlers::HandlerErrorCode::kForbidden
+    };
+}
+
 void ErrorResponse::ThrowConflict() const {
     throw userver::server::handlers::ConflictError{FormattedErrorBody{GetString()}};
 }
