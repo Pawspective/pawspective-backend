@@ -8,11 +8,13 @@
 #include <userver/storages/secdist/provider_component.hpp>
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/utils/daemon_run.hpp>
+#include "animal_repository_component.hpp"
 #include "auth_checker.hpp"
 #include "auth_login_handler.hpp"
 #include "auth_logout_handler.hpp"
 #include "auth_me_handler.hpp"
 #include "auth_refresh_handler.hpp"
+#include "breed_repository_component.hpp"
 #include "city_repository_component.hpp"
 #include "city_service_component.hpp"
 #include "components/user_service_component.hpp"
@@ -54,6 +56,8 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::components::CityServiceComponent>()
             .Append<pawspective::components::OrganizationRepositoryComponent>()
             .Append<pawspective::components::OrganizationServiceComponent>()
+            .Append<pawspective::components::AnimalRepositoryComponent>()
+            .Append<pawspective::components::BreedRepositoryComponent>()
             .Append<pawspective::handlers::OrgRegistrationHandler>()
             .Append<pawspective::handlers::OrgUpdateHandler>();
 

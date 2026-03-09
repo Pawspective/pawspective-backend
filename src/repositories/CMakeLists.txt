@@ -2,6 +2,8 @@ set(REPOSITORIES_SOURCES
     src/user_repository.cpp
     src/organization_repository.cpp
     src/city_repository.cpp
+    src/animal_repository.cpp
+    src/breed_repository.cpp
 )
 
 add_library(pawspective_repositories STATIC ${REPOSITORIES_SOURCES})
