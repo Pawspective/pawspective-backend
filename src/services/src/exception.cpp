@@ -11,4 +11,6 @@ InvalidCredentialsException::InvalidCredentialsException() : std::runtime_error(
 
 OrganizationNotFoundException::OrganizationNotFoundException() : std::runtime_error("Organization not found") {}
 
+CityNotFoundException::CityNotFoundException() : std::runtime_error("City not found") {}
+
 }  // namespace pawspective::services

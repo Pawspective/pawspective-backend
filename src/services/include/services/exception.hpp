@@ -23,4 +23,9 @@ public:
     explicit OrganizationNotFoundException();
 };
 
+class CityNotFoundException : public std::runtime_error {
+public:
+    explicit CityNotFoundException();
+};
+
 }  // namespace pawspective::services
