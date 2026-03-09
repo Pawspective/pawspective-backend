@@ -5,7 +5,6 @@
 #include <userver/formats/json/value.hpp>
 #include <userver/formats/parse/to.hpp>
 #include <userver/formats/serialize/to.hpp>
-#include "city_dto.hpp"
 
 namespace pawspective::dto {
 
