@@ -20,6 +20,7 @@
 #include "components/user_service_component.hpp"
 #include "health_handler.hpp"
 #include "jwt_component.hpp"
+#include "org_get_handler.hpp"
 #include "org_registration_handler.hpp"
 #include "org_update_handler.hpp"
 #include "organization_repository_component.hpp"
@@ -59,7 +60,8 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::components::AnimalRepositoryComponent>()
             .Append<pawspective::components::BreedRepositoryComponent>()
             .Append<pawspective::handlers::OrgRegistrationHandler>()
-            .Append<pawspective::handlers::OrgUpdateHandler>();
+            .Append<pawspective::handlers::OrgUpdateHandler>()
+            .Append<pawspective::handlers::OrganizationGetHandler>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }

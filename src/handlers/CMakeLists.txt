@@ -10,6 +10,7 @@ set(HANDLERS_SOURCES
     src/auth_logout_handler.cpp
     src/org_registration_handler.cpp
     src/org_update_handler.cpp
+    src/org_get_handler.cpp
 )
 
 add_library(pawspective_handlers STATIC ${HANDLERS_SOURCES})
