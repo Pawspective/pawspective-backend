@@ -6,13 +6,19 @@ namespace pawspective::services {
 
 OrganizationService::OrganizationService(
     const repositories::OrganizationRepository& repo,
-    const services::CityService& city_service
+    const services::CityService& city_service,
+    const services::UserService& user_service
 )
-    : repository_(repo), city_service_(city_service) {}
+    : repository_(repo), city_service_(city_service), user_service_(user_service) {}
 
-dto::OrganizationDTO OrganizationService::Register(const dto::OrganizationRegisterDTO& dto) const {
+dto::OrganizationDTO OrganizationService::Register(const int64_t user_id, const dto::OrganizationRegisterDTO& dto)
+    const {
+    if (!user_service_.CanUserCreateOrganization(user_id)) {
+        throw ForbiddenException();
+    }
     auto city_dto = city_service_.Get(dto.city_id);
     models::Organization org = repository_.Create(models::Organization::from_register_dto(dto));
+    user_service_.LinkOrganization(user_id, org.id);
 
     return models::Organization::to_dto(org, city_dto);
 }
@@ -36,8 +42,16 @@ std::vector<dto::OrganizationDTO> OrganizationService::FindByNameContaining(cons
     return dtos;
 }
 
-dto::OrganizationDTO OrganizationService::Update(int64_t id, const dto::OrganizationUpdateDTO& dto) const {
-    models::Organization org = models::Organization::from_update_dto(id, dto);
+dto::OrganizationDTO OrganizationService::Update(
+    const int64_t user_id,
+    const int64_t org_id,
+    const dto::OrganizationUpdateDTO& dto
+) const {
+    auto user = user_service_.GetUserById(user_id);
+    if (!user.organization_id || user.organization_id != org_id) {
+        throw ForbiddenException();
+    }
+    models::Organization org = models::Organization::from_update_dto(org_id, dto);
     auto result = repository_.Update(org);
     if (!result) {
         throw OrganizationNotFoundException();

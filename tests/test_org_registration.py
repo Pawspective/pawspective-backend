@@ -86,6 +86,32 @@ async def test_register_org_success_without_description(service_client, authenti
     assert 'id' in data
 
 
+async def test_register_org_second_time_forbidden(service_client, authenticated_user, city):
+    """Test that user cannot create a second organization"""
+    first_response = await service_client.post(
+        '/orgs',
+        json={
+            'name': 'First Org',
+            'city_id': city['id'],
+        },
+        headers={'Authorization': f"Bearer {authenticated_user['token']}"},
+    )
+    assert first_response.status == 201
+
+    second_response = await service_client.post(
+        '/orgs',
+        json={
+            'name': 'Second Org',
+            'city_id': city['id'],
+        },
+        headers={'Authorization': f"Bearer {authenticated_user['token']}"},
+    )
+
+    assert second_response.status == 403
+    payload = second_response.json()
+    assert payload['code'] == '403'
+
+
 async def test_register_org_requires_auth(service_client, city):
     """Test that creating an organization requires authentication"""
     response = await service_client.post(

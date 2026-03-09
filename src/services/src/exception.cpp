@@ -13,4 +13,6 @@ OrganizationNotFoundException::OrganizationNotFoundException() : std::runtime_er
 
 CityNotFoundException::CityNotFoundException() : std::runtime_error("City not found") {}
 
+ForbiddenException::ForbiddenException() : std::runtime_error("Forbidden") {}
+
 }  // namespace pawspective::services

@@ -50,6 +50,11 @@ public:
     [[noreturn]] void ThrowUnauthorized() const;
 
     /**
+     * @brief Throw Forbidden (HTTP 403) with this error response
+     */
+    [[noreturn]] void ThrowForbidden() const;
+
+    /**
      * @brief Throw ConflictError (HTTP 409) with this error response
      */
     [[noreturn]] void ThrowConflict() const;
@@ -68,6 +73,7 @@ private:
  * @brief Machine-readable error codes (UPPER_SNAKE_CASE) used in error responses
  */
 namespace error_code {
+inline constexpr std::string_view kForbidden = "FORBIDDEN";
 inline constexpr std::string_view kInvalidJsonFormat = "INVALID_JSON_FORMAT";
 inline constexpr std::string_view kMissingField = "MISSING_FIELD";
 inline constexpr std::string_view kValidationError = "VALIDATION_ERROR";

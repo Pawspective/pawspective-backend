@@ -28,4 +28,9 @@ public:
     explicit CityNotFoundException();
 };
 
+class ForbiddenException : public std::runtime_error {
+public:
+    explicit ForbiddenException();
+};
+
 }  // namespace pawspective::services

@@ -26,8 +26,9 @@ OrgUpdateHandler::OrgUpdateHandler(
 userver::formats::json::Value OrgUpdateHandler::HandleRequestJsonThrow(
     const userver::server::http::HttpRequest& request,
     const userver::formats::json::Value& request_body,
-    userver::server::request::RequestContext& /*context*/
+    userver::server::request::RequestContext& context
 ) const {
+    const auto& user_id = context.GetData<int64_t>("user_id");
     const auto& id_str = request.GetPathArg("id");
     std::int64_t org_id = 0;
 
@@ -49,7 +50,7 @@ userver::formats::json::Value OrgUpdateHandler::HandleRequestJsonThrow(
         validator.ThrowIfInvalid();
 
         LOG_INFO() << "Updating organization " << org_id;
-        auto updated_org = organization_service_.Update(org_id, update_dto);
+        auto updated_org = organization_service_.Update(user_id, org_id, update_dto);
 
         LOG_INFO() << "Organization " << org_id << " updated successfully";
         return userver::formats::json::ValueBuilder(updated_org).ExtractValue();
@@ -65,6 +66,10 @@ userver::formats::json::Value OrgUpdateHandler::HandleRequestJsonThrow(
         utils::ErrorResponse(utils::error_code::kValidationError, "Organization not found").ThrowNotFound();
     } catch (const services::CityNotFoundException& e) {
         utils::ErrorResponse(utils::error_code::kCityNotFound, "City not found").ThrowClientError();
+    } catch (const services::ForbiddenException& e) {
+        LOG_WARNING() << "User " << user_id << " tried to update organization " << org_id << " without permission";
+        utils::ErrorResponse(utils::error_code::kForbidden, "You are not allowed to update this organization")
+            .ThrowClientError();
     }
 }
 }  // namespace pawspective::handlers

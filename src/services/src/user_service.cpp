@@ -45,6 +45,10 @@ std::optional<std::int64_t> UserService::GetOrganizationId(std::int64_t user_id)
     return user_repository_.get_organization_id_by_user_id(user_id);
 }
 
+models::User UserService::LinkOrganization(std::int64_t user_id, std::int64_t organization_id) const {
+    return user_repository_.link_organization(user_id, organization_id);
+}
+
 models::User UserService::UpdateUser(std::int64_t user_id, const dto::UserUpdateDTO& dto) const {
     models::User new_data = models::User::from_update_dto(dto);
     if (auto opt = user_repository_.get_by_id(user_id); !opt.has_value()) {
