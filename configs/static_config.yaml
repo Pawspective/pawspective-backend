@@ -44,6 +44,9 @@ components_manager:
         organization-repository:
             load-enabled: true
 
+        organization-service:
+            load-enabled: true
+
         user-repository: 
             load-enabled: true
 
