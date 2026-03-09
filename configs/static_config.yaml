@@ -44,6 +44,12 @@ components_manager:
         organization-repository:
             load-enabled: true
 
+        city-repository:
+            load-enabled: true
+
+        city-service:
+            load-enabled: true
+
         organization-service:
             load-enabled: true
 

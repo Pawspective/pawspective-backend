@@ -13,6 +13,8 @@
 #include "auth_logout_handler.hpp"
 #include "auth_me_handler.hpp"
 #include "auth_refresh_handler.hpp"
+#include "city_repository_component.hpp"
+#include "city_service_component.hpp"
 #include "components/user_service_component.hpp"
 #include "health_handler.hpp"
 #include "jwt_component.hpp"
@@ -47,6 +49,8 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::handlers::AuthLoginHandler>()
             .Append<pawspective::components::UserServiceComponent>()
             .Append<pawspective::handlers::UserUpdateHandler>()
+            .Append<pawspective::components::CityRepositoryComponent>()
+            .Append<pawspective::components::CityServiceComponent>()
             .Append<pawspective::components::OrganizationRepositoryComponent>()
             .Append<pawspective::components::OrganizationServiceComponent>()
             .Append<pawspective::handlers::OrgRegistrationHandler>();
