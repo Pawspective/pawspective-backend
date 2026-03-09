@@ -4,7 +4,8 @@
 #include <optional>
 #include <string>
 #include <userver/storages/postgres/cluster.hpp>
-#include "../../models/include/user.hpp"
+#include "organization.hpp"
+#include "user.hpp"
 
 namespace pawspective::repositories {
 
@@ -22,6 +23,7 @@ public:
     models::User link_organization(std::int64_t id, std::int64_t org_id) const;
     // NOLINTEND(modernize-use-nodiscard)
     [[nodiscard]] bool check_can_create_shelter(std::int64_t id) const;
-    [[nodiscard]] std::optional<std::int64_t> get_organization_by_user_id(std::int64_t id) const;
+    [[nodiscard]] std::optional<std::int64_t> get_organization_id_by_user_id(std::int64_t id) const;
+    [[nodiscard]] std::optional<models::Organization> get_organization_by_user_id(std::int64_t id) const;
 };
 }  // namespace pawspective::repositories

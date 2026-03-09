@@ -4,7 +4,7 @@
 #include <optional>
 #include <string>
 
-#include "models/animal_enums.hpp"
+#include "animal_enums.hpp"
 
 namespace pawspective::dto {
 

@@ -13,7 +13,7 @@ struct OrganizationUpdateDTO {
     std::optional<std::string> name;
     std::optional<std::string> description;
     // std::optional<std::string> avatar_url; // TODO: add avatar_url later
-    std::optional<City> city;
+    std::optional<std::int64_t> city_id{};
 };
 
 userver::formats::json::Value

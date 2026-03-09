@@ -5,6 +5,7 @@ set(DTO_SOURCES
     src/organization_dto.cpp
     src/organization_register_dto.cpp
     src/organization_update_dto.cpp
+    src/city_dto.cpp
     src/animal_dto.cpp
     src/animal_register_dto.cpp
     src/animal_update_dto.cpp

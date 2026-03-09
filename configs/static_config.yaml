@@ -41,6 +41,9 @@ components_manager:
         session-service-pg:
             load-enabled: true 
         
+        organization-repository:
+            load-enabled: true
+
         user-repository: 
             load-enabled: true
 

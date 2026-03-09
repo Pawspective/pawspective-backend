@@ -15,7 +15,7 @@ struct OrganizationDTO {
     std::string name;
     std::optional<std::string> description;
     // std::optional<std::string> avatar_url; // TODO: add avatar_url later
-    City city;
+    CityDTO city;
 };
 
 userver::formats::json::Value

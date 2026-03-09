@@ -12,7 +12,7 @@
 namespace pawspective::dto {
 
 [[maybe_unused]] userver::formats::json::Value
-Serialize(const City& data, userver::formats::serialize::To<userver::formats::json::Value>) {
+Serialize(const CityDTO& data, userver::formats::serialize::To<userver::formats::json::Value>) {
     userver::formats::json::ValueBuilder builder;
 
     builder["id"] = data.id;
@@ -21,8 +21,8 @@ Serialize(const City& data, userver::formats::serialize::To<userver::formats::js
     return builder.ExtractValue();
 }
 
-[[maybe_unused]] City Parse(const userver::formats::json::Value& json, userver::formats::parse::To<City>) {
-    City city;
+[[maybe_unused]] CityDTO Parse(const userver::formats::json::Value& json, userver::formats::parse::To<CityDTO>) {
+    CityDTO city;
 
     city.id = json["id"].As<std::int64_t>();
     city.name = json["name"].As<std::string>();
