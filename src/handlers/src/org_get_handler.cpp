@@ -31,7 +31,7 @@ userver::formats::json::Value OrganizationGetHandler::HandleRequestJsonThrow(
     } catch (const std::exception& e) {
         LOG_WARNING() << "Invalid organization ID format in path: " << id_str;
         utils::ErrorResponse(utils::error_code::kOrganizationNotFound, "Invalid organization ID format")
-            .ThrowClientError();
+            .ThrowNotFound();
     }
 
     try {
