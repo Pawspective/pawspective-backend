@@ -125,6 +125,11 @@ components_manager:
                     - jwt
                 required: true
 
+        handler-city-list:
+            path: /city
+            method: GET
+            task_processor: main-task-processor
+
         handler-org-registration:
             path: /orgs
             method: POST
