@@ -15,6 +15,7 @@
 #include "auth_me_handler.hpp"
 #include "auth_refresh_handler.hpp"
 #include "breed_repository_component.hpp"
+#include "city_list_handler.hpp"
 #include "city_repository_component.hpp"
 #include "city_service_component.hpp"
 #include "components/user_service_component.hpp"
@@ -59,7 +60,8 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::components::AnimalRepositoryComponent>()
             .Append<pawspective::components::BreedRepositoryComponent>()
             .Append<pawspective::handlers::OrgRegistrationHandler>()
-            .Append<pawspective::handlers::OrgUpdateHandler>();
+            .Append<pawspective::handlers::OrgUpdateHandler>()
+            .Append<pawspective::handlers::CityListHandler>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }
