@@ -34,7 +34,7 @@ userver::formats::json::Value AuthRefreshHandler::HandleRequestJsonThrow(
     auto payload = session_component_.get_service().validate_session(refresh_token);
     if (payload == std::nullopt) {
         LOG_WARNING() << "Invalid refresh token attempt";
-        utils::ErrorResponse(utils::error_code::kInvalidRefreshToken, "Invalid refresh token").ThrowUnauthorized();
+        utils::ErrorResponse(utils::error_code::kRefreshTokenInvalid, "Invalid refresh token").ThrowUnauthorized();
     }
 
     session_component_.get_service().revoke_session(refresh_token);

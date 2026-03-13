@@ -21,6 +21,15 @@ struct TokenPayload {              // NOLINT [cppcoreguidelines-pro-type-member-
 };
 
 /**
+ * @brief Result of JWT token validation, distinguishing between valid, expired, and invalid tokens.
+ */
+struct TokenValidationResult {
+    enum class Status : uint8_t { kValid, kExpired, kInvalid };
+    Status status{Status::kInvalid};
+    std::optional<TokenPayload> payload;
+};
+
+/**
  * @brief Stateless JWT service responsible for token creation and validation.
  *
  * This service:
@@ -86,9 +95,9 @@ public:
      *  - token type check (must be access)
      *
      * @param token JWT string.
-     * @return Decoded payload if valid; std::nullopt otherwise.
+     * @return TokenValidationResult with status kValid (+ payload), kExpired, or kInvalid.
      */
-    [[nodiscard]] std::optional<TokenPayload> validate_access_token(std::string_view token) const;
+    [[nodiscard]] TokenValidationResult validate_access_token(std::string_view token) const;
 
     /**
      * @brief Validates a refresh token.
@@ -119,7 +128,7 @@ private:
      *
      * Does not check token type.
      */
-    [[nodiscard]] std::optional<TokenPayload> ValidateToken(std::string_view token) const;
+    [[nodiscard]] TokenValidationResult ValidateToken(std::string_view token) const;
 
     std::chrono::seconds access_ttl_;
     std::chrono::seconds refresh_ttl_;

@@ -80,9 +80,12 @@ inline constexpr std::string_view kValidationError = "VALIDATION_ERROR";
 inline constexpr std::string_view kInvalidCredentials = "INVALID_CREDENTIALS";
 inline constexpr std::string_view kUserNotFound = "USER_NOT_FOUND";
 inline constexpr std::string_view kUserAlreadyExists = "USER_ALREADY_EXISTS";
-inline constexpr std::string_view kInvalidRefreshToken = "INVALID_REFRESH_TOKEN";
-inline constexpr std::string_view kCityNotFound = "CITY_NOT_FOUND";
+inline constexpr std::string_view kAccessTokenMissing = "ACCESS_TOKEN_MISSING";
+inline constexpr std::string_view kAccessTokenInvalid = "ACCESS_TOKEN_INVALID";
+inline constexpr std::string_view kAccessTokenExpired = "ACCESS_TOKEN_EXPIRED";
+inline constexpr std::string_view kRefreshTokenInvalid = "REFRESH_TOKEN_INVALID";
 inline constexpr std::string_view kOrganizationNotFound = "ORGANIZATION_NOT_FOUND";
+inline constexpr std::string_view kCityNotFound = "CITY_NOT_FOUND";
 }  // namespace error_code
 
 }  // namespace pawspective::utils
