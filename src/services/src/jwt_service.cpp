@@ -118,25 +118,6 @@ TokenValidationResult JwtService::validate_access_token(const std::string_view t
         }
         return {TokenValidationResult::Status::kInvalid, std::nullopt};
     }
-    // if (result.status == TokenValidationResult::Status::kExpired) {
-    //     // Убеждаемся, что это не истёкший refresh-токен, переданный по ошибке.
-    //     // Для этого нужно декодировать payload без проверки exp.
-    //     // Переиспользуем: если подпись/alg/iss прошли, но exp истёк — проверяем тип.
-    //     const auto first_dot = token.find('.');
-    //     const auto last_dot = token.rfind('.');
-    //     if (first_dot != last_dot) {
-    //         try {
-    //             const std::string_view signed_area = token.substr(0, last_dot);
-    //             const std::string_view payload_b64 = signed_area.substr(first_dot + 1);
-    //             auto payload_json =
-    //                 userver::formats::json::FromString(userver::crypto::base64::Base64UrlDecode(payload_b64));
-    //             if (payload_json["ref"].As<bool>(false)) {
-    //                 return {TokenValidationResult::Status::kInvalid, std::nullopt};
-    //             }
-    //         } catch (const std::exception& /*e*/) {
-    //         }
-    //     }
-    // }
     return result;
 }
 
