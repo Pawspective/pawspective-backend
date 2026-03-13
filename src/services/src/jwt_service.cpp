@@ -58,12 +58,12 @@ std::string JwtService::CreateToken(const std::string_view user_id, bool is_refr
     return to_sign + "." + userver::crypto::base64::Base64UrlEncode(signature);
 }
 
-std::optional<TokenPayload> JwtService::ValidateToken(const std::string_view token) const {
+TokenValidationResult JwtService::ValidateToken(const std::string_view token) const {
     const auto first_dot = token.find('.');
     const auto last_dot = token.rfind('.');
 
     if (first_dot == std::string::npos || last_dot == first_dot) {
-        return std::nullopt;
+        return {TokenValidationResult::Status::kInvalid, std::nullopt};
     }
 
     const std::string_view signed_area = token.substr(0, last_dot);
@@ -73,7 +73,7 @@ std::optional<TokenPayload> JwtService::ValidateToken(const std::string_view tok
         const std::string signature = userver::crypto::base64::Base64UrlDecode(signature_b64);
         verifier_.Verify({signed_area}, signature);
     } catch (const std::exception& /*e*/) {
-        return std::nullopt;
+        return {TokenValidationResult::Status::kInvalid, std::nullopt};
     }
 
     try {
@@ -81,20 +81,20 @@ std::optional<TokenPayload> JwtService::ValidateToken(const std::string_view tok
 
         auto payload_json = userver::formats::json::FromString(userver::crypto::base64::Base64UrlDecode(payload_b64));
 
-        auto exp = payload_json["exp"].As<std::int64_t>();
-        if (exp < userver::utils::datetime::Timestamp()) {
-            return std::nullopt;
-        }
-
         auto header_json = signed_area.substr(0, first_dot);
         if (userver::formats::json::FromString(userver::crypto::base64::Base64UrlDecode(header_json))["alg"]
                 .As<std::string>() != "HS256")
         {
-            return std::nullopt;
+            return {TokenValidationResult::Status::kInvalid, std::nullopt};
         }
 
         if (payload_json["iss"].As<std::string>() != "auth-service") {
-            return std::nullopt;
+            return {TokenValidationResult::Status::kInvalid, std::nullopt};
+        }
+
+        auto exp = payload_json["exp"].As<std::int64_t>();
+        if (exp < userver::utils::datetime::Timestamp()) {
+            return {TokenValidationResult::Status::kExpired, std::nullopt};
         }
 
         std::int64_t subject_id{};
@@ -104,24 +104,46 @@ std::optional<TokenPayload> JwtService::ValidateToken(const std::string_view tok
             subject_id = std::stoll(payload_json["sub"].As<std::string>());
         }
 
-        return TokenPayload{subject_id, payload_json["ref"].As<bool>()};
+        return {TokenValidationResult::Status::kValid, TokenPayload{subject_id, payload_json["ref"].As<bool>()}};
     } catch (const std::exception& /*e*/) {
-        return std::nullopt;
+        return {TokenValidationResult::Status::kInvalid, std::nullopt};
     }
 }
 
-std::optional<TokenPayload> JwtService::validate_access_token(const std::string_view token) const {
-    auto payload = ValidateToken(token);
-    if (payload && !payload->is_refresh_token) {
-        return payload;
+TokenValidationResult JwtService::validate_access_token(const std::string_view token) const {
+    auto result = ValidateToken(token);
+    if (result.status == TokenValidationResult::Status::kValid) {
+        if (result.payload && !result.payload->is_refresh_token) {
+            return result;
+        }
+        return {TokenValidationResult::Status::kInvalid, std::nullopt};
     }
-    return std::nullopt;
+    // if (result.status == TokenValidationResult::Status::kExpired) {
+    //     // Убеждаемся, что это не истёкший refresh-токен, переданный по ошибке.
+    //     // Для этого нужно декодировать payload без проверки exp.
+    //     // Переиспользуем: если подпись/alg/iss прошли, но exp истёк — проверяем тип.
+    //     const auto first_dot = token.find('.');
+    //     const auto last_dot = token.rfind('.');
+    //     if (first_dot != last_dot) {
+    //         try {
+    //             const std::string_view signed_area = token.substr(0, last_dot);
+    //             const std::string_view payload_b64 = signed_area.substr(first_dot + 1);
+    //             auto payload_json =
+    //                 userver::formats::json::FromString(userver::crypto::base64::Base64UrlDecode(payload_b64));
+    //             if (payload_json["ref"].As<bool>(false)) {
+    //                 return {TokenValidationResult::Status::kInvalid, std::nullopt};
+    //             }
+    //         } catch (const std::exception& /*e*/) {
+    //         }
+    //     }
+    // }
+    return result;
 }
 
 std::optional<TokenPayload> JwtService::validate_refresh_token(const std::string_view token) const {
-    auto payload = ValidateToken(token);
-    if (payload && payload->is_refresh_token) {
-        return payload;
+    auto result = ValidateToken(token);
+    if (result.status == TokenValidationResult::Status::kValid && result.payload && result.payload->is_refresh_token) {
+        return result.payload;
     }
     return std::nullopt;
 }

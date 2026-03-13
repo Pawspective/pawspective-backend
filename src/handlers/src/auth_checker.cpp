@@ -10,6 +10,7 @@
 #include <userver/server/request/request_context.hpp>
 #include "../../components/include/jwt_component.hpp"
 #include "../../services/include/jwt_service.hpp"
+#include "utils/error_response.hpp"
 
 namespace pawspective::handlers {
 
@@ -26,35 +27,28 @@ AuthChecker::AuthCheckResult AuthChecker::CheckAuth(
         if (!is_required_) {
             return {};
         }
-        return AuthCheckResult{
-            AuthCheckResult::Status::kTokenNotFound,
-            {},
-            "Empty Authorization header",
-            userver::server::handlers::HandlerErrorCode::kUnauthorized
-        };
+        utils::ErrorResponse(utils::error_code::kAccessTokenMissing, "Missing Authorization header")
+            .ThrowUnauthorized();
     }
 
     const auto bearer_sep_pos = auth_value.find(' ');
     if (bearer_sep_pos == std::string::npos || auth_value.substr(0, bearer_sep_pos) != "Bearer") {
-        return AuthCheckResult{
-            AuthCheckResult::Status::kTokenNotFound,
-            {},
-            "Invalid Authorization header format. Expected: Bearer <token>",
-            userver::server::handlers::HandlerErrorCode::kUnauthorized
-        };
+        utils::ErrorResponse(
+            utils::error_code::kAccessTokenInvalid,
+            "Invalid Authorization header format. Expected: Bearer <token>"
+        )
+            .ThrowUnauthorized();
     }
     const std::string token = auth_value.substr(bearer_sep_pos + 1);
-    auto payload = jwt_service_.validate_access_token(token);
-    if (!payload) {
-        return AuthCheckResult{
-            AuthCheckResult::Status::kForbidden,
-            {},
-            "Invalid or expired access token",
-            userver::server::handlers::HandlerErrorCode::kUnauthorized
-        };
+    auto result = jwt_service_.validate_access_token(token);
+    if (result.status == services::TokenValidationResult::Status::kExpired) {
+        utils::ErrorResponse(utils::error_code::kAccessTokenExpired, "Access token has expired").ThrowUnauthorized();
+    }
+    if (result.status != services::TokenValidationResult::Status::kValid) {
+        utils::ErrorResponse(utils::error_code::kAccessTokenInvalid, "Invalid access token").ThrowUnauthorized();
     }
 
-    request_context.SetData("user_id", payload->user_id);
+    request_context.SetData("user_id", result.payload->user_id);
     return {};
 }
 
