@@ -51,6 +51,9 @@ models::User UserService::LinkOrganization(std::int64_t user_id, std::int64_t or
 
 models::User UserService::UpdateUser(std::int64_t user_id, const dto::UserUpdateDTO& dto) const {
     models::User new_data = models::User::from_update_dto(dto);
+    if (dto.password.has_value()) {
+        new_data.password_hash = utils::crypto::GenerateHash(*dto.password);
+    }
     if (auto opt = user_repository_.get_by_id(user_id); !opt.has_value()) {
         throw UserNotFoundException();
     }
