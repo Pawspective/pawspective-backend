@@ -11,6 +11,7 @@
 #include "animal_registration_handler.hpp"
 #include "animal_repository_component.hpp"
 #include "animal_service_component.hpp"
+#include "animal_update_handler.hpp"
 #include "auth_checker.hpp"
 #include "auth_login_handler.hpp"
 #include "auth_logout_handler.hpp"
@@ -69,7 +70,8 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::handlers::OrgUpdateHandler>()
             .Append<pawspective::handlers::OrganizationGetHandler>()
             .Append<pawspective::handlers::CityListHandler>()
-            .Append<pawspective::handlers::AnimalRegistrationHandler>();
+            .Append<pawspective::handlers::AnimalRegistrationHandler>()
+            .Append<pawspective::handlers::AnimalUpdateHandler>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }
