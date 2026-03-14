@@ -5,6 +5,8 @@ set(SERVICES_SOURCES
     src/exception.cpp
     src/user_service.cpp
     src/organization_service.cpp
+    src/animal_service.cpp
+    src/breed_service.cpp
 )
 
 add_library(pawspective_services STATIC ${SERVICES_SOURCES})

@@ -9,6 +9,8 @@ set(COMPONENTS_SOURCES
     src/organization_service_component.cpp
     src/animal_repository_component.cpp
     src/breed_repository_component.cpp
+    src/animal_service_component.cpp
+    src/breed_service_component.cpp
 )
 
 add_library(pawspective_components STATIC ${COMPONENTS_SOURCES})

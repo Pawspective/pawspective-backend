@@ -28,6 +28,16 @@ public:
     explicit CityNotFoundException();
 };
 
+class AnimalNotFoundException : public std::runtime_error {
+public:
+    explicit AnimalNotFoundException();
+};
+
+class BreedNotFoundException : public std::runtime_error {
+public:
+    explicit BreedNotFoundException();
+};
+
 class ForbiddenException : public std::runtime_error {
 public:
     explicit ForbiddenException();
