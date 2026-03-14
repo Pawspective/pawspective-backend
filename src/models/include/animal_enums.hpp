@@ -77,7 +77,7 @@ namespace userver::storages::postgres::io {
 
 template <>
 struct CppToUserPg<pawspective::models::AnimalSize> : EnumMappingBase<pawspective::models::AnimalSize> {
-    static constexpr DBTypeName postgres_name = "animal_size";
+    static constexpr DBTypeName postgres_name = "public.animal_size";
     static constexpr EnumeratorList enumerators{
         {pawspective::models::AnimalSize::kSmall, "small"},
         {pawspective::models::AnimalSize::kMedium, "medium"},
@@ -87,7 +87,7 @@ struct CppToUserPg<pawspective::models::AnimalSize> : EnumMappingBase<pawspectiv
 
 template <>
 struct CppToUserPg<pawspective::models::AnimalGender> : EnumMappingBase<pawspective::models::AnimalGender> {
-    static constexpr DBTypeName postgres_name = "animal_gender";
+    static constexpr DBTypeName postgres_name = "public.animal_gender";
     static constexpr EnumeratorList enumerators{
         {pawspective::models::AnimalGender::kMale, "male"},
         {pawspective::models::AnimalGender::kFemale, "female"},
@@ -97,7 +97,7 @@ struct CppToUserPg<pawspective::models::AnimalGender> : EnumMappingBase<pawspect
 
 template <>
 struct CppToUserPg<pawspective::models::CareLevel> : EnumMappingBase<pawspective::models::CareLevel> {
-    static constexpr DBTypeName postgres_name = "care_level";
+    static constexpr DBTypeName postgres_name = "public.care_level";
     static constexpr EnumeratorList enumerators{
         {pawspective::models::CareLevel::kEasy, "easy"},
         {pawspective::models::CareLevel::kModerate, "moderate"},
@@ -108,7 +108,7 @@ struct CppToUserPg<pawspective::models::CareLevel> : EnumMappingBase<pawspective
 
 template <>
 struct CppToUserPg<pawspective::models::GoodWith> : EnumMappingBase<pawspective::models::GoodWith> {
-    static constexpr DBTypeName postgres_name = "good_with";
+    static constexpr DBTypeName postgres_name = "public.good_with";
     static constexpr EnumeratorList enumerators{
         {pawspective::models::GoodWith::kDogs, "dogs"},
         {pawspective::models::GoodWith::kCats, "cats"},
@@ -119,7 +119,7 @@ struct CppToUserPg<pawspective::models::GoodWith> : EnumMappingBase<pawspective:
 
 template <>
 struct CppToUserPg<pawspective::models::AnimalColor> : EnumMappingBase<pawspective::models::AnimalColor> {
-    static constexpr DBTypeName postgres_name = "animal_color";
+    static constexpr DBTypeName postgres_name = "public.animal_color";
     static constexpr EnumeratorList enumerators{
         {pawspective::models::AnimalColor::kBlack, "black"},
         {pawspective::models::AnimalColor::kWhite, "white"},
@@ -138,7 +138,7 @@ struct CppToUserPg<pawspective::models::AnimalColor> : EnumMappingBase<pawspecti
 
 template <>
 struct CppToUserPg<pawspective::models::AnimalStatus> : EnumMappingBase<pawspective::models::AnimalStatus> {
-    static constexpr DBTypeName postgres_name = "animal_status";
+    static constexpr DBTypeName postgres_name = "public.animal_status";
     static constexpr EnumeratorList enumerators{
         {pawspective::models::AnimalStatus::kAvailable, "available"},
         {pawspective::models::AnimalStatus::kAdopted, "adopted"},
@@ -148,7 +148,7 @@ struct CppToUserPg<pawspective::models::AnimalStatus> : EnumMappingBase<pawspect
 
 template <>
 struct CppToUserPg<pawspective::models::AnimalType> : EnumMappingBase<pawspective::models::AnimalType> {
-    static constexpr DBTypeName postgres_name = "animal_type";
+    static constexpr DBTypeName postgres_name = "public.animal_type";
     static constexpr EnumeratorList enumerators{
         {pawspective::models::AnimalType::kDog, "dog"},
         {pawspective::models::AnimalType::kCat, "cat"},

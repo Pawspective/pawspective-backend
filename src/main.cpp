@@ -8,6 +8,7 @@
 #include <userver/storages/secdist/provider_component.hpp>
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/utils/daemon_run.hpp>
+#include "animal_registration_handler.hpp"
 #include "animal_repository_component.hpp"
 #include "animal_service_component.hpp"
 #include "auth_checker.hpp"
@@ -67,7 +68,8 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::handlers::OrgRegistrationHandler>()
             .Append<pawspective::handlers::OrgUpdateHandler>()
             .Append<pawspective::handlers::OrganizationGetHandler>()
-            .Append<pawspective::handlers::CityListHandler>();
+            .Append<pawspective::handlers::CityListHandler>()
+            .Append<pawspective::handlers::AnimalRegistrationHandler>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }

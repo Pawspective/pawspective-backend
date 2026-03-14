@@ -33,7 +33,7 @@ struct Animal {
     std::optional<std::string> description;
     AnimalStatus status;
 
-    auto introspect() const {
+    auto Introspect() {
         return std::tie(
             id,
             organization_id,
