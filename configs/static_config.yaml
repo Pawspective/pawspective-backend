@@ -158,3 +158,12 @@ components_manager:
             path: /orgs/{id}
             method: GET
             task_processor: main-task-processor
+
+        handler-animal-registration:
+            path: /animals
+            method: POST
+            task_processor: main-task-processor
+            auth:
+                types:
+                    - jwt
+                required: true

@@ -9,6 +9,7 @@ set(HANDLERS_SOURCES
     src/auth_login_handler.cpp
     src/auth_logout_handler.cpp
     src/org_registration_handler.cpp
+    src/animal_registration_handler.cpp
     src/org_update_handler.cpp
     src/org_get_handler.cpp
     src/city_list_handler.cpp
