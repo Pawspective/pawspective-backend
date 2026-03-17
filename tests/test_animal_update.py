@@ -192,7 +192,7 @@ async def test_update_animal_forbidden_wrong_org(
 
     assert response.status == 403
     data = response.json()
-    assert data['code'] == '403'
+    assert data['error']['code'] == 'FORBIDDEN'
 
 
 async def test_update_animal_blank_name(
