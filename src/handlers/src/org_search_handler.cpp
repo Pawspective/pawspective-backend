@@ -20,7 +20,7 @@ userver::formats::json::Value OrgSearchHandler::HandleRequestJsonThrow(
     const userver::formats::json::Value& /*request_json*/,
     userver::server::request::RequestContext& /*context*/
 ) const {
-    const auto name = request.GetArg("name");
+    const auto& name = request.GetArg("name");
     const auto orgs = org_service_.get_service().FindByNameContaining(name);
     return userver::formats::json::ValueBuilder{orgs}.ExtractValue();
 }
