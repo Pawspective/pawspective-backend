@@ -12,6 +12,7 @@ set(HANDLERS_SOURCES
     src/animal_registration_handler.cpp
     src/org_update_handler.cpp
     src/org_get_handler.cpp
+    src/org_search_handler.cpp
     src/city_list_handler.cpp
     src/animal_update_handler.cpp
 )

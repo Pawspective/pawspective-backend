@@ -154,6 +154,11 @@ components_manager:
                     - jwt
                 required: true
 
+        handler-org-search:
+            path: /orgs
+            method: GET
+            task_processor: main-task-processor
+
         handler-organization-get:
             path: /orgs/{id}
             method: GET
