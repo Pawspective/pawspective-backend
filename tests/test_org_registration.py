@@ -109,7 +109,7 @@ async def test_register_org_second_time_forbidden(service_client, authenticated_
 
     assert second_response.status == 403
     payload = second_response.json()
-    assert payload['code'] == '403'
+    assert payload['error']['code'] == 'FORBIDDEN'
 
 
 async def test_register_org_requires_auth(service_client, city):

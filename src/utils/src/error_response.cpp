@@ -27,7 +27,7 @@ void ErrorResponse::ThrowUnauthorized() const {
 
 void ErrorResponse::ThrowForbidden() const {
     throw userver::server::handlers::ClientError{
-        userver::server::handlers::ExternalBody{GetString()},
+        FormattedErrorBody{GetString()},
         userver::server::handlers::HandlerErrorCode::kForbidden
     };
 }
