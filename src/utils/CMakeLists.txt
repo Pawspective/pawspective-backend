@@ -3,6 +3,7 @@ set(UTILS_SOURCES
     src/exception.cpp
     src/validator.cpp
     src/error_response.cpp
+    src/sql_builder.cpp
 )
 
 add_library(pawspective_utils STATIC ${UTILS_SOURCES})
@@ -14,6 +15,7 @@ target_include_directories(pawspective_utils PUBLIC
 target_link_libraries(pawspective_utils
     PUBLIC
     userver::core
+    userver::postgresql
     ${ARGON2_LIBRARIES}
 )
 
@@ -21,6 +23,7 @@ if(BUILD_TESTING)
     add_executable(pawspective_utils_tests
         tests/hasher_test.cpp
         tests/validator_test.cpp
+        tests/sql_builder_test.cpp
     )
 
     target_link_libraries(pawspective_utils_tests
