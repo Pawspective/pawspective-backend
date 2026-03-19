@@ -5,8 +5,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include <userver/utils/move_only_function.hpp>
 #include <userver/storages/postgres/parameter_store.hpp>
+#include <userver/utils/move_only_function.hpp>
 
 namespace pawspective::utils::sql {
 
@@ -17,19 +17,14 @@ using ValuePusher = userver::utils::move_only_function<void(userver::storages::p
 
 namespace detail {
 
-template<typename T>
-ValuePusher MakePusher(T&& value) {
-    return [v = std::decay_t<T>(std::forward<T>(value))](auto& params) {
-        params.PushBack(std::move(v));
-    };
+template <typename T>
+ValuePusher MakePusher(T&& value) {  // NOLINT(cppcoreguidelines-missing-std-forward)
+    return [v = std::decay_t<T>(std::forward<T>(value))](auto& params) { params.PushBack(std::move(v)); };
 }
 
+}  // namespace detail
 
-
-} // namespace detail
-
-
-enum class Op {
+enum class Op : std::uint8_t {
     kEqual,
     kNotEqual,
     kGreater,
@@ -40,10 +35,7 @@ enum class Op {
     kAny,
 };
 
-enum class SortOrder {
-    kAsc,
-    kDesc
-};
+enum class SortOrder : std::uint8_t { kAsc, kDesc };
 
 /**
  * @brief Single filtering condition.
@@ -52,8 +44,6 @@ enum class SortOrder {
  * and value is always provided through the binder.
  */
 struct Condition {
-
-
     /** @brief Logical field name from external filter input. */
     std::string column;
     /** @brief Comparison operator. */
@@ -76,7 +66,7 @@ struct Condition {
      * @param value Condition value.
      * @return Condition with Op::kEqual and deferred parameter binding.
      */
-    template<typename T> 
+    template <typename T>
     static Condition Eq(std::string_view column, T&& value) {
         return Condition{std::string(column), Op::kEqual, detail::MakePusher(std::forward<T>(value))};
     }
@@ -88,7 +78,7 @@ struct Condition {
      * @param value Condition value.
      * @return Condition with Op::kNotEqual and deferred parameter binding.
      */
-    template<typename T>
+    template <typename T>
     static Condition Neq(std::string_view column, T&& value) {
         return Condition{std::string(column), Op::kNotEqual, detail::MakePusher(std::forward<T>(value))};
     }
@@ -100,7 +90,7 @@ struct Condition {
      * @param value Condition value.
      * @return Condition with Op::kGreater and deferred parameter binding.
      */
-    template<typename T>
+    template <typename T>
     static Condition Ge(std::string_view column, T&& value) {
         return Condition{std::string(column), Op::kGreater, detail::MakePusher(std::forward<T>(value))};
     }
@@ -112,10 +102,10 @@ struct Condition {
      * @param value Condition value.
      * @return Condition with Op::kLess and deferred parameter binding.
      */
-    template<typename T>
+    template <typename T>
     static Condition Le(std::string_view column, T&& value) {
         return Condition{std::string(column), Op::kLess, detail::MakePusher(std::forward<T>(value))};
-    }   
+    }
 
     /**
      * @brief Builds '>=' condition.
@@ -124,10 +114,10 @@ struct Condition {
      * @param value Condition value.
      * @return Condition with Op::kGreaterOrEqual and deferred parameter binding.
      */
-    template<typename T>
+    template <typename T>
     static Condition Geq(std::string_view column, T&& value) {
         return Condition{std::string(column), Op::kGreaterOrEqual, detail::MakePusher(std::forward<T>(value))};
-    }   
+    }
 
     /**
      * @brief Builds '<=' condition.
@@ -136,7 +126,7 @@ struct Condition {
      * @param value Condition value.
      * @return Condition with Op::kLessOrEqual and deferred parameter binding.
      */
-    template<typename T>
+    template <typename T>
     static Condition Leq(std::string_view column, T&& value) {
         return Condition{std::string(column), Op::kLessOrEqual, detail::MakePusher(std::forward<T>(value))};
     }
@@ -148,7 +138,7 @@ struct Condition {
      * @param values Condition values copied into internal storage.
      * @return Condition with Op::kAny and deferred parameter binding.
      */
-    template<typename T>
+    template <typename T>
     static Condition Any(std::string_view column, const std::vector<T>& values) {
         return Condition{std::string(column), Op::kAny, detail::MakePusher(std::move(std::vector<T>(values)))};
     }
@@ -160,7 +150,7 @@ struct Condition {
      * @param values Condition values moved into internal storage.
      * @return Condition with Op::kAny and deferred parameter binding.
      */
-    template<typename T>
+    template <typename T>
     static Condition Any(std::string_view column, std::vector<T>&& values) {
         return Condition{std::string(column), Op::kAny, detail::MakePusher(std::move(values))};
     }
@@ -223,7 +213,6 @@ struct QueryClause {
     userver::storages::postgres::ParameterStore parameters;
 };
 
-
 /**
  * @brief Builds SQL clauses from QueryFilter using strict whitelist resolution.
  * @param filter Input conditions, sorting and pagination.
@@ -233,6 +222,4 @@ struct QueryClause {
  */
 QueryClause BuildQueryClause(const QueryFilter& filter, const QueryWhitelist& whitelist);
 
-
-} // namespace pawspective::utils::sql
-
+}  // namespace pawspective::utils::sql

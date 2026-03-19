@@ -5,19 +5,26 @@
 namespace pawspective::utils::sql {
 
 namespace {
-    std::string OpToSql(Op op) {
-        switch (op) {
-            case Op::kEqual: return "=";
-            case Op::kNotEqual: return "!=";
-            case Op::kGreater: return ">";
-            case Op::kLess: return "<";
-            case Op::kGreaterOrEqual: return ">=";
-            case Op::kLessOrEqual: return "<=";
-            case Op::kIlike: return "ILIKE";
-            case Op::kAny: return "ANY";
-        }
+std::string OpToSql(Op op) {
+    switch (op) {
+        case Op::kEqual:
+            return "=";
+        case Op::kNotEqual:
+            return "!=";
+        case Op::kGreater:
+            return ">";
+        case Op::kLess:
+            return "<";
+        case Op::kGreaterOrEqual:
+            return ">=";
+        case Op::kLessOrEqual:
+            return "<=";
+        case Op::kIlike:
+            return "ILIKE";
+        case Op::kAny:
+            return "ANY";
     }
-
+}
 
 std::string EscapeForLike(std::string_view input) {
     std::string escaped;
@@ -43,14 +50,13 @@ const std::string& GetColumnName(
     }
     return it->second;
 }
-} // namespace
+}  // namespace
 
 Condition Condition::Ilike(std::string_view column, const std::string& value) {
     return Condition{std::string(column), Op::kIlike, detail::MakePusher(EscapeForLike(value))};
 }
 
 QueryClause BuildQueryClause(const QueryFilter& filter, const QueryWhitelist& whitelist) {
-    
     std::string query;
     userver::storages::postgres::ParameterStore params;
     // WHERE part
@@ -101,4 +107,4 @@ QueryClause BuildQueryClause(const QueryFilter& filter, const QueryWhitelist& wh
     return QueryClause{std::move(query), std::move(params)};
 }
 
-} // namespace pawspective::utils::sql
+}  // namespace pawspective::utils::sql

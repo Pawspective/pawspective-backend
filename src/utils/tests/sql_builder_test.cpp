@@ -11,15 +11,17 @@ namespace {
 
 QueryWhitelist MakeWhitelist() {
     return QueryWhitelist{
-        .filter_fields = {
-            {"name", "o.name"},
-            {"city_id", "o.city_id"},
-            {"rating", "o.rating"},
-        },
-        .sort_fields = {
-            {"name", "o.name"},
-            {"created_at", "o.created_at"},
-        },
+        .filter_fields =
+            {
+                {"name", "o.name"},
+                {"city_id", "o.city_id"},
+                {"rating", "o.rating"},
+            },
+        .sort_fields =
+            {
+                {"name", "o.name"},
+                {"created_at", "o.created_at"},
+            },
     };
 }
 
@@ -78,18 +80,12 @@ UTEST(SqlBuilder, ThrowsOnUnknownField) {
     QueryFilter filter;
     filter.conditions.push_back(Condition::Eq("unknown_filter", 1));
 
-    EXPECT_THROW(
-        static_cast<void>(BuildQueryClause(filter, MakeWhitelist())),
-        std::invalid_argument
-    );
+    EXPECT_THROW(static_cast<void>(BuildQueryClause(filter, MakeWhitelist())), std::invalid_argument);
 
     QueryFilter sort_filter;
     sort_filter.sort_specs.push_back(SortSpec{"unknown_sort", SortOrder::kAsc});
 
-    EXPECT_THROW(
-        static_cast<void>(BuildQueryClause(sort_filter, MakeWhitelist())),
-        std::invalid_argument
-    );
+    EXPECT_THROW(static_cast<void>(BuildQueryClause(sort_filter, MakeWhitelist())), std::invalid_argument);
 }
 
 }  // namespace pawspective::utils::sql::tests
