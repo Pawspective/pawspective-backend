@@ -3,22 +3,9 @@
 #include <fmt/format.h>
 #include <boost/algorithm/string/join.hpp>
 
+#include <utils/sql_builder.hpp>
+
 namespace pawspective::repositories {
-
-namespace {
-std::string EscapeForLike(std::string_view input) {
-    std::string escaped;
-    escaped.reserve(input.size());
-
-    for (char c : input) {
-        if (c == '%' || c == '_' || c == '\\') {
-            escaped += '\\';
-        }
-        escaped += c;
-    }
-    return escaped;
-}
-}  // namespace
 
 OrganizationRepository::OrganizationRepository(userver::storages::postgres::ClusterPtr pg_cluster)
     : pg_cluster_(std::move(pg_cluster)) {}
@@ -37,11 +24,19 @@ OrganizationRepository::OrganizationRepository(userver::storages::postgres::Clus
 
 [[nodiscard]] std::vector<models::Organization> OrganizationRepository::FindByNameContaining(const std::string_view name
 ) const {
+    pawspective::utils::sql::QueryFilter filter;
+    filter.conditions.emplace_back(pawspective::utils::sql::Condition::Ilike("name", std::string(name)));
+    filter.page_spec.limit = 50;
+    const pawspective::utils::sql::QueryWhitelist whitelist{
+        .filter_fields = {{"name", "name"}},
+        .sort_fields = {},
+    };
+    const auto query_clause = pawspective::utils::sql::BuildQueryClause(filter, whitelist);
+
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
-        "SELECT id, name, description, city_id FROM organizations WHERE name ILIKE '%' || $1 || '%' ESCAPE '\\' LIMIT "
-        "50",
-        EscapeForLike(name)
+        "SELECT id, name, description, city_id FROM organizations" + query_clause.query,
+        query_clause.parameters
     );
     return result.AsContainer<std::vector<models::Organization>>(userver::storages::postgres::kRowTag);
 }
