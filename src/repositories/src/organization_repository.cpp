@@ -27,11 +27,11 @@ OrganizationRepository::OrganizationRepository(userver::storages::postgres::Clus
     pawspective::utils::sql::QueryFilter filter;
     filter.conditions.emplace_back(pawspective::utils::sql::Condition::Ilike("name", std::string(name)));
     filter.page_spec.limit = 50;
-    const pawspective::utils::sql::QueryWhitelist whitelist{
+    static const pawspective::utils::sql::QueryWhitelist kWhitelist{
         .filter_fields = {{"name", "name"}},
         .sort_fields = {},
     };
-    const auto query_clause = pawspective::utils::sql::BuildQueryClause(filter, whitelist);
+    const auto query_clause = pawspective::utils::sql::BuildQueryClause(filter, kWhitelist);
 
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
