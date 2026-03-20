@@ -91,7 +91,7 @@ struct Condition {
      * @return Condition with Op::kGreater and deferred parameter binding.
      */
     template <typename T>
-    static Condition Ge(std::string_view column, T&& value) {
+    static Condition Gt(std::string_view column, T&& value) {
         return Condition{std::string(column), Op::kGreater, detail::MakePusher(std::forward<T>(value))};
     }
 
@@ -103,7 +103,7 @@ struct Condition {
      * @return Condition with Op::kLess and deferred parameter binding.
      */
     template <typename T>
-    static Condition Le(std::string_view column, T&& value) {
+    static Condition Lt(std::string_view column, T&& value) {
         return Condition{std::string(column), Op::kLess, detail::MakePusher(std::forward<T>(value))};
     }
 
@@ -115,7 +115,7 @@ struct Condition {
      * @return Condition with Op::kGreaterOrEqual and deferred parameter binding.
      */
     template <typename T>
-    static Condition Geq(std::string_view column, T&& value) {
+    static Condition Ge(std::string_view column, T&& value) {
         return Condition{std::string(column), Op::kGreaterOrEqual, detail::MakePusher(std::forward<T>(value))};
     }
 
@@ -127,7 +127,7 @@ struct Condition {
      * @return Condition with Op::kLessOrEqual and deferred parameter binding.
      */
     template <typename T>
-    static Condition Leq(std::string_view column, T&& value) {
+    static Condition Le(std::string_view column, T&& value) {
         return Condition{std::string(column), Op::kLessOrEqual, detail::MakePusher(std::forward<T>(value))};
     }
 

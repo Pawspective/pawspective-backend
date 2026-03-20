@@ -94,7 +94,7 @@ UTEST(SqlBuilder, BuildsExpectedSqlFragments) {
 
 UTEST(SqlBuilder, UsesMonotonicPlaceholderOrder) {
     QueryFilter filter;
-    filter.conditions.push_back(Condition::Ge("rating", 3));
+    filter.conditions.push_back(Condition::Gt("rating", 3));
     filter.conditions.push_back(Condition::Any("city_id", std::vector<int>{1, 2, 3}));
     filter.sort_specs.push_back(SortSpec{"name", SortOrder::kAsc});
     filter.page_spec.limit = 10;
