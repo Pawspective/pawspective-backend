@@ -25,6 +25,7 @@
 #include "components/user_service_component.hpp"
 #include "health_handler.hpp"
 #include "jwt_component.hpp"
+#include "org_animals_handler.hpp"
 #include "org_get_handler.hpp"
 #include "org_registration_handler.hpp"
 #include "org_search_handler.hpp"
@@ -73,7 +74,8 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::handlers::OrganizationGetHandler>()
             .Append<pawspective::handlers::CityListHandler>()
             .Append<pawspective::handlers::AnimalRegistrationHandler>()
-            .Append<pawspective::handlers::AnimalUpdateHandler>();
+            .Append<pawspective::handlers::AnimalUpdateHandler>()
+            .Append<pawspective::handlers::OrganizationAnimalHandler>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }

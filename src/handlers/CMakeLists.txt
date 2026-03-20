@@ -15,6 +15,7 @@ set(HANDLERS_SOURCES
     src/org_search_handler.cpp
     src/city_list_handler.cpp
     src/animal_update_handler.cpp
+    src/org_animals_handler.cpp
 )
 
 add_library(pawspective_handlers STATIC ${HANDLERS_SOURCES})
