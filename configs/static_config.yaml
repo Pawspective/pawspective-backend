@@ -181,3 +181,8 @@ components_manager:
                 types:
                     - jwt
                 required: true
+
+        handler-organization-animals:
+            path: /orgs/{id}/animals
+            method: GET
+            task_processor: main-task-processor
