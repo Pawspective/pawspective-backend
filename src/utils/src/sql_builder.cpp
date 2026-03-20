@@ -1,5 +1,10 @@
 #include "utils/sql_builder.hpp"
 
+#include <fmt/compile.h>
+#include <fmt/format.h>
+#include <algorithm>
+
+#include <iterator>
 #include <stdexcept>
 
 namespace pawspective::utils::sql {
@@ -19,22 +24,28 @@ std::string OpToSql(Op op) {
             return ">=";
         case Op::kLessOrEqual:
             return "<=";
-        case Op::kIlike:
-            return "ILIKE";
-        case Op::kAny:
-            return "ANY";
+        default:
+            throw std::logic_error("Unhandled operator in OpToSql");
     }
 }
 
 std::string EscapeForLike(std::string_view input) {
+    const auto escape_count = static_cast<size_t>(std::count_if(input.begin(), input.end(), [](char c) {
+        return c == '%' || c == '_' || c == '\\';
+    }));
+
+    if (escape_count == 0) {
+        return std::string(input);
+    }
+
     std::string escaped;
-    escaped.reserve(input.size());
+    escaped.reserve(input.size() + escape_count);
 
     for (char c : input) {
         if (c == '%' || c == '_' || c == '\\') {
-            escaped += '\\';
+            escaped.push_back('\\');
         }
-        escaped += c;
+        escaped.push_back(c);
     }
     return escaped;
 }
@@ -52,59 +63,77 @@ const std::string& GetColumnName(
 }
 }  // namespace
 
-Condition Condition::Ilike(std::string_view column, const std::string& value) {
+Condition Condition::Ilike(std::string_view column, const std::string_view value) {
     return Condition{std::string(column), Op::kIlike, detail::MakePusher(EscapeForLike(value))};
 }
 
-QueryClause BuildQueryClause(const QueryFilter& filter, const QueryWhitelist& whitelist) {
-    std::string query;
+QueryClause BuildQueryClause(QueryFilter& filter, const QueryWhitelist& whitelist) {
+    fmt::memory_buffer query;
+    query.reserve(64 + filter.conditions.size() * 48 + filter.sort_specs.size() * 24);
     userver::storages::postgres::ParameterStore params;
     // WHERE part
     if (!filter.conditions.empty()) {
-        query += " WHERE ";
+        fmt::format_to(std::back_inserter(query), FMT_COMPILE(" WHERE "));
         for (size_t i = 0; i < filter.conditions.size(); ++i) {
             auto& cond = filter.conditions[i];
             const auto& column = GetColumnName(whitelist.filter_fields, cond.column, "filters");
+            const auto next_placeholder = params.Size() + 1;
             switch (cond.op) {
                 case Op::kIlike:
-                    query += column + " ILIKE '%' || $" + std::to_string(params.Size() + 1) + " || '%' ESCAPE '\\'";
+                    fmt::format_to(
+                        std::back_inserter(query),
+                        FMT_COMPILE("{} ILIKE '%' || ${} || '%' ESCAPE '\\'"),
+                        column,
+                        next_placeholder
+                    );
                     break;
                 case Op::kAny:
-                    query += column + " = ANY($" + std::to_string(params.Size() + 1) + ")";
+                    fmt::format_to(std::back_inserter(query), FMT_COMPILE("{} = ANY(${})"), column, next_placeholder);
                     break;
                 default:
-                    query += column + " " + OpToSql(cond.op) + " $" + std::to_string(params.Size() + 1);
+                    fmt::format_to(
+                        std::back_inserter(query),
+                        FMT_COMPILE("{} {} ${}"),
+                        column,
+                        OpToSql(cond.op),
+                        next_placeholder
+                    );
             }
             cond.binder(params);
             if (i < filter.conditions.size() - 1) {
-                query += " AND ";
+                fmt::format_to(std::back_inserter(query), FMT_COMPILE(" AND "));
             }
         }
     }
     // ORDER BY part
     if (!filter.sort_specs.empty()) {
-        query += " ORDER BY ";
+        fmt::format_to(std::back_inserter(query), FMT_COMPILE(" ORDER BY "));
         for (size_t i = 0; i < filter.sort_specs.size(); ++i) {
             const auto& sort_spec = filter.sort_specs[i];
             const auto& column = GetColumnName(whitelist.sort_fields, sort_spec.column, "sorting");
-            query += column + " " + (sort_spec.order == SortOrder::kAsc ? "ASC" : "DESC");
+            fmt::format_to(
+                std::back_inserter(query),
+                FMT_COMPILE("{} {}"),
+                column,
+                sort_spec.order == SortOrder::kAsc ? "ASC" : "DESC"
+            );
             if (i < filter.sort_specs.size() - 1) {
-                query += ", ";
+                fmt::format_to(std::back_inserter(query), FMT_COMPILE(", "));
             }
         }
     }
     // LIMIT and OFFSET part
     const auto& page_spec = filter.page_spec;
     if (page_spec.limit.has_value()) {
-        query += " LIMIT $" + std::to_string(params.Size() + 1);
+        fmt::format_to(std::back_inserter(query), FMT_COMPILE(" LIMIT ${}"), params.Size() + 1);
         params.PushBack(page_spec.limit.value());
     }
     if (page_spec.offset.has_value()) {
-        query += " OFFSET $" + std::to_string(params.Size() + 1);
+        fmt::format_to(std::back_inserter(query), FMT_COMPILE(" OFFSET ${}"), params.Size() + 1);
         params.PushBack(page_spec.offset.value());
     }
 
-    return QueryClause{std::move(query), std::move(params)};
+    return QueryClause{fmt::to_string(query), std::move(params)};
 }
 
 }  // namespace pawspective::utils::sql

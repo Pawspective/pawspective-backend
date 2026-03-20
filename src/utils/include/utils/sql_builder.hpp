@@ -13,13 +13,13 @@ namespace pawspective::utils::sql {
 /**
  * @brief Callable that appends a single value to ParameterStore.
  */
-using ValuePusher = userver::utils::move_only_function<void(userver::storages::postgres::ParameterStore&) const>;
+using ValuePusher = userver::utils::move_only_function<void(userver::storages::postgres::ParameterStore&)>;
 
 namespace detail {
 
 template <typename T>
 ValuePusher MakePusher(T&& value) {  // NOLINT(cppcoreguidelines-missing-std-forward)
-    return [v = std::decay_t<T>(std::forward<T>(value))](auto& params) { params.PushBack(std::move(v)); };
+    return [v = std::decay_t<T>(std::forward<T>(value))](auto& params) mutable { params.PushBack(std::move(v)); };
 }
 
 }  // namespace detail
@@ -57,7 +57,7 @@ struct Condition {
      * @param value Input search text.
      * @return Condition with Op::kIlike and deferred parameter binding.
      */
-    static Condition Ilike(std::string_view column, const std::string& value);
+    static Condition Ilike(std::string_view column, std::string_view value);
 
     /**
      * @brief Builds '=' condition.
@@ -140,7 +140,7 @@ struct Condition {
      */
     template <typename T>
     static Condition Any(std::string_view column, const std::vector<T>& values) {
-        return Condition{std::string(column), Op::kAny, detail::MakePusher(std::move(std::vector<T>(values)))};
+        return Condition{std::string(column), Op::kAny, detail::MakePusher(std::vector<T>(values))};
     }
 
     /**
@@ -215,11 +215,13 @@ struct QueryClause {
 
 /**
  * @brief Builds SQL clauses from QueryFilter using strict whitelist resolution.
+ *
+ * Consumes deferred binders in filter conditions, so filter is non-const.
  * @param filter Input conditions, sorting and pagination.
  * @param whitelist Allowed mappings for filter and sort fields.
  * @return SQL clause string with corresponding ParameterStore values.
  * @throw std::invalid_argument If a filter or sort field is not present in whitelist.
  */
-QueryClause BuildQueryClause(const QueryFilter& filter, const QueryWhitelist& whitelist);
+QueryClause BuildQueryClause(QueryFilter& filter, const QueryWhitelist& whitelist);
 
 }  // namespace pawspective::utils::sql

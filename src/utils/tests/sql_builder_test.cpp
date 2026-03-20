@@ -68,7 +68,7 @@ UTEST(SqlBuilder, UsesMonotonicPlaceholderOrder) {
 }
 
 UTEST(SqlBuilder, EmptyFilterProducesNoClauses) {
-    const QueryFilter filter;
+    QueryFilter filter;
 
     const auto query_clause = BuildQueryClause(filter, MakeWhitelist());
 
