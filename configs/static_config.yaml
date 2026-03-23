@@ -187,6 +187,11 @@ components_manager:
             method: GET
             task_processor: main-task-processor
 
+        handler-animal-list:
+            path: /animals
+            method: GET
+            task_processor: main-task-processor
+
         handler-animal-get:
             path: /animals/{id}
             method: GET

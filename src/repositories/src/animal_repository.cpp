@@ -2,24 +2,50 @@
 #include "../../utils/include/utils/sql_builder.hpp"
 
 #include <fmt/format.h>
+#include <algorithm>
 #include <boost/algorithm/string/join.hpp>
 #include <userver/storages/postgres/io/array_types.hpp>
+#include <userver/storages/postgres/io/enum_types.hpp>
 #include <userver/storages/postgres/io/range_types.hpp>
 
 namespace pawspective::repositories {
 
 namespace {
+
 const utils::sql::QueryWhitelist kFilterWhitelist{
     {{"breeds", "a.breed_id"},
-     {"animalTypes", "b.animal_type"},
-     {"sizes", "a.size"},
-     {"genders", "a.gender"},
-     {"careLevels", "a.care_level"},
-     {"colors", "a.color"},
-     {"goodWiths", "a.good_with"},
+     {"animalTypes", "b.animal_type::text"},
+     {"sizes", "a.size::text"},
+     {"genders", "a.gender::text"},
+     {"careLevels", "a.care_level::text"},
+     {"colors", "a.color::text"},
+     {"goodWiths", "a.good_with::text"},
      {"age", "a.age"}},
     {{"id", "a.id"}}
 };
+
+template <typename T>
+std::string EnumToLiteral(T value) {
+    const auto& enumerators = userver::storages::postgres::io::CppToUserPg<T>::enumerators;
+    const auto it = std::find_if(enumerators.begin(), enumerators.end(), [value](const auto& e) {
+        return e.enumerator == value;
+    });
+    if (it == enumerators.end()) {
+        throw std::runtime_error("Unknown enum value");
+    }
+    return std::string(it->literal);
+}
+
+template <typename T>
+std::vector<std::string> EnumsToLiterals(const std::vector<T>& values) {
+    std::vector<std::string> result;
+    result.reserve(values.size());
+    std::transform(values.begin(), values.end(), std::back_inserter(result), [](const auto& v) {
+        return EnumToLiteral(v);
+    });
+    return result;
+}
+
 }  // namespace
 
 AnimalRepository::AnimalRepository(userver::storages::postgres::ClusterPtr pg_cluster)
@@ -169,12 +195,7 @@ std::vector<models::Animal> AnimalRepository::FindByFilters(const models::Animal
 
     auto add_any_enum = [&](const std::string& key, const auto& vec) {
         if (!vec.empty()) {
-            std::vector<int> int_vec;
-            int_vec.reserve(vec.size());
-            std::transform(vec.begin(), vec.end(), std::back_inserter(int_vec), [](const auto& val) {
-                return static_cast<int>(val);
-            });
-            query_filter.conditions.push_back(utils::sql::Condition::Any(key, std::move(int_vec)));
+            query_filter.conditions.push_back(utils::sql::Condition::Any(key, EnumsToLiterals(vec)));
         }
     };
 
