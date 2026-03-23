@@ -6,6 +6,7 @@ set(MODELS_SOURCES
     src/animal.cpp
     src/animal_enums.cpp
     src/breed.cpp
+    src/animal_filters.cpp
 )
 
 add_library(pawspective_models STATIC ${MODELS_SOURCES})

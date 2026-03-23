@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <userver/formats/json/value_builder.hpp>
+#include <userver/storages/postgres/io/array_types.hpp>
 #include <userver/storages/postgres/io/enum_types.hpp>
 #include <userver/storages/postgres/io/io_fwd.hpp>
 #include <userver/storages/postgres/io/pg_types.hpp>

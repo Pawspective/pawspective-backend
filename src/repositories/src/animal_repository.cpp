@@ -1,9 +1,26 @@
 #include "../include/animal_repository.hpp"
+#include "../../utils/include/utils/sql_builder.hpp"
 
 #include <fmt/format.h>
 #include <boost/algorithm/string/join.hpp>
+#include <userver/storages/postgres/io/array_types.hpp>
+#include <userver/storages/postgres/io/range_types.hpp>
 
 namespace pawspective::repositories {
+
+namespace {
+const utils::sql::QueryWhitelist kFilterWhitelist{
+    {{"breeds", "a.breed_id"},
+     {"animalTypes", "b.animal_type"},
+     {"sizes", "a.size"},
+     {"genders", "a.gender"},
+     {"careLevels", "a.care_level"},
+     {"colors", "a.color"},
+     {"goodWiths", "a.good_with"},
+     {"age", "a.age"}},
+    {{"id", "a.id"}}
+};
+}  // namespace
 
 AnimalRepository::AnimalRepository(userver::storages::postgres::ClusterPtr pg_cluster)
     : pg_cluster_(std::move(pg_cluster)) {}
@@ -105,6 +122,89 @@ std::optional<models::Animal> AnimalRepository::Update(const models::Animal& ani
         return std::nullopt;
     }
     return result.AsSingleRow<models::Animal>(userver::storages::postgres::kRowTag);
+}
+
+models::AnimalFilters AnimalRepository::GetAvailableFilters() const {
+    auto result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kSlave,
+        "SELECT "
+        "ARRAY(SELECT DISTINCT breed_id FROM animals WHERE breed_id IS NOT NULL), "
+        "ARRAY(SELECT DISTINCT b.animal_type FROM animals a JOIN breeds b ON a.breed_id = b.id), "
+        "ARRAY(SELECT DISTINCT size FROM animals), "
+        "ARRAY(SELECT DISTINCT gender FROM animals), "
+        "ARRAY(SELECT DISTINCT care_level FROM animals), "
+        "ARRAY(SELECT DISTINCT color FROM animals), "
+        "ARRAY(SELECT DISTINCT good_with FROM animals), "
+        "COALESCE(MIN(age), 0), "
+        "COALESCE(MAX(age), 0) "
+        "FROM animals"
+    );
+
+    auto row = result.AsSingleRow<std::tuple<
+        std::vector<std::int64_t>,
+        std::vector<models::AnimalType>,
+        std::vector<models::AnimalSize>,
+        std::vector<models::AnimalGender>,
+        std::vector<models::CareLevel>,
+        std::vector<models::AnimalColor>,
+        std::vector<models::GoodWith>,
+        int,
+        int>>();
+
+    return {
+        std::get<0>(row),
+        std::get<1>(row),
+        std::get<2>(row),
+        std::get<3>(row),
+        std::get<4>(row),
+        std::get<5>(row),
+        std::get<6>(row),
+        std::get<7>(row),
+        std::get<8>(row)
+    };
+}
+
+std::vector<models::Animal> AnimalRepository::FindByFilters(const models::AnimalFilters& filter) const {
+    utils::sql::QueryFilter query_filter;
+
+    auto add_any_enum = [&](const std::string& key, const auto& vec) {
+        if (!vec.empty()) {
+            std::vector<int> int_vec;
+            int_vec.reserve(vec.size());
+            std::transform(vec.begin(), vec.end(), std::back_inserter(int_vec), [](const auto& val) {
+                return static_cast<int>(val);
+            });
+            query_filter.conditions.push_back(utils::sql::Condition::Any(key, std::move(int_vec)));
+        }
+    };
+
+    if (!filter.breed_ids.empty()) {
+        query_filter.conditions.push_back(utils::sql::Condition::Any("breeds", filter.breed_ids));
+    }
+
+    add_any_enum("animalTypes", filter.animal_types);
+    add_any_enum("sizes", filter.sizes);
+    add_any_enum("genders", filter.genders);
+    add_any_enum("careLevels", filter.care_levels);
+    add_any_enum("colors", filter.colors);
+    add_any_enum("goodWiths", filter.good_withs);
+
+    query_filter.conditions.push_back(utils::sql::Condition::Ge("age", filter.min_age));
+    query_filter.conditions.push_back(utils::sql::Condition::Le("age", filter.max_age));
+
+    auto [query_suffix, params] = utils::sql::BuildQueryClause(query_filter, kFilterWhitelist);
+
+    auto result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kSlave,
+        "SELECT a.id, a.organization_id, a.name, a.breed_id, a.size, a.gender, "
+        "a.care_level, a.good_with, a.color, a.age, a.description, a.status "
+        "FROM animals a "
+        "LEFT JOIN breeds b ON a.breed_id = b.id " +
+            query_suffix,
+        params
+    );
+
+    return result.AsContainer<std::vector<models::Animal>>(userver::storages::postgres::kRowTag);
 }
 
 }  // namespace pawspective::repositories

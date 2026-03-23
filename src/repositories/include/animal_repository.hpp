@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "../../models/include/animal.hpp"
+#include "../../models/include/animal_filters.hpp"
 
 namespace pawspective::repositories {
 
@@ -16,6 +17,8 @@ public:
     [[nodiscard]] std::vector<models::Animal> GetByOrganizationId(std::int64_t org_id) const;
     models::Animal Create(const models::Animal& animal) const;
     std::optional<models::Animal> Update(const models::Animal& animal) const;
+    [[nodiscard]] models::AnimalFilters GetAvailableFilters() const;
+    [[nodiscard]] std::vector<models::Animal> FindByFilters(const models::AnimalFilters& filter) const;
 
     // void Delete(std::int64_t id) const; //TODO: add delete method when needed
 
