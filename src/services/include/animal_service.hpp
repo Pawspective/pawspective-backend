@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "animal_dto.hpp"
+#include "animal_filter_dto.hpp"
 #include "animal_register_dto.hpp"
 #include "animal_repository.hpp"
 #include "animal_update_dto.hpp"
@@ -25,6 +26,8 @@ public:
     dto::AnimalDTO Update(int64_t user_id, int64_t animal_id, const dto::AnimalUpdateDTO& dto) const;
     [[nodiscard]] dto::AnimalDTO Get(int64_t id) const;
     [[nodiscard]] std::vector<dto::AnimalDTO> GetByOrganization(int64_t org_id) const;
+    [[nodiscard]] dto::AnimalFilterDTO GetFilterOptions() const;
+    [[nodiscard]] std::vector<dto::AnimalDTO> FindByFilters(const dto::AnimalFilterDTO& dto) const;
 
 private:
     const repositories::AnimalRepository& repository_;

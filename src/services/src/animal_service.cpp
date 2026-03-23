@@ -67,4 +67,24 @@ std::vector<dto::AnimalDTO> AnimalService::GetByOrganization(int64_t org_id) con
     return dtos;
 }
 
+dto::AnimalFilterDTO AnimalService::GetFilterOptions() const {
+    auto filters = repository_.GetAvailableFilters();
+    return models::AnimalFilters::to_dto(filters);
+}
+
+std::vector<dto::AnimalDTO> AnimalService::FindByFilters(const dto::AnimalFilterDTO& dto) const {
+    auto filter_model = models::AnimalFilters::from_dto(dto);
+    auto animals = repository_.FindByFilters(filter_model);
+
+    std::vector<dto::AnimalDTO> results;
+    results.reserve(animals.size());
+
+    for (const auto& animal : animals) {
+        auto breed_dto = breed_service_.Get(animal.breed_id);
+        results.push_back(models::Animal::to_dto(animal, breed_dto));
+    }
+
+    return results;
+}
+
 }  // namespace pawspective::services
