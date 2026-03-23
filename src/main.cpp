@@ -9,6 +9,7 @@
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/utils/daemon_run.hpp>
 #include "animal_get_handler.hpp"
+#include "animal_list_handler.hpp"
 #include "animal_registration_handler.hpp"
 #include "animal_repository_component.hpp"
 #include "animal_service_component.hpp"
@@ -77,7 +78,8 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::handlers::AnimalRegistrationHandler>()
             .Append<pawspective::handlers::AnimalUpdateHandler>()
             .Append<pawspective::handlers::OrganizationAnimalHandler>()
-            .Append<pawspective::handlers::AnimalGetHandler>();
+            .Append<pawspective::handlers::AnimalGetHandler>()
+            .Append<pawspective::handlers::AnimalListHandler>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }
