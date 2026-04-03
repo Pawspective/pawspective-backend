@@ -27,7 +27,7 @@ userver::formats::json::Value BreedListHandler::HandleRequestJsonThrow(
         utils::ErrorResponse(utils::error_code::kMissingField, "Query parameter 'type' is required").ThrowClientError();
     }
 
-    models::AnimalType animal_type;
+    models::AnimalType animal_type = models::AnimalType::kUnspecified;
     try {
         animal_type = userver::formats::json::ValueBuilder(type_str).ExtractValue().As<models::AnimalType>();
     } catch (const userver::formats::json::Exception&) {
