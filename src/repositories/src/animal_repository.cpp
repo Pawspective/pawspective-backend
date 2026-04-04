@@ -47,6 +47,16 @@ std::vector<std::string> EnumsToLiterals(const std::vector<T>& values) {
     return result;
 }
 
+template <typename T>
+std::vector<T> ToEnumVector(const std::vector<std::string>& strings) {
+    std::vector<T> enums;
+    enums.reserve(strings.size());
+    std::transform(strings.begin(), strings.end(), std::back_inserter(enums), [](const std::string& s) {
+        return models::Parse(s, userver::formats::parse::To<T>{});
+    });
+    return enums;
+}
+
 }  // namespace
 
 AnimalRepository::AnimalRepository(userver::storages::postgres::ClusterPtr pg_cluster)
@@ -149,16 +159,6 @@ std::optional<models::Animal> AnimalRepository::Update(const models::Animal& ani
         return std::nullopt;
     }
     return result.AsSingleRow<models::Animal>(userver::storages::postgres::kRowTag);
-}
-
-template <typename T>
-std::vector<T> ToEnumVector(const std::vector<std::string>& strings) {
-    std::vector<T> enums;
-    enums.reserve(strings.size());
-    std::transform(strings.begin(), strings.end(), std::back_inserter(enums), [](const std::string& s) {
-        return models::Parse(s, userver::formats::parse::To<T>{});
-    });
-    return enums;
 }
 
 models::AnimalFilters AnimalRepository::GetAvailableFilters() const {
