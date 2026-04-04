@@ -4,6 +4,7 @@
 #include <fmt/format.h>
 #include <algorithm>
 #include <boost/algorithm/string/join.hpp>
+#include <iterator>
 #include <userver/storages/postgres/io/array_types.hpp>
 #include <userver/storages/postgres/io/enum_types.hpp>
 #include <userver/storages/postgres/io/range_types.hpp>
@@ -44,6 +45,16 @@ std::vector<std::string> EnumsToLiterals(const std::vector<T>& values) {
         return EnumToLiteral(v);
     });
     return result;
+}
+
+template <typename T>
+std::vector<T> ToEnumVector(const std::vector<std::string>& strings) {
+    std::vector<T> enums;
+    enums.reserve(strings.size());
+    std::transform(strings.begin(), strings.end(), std::back_inserter(enums), [](const std::string& s) {
+        return models::Parse(s, userver::formats::parse::To<T>{});
+    });
+    return enums;
 }
 
 }  // namespace
@@ -154,37 +165,37 @@ models::AnimalFilters AnimalRepository::GetAvailableFilters() const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
         "SELECT "
-        "ARRAY(SELECT DISTINCT breed_id FROM animals WHERE breed_id IS NOT NULL), "
-        "ARRAY(SELECT DISTINCT b.animal_type FROM animals a JOIN breeds b ON a.breed_id = b.id), "
-        "ARRAY(SELECT DISTINCT size FROM animals), "
-        "ARRAY(SELECT DISTINCT gender FROM animals), "
-        "ARRAY(SELECT DISTINCT care_level FROM animals), "
-        "ARRAY(SELECT DISTINCT color FROM animals), "
-        "ARRAY(SELECT DISTINCT good_with FROM animals), "
+        "ARRAY(SELECT DISTINCT id FROM breeds WHERE id IS NOT NULL), "
+        "ARRAY(SELECT unnest(enum_range(NULL::animal_type))::text), "
+        "ARRAY(SELECT unnest(enum_range(NULL::animal_size))::text), "
+        "ARRAY(SELECT unnest(enum_range(NULL::animal_gender))::text), "
+        "ARRAY(SELECT unnest(enum_range(NULL::care_level))::text), "
+        "ARRAY(SELECT unnest(enum_range(NULL::animal_color))::text), "
+        "ARRAY(SELECT unnest(enum_range(NULL::good_with))::text), "
         "COALESCE(MIN(age), 0), "
-        "COALESCE(MAX(age), 0) "
+        "COALESCE(MAX(age), 100) "
         "FROM animals"
     );
 
     auto row = result.AsSingleRow<std::tuple<
         std::vector<std::int64_t>,
-        std::vector<models::AnimalType>,
-        std::vector<models::AnimalSize>,
-        std::vector<models::AnimalGender>,
-        std::vector<models::CareLevel>,
-        std::vector<models::AnimalColor>,
-        std::vector<models::GoodWith>,
+        std::vector<std::string>,
+        std::vector<std::string>,
+        std::vector<std::string>,
+        std::vector<std::string>,
+        std::vector<std::string>,
+        std::vector<std::string>,
         int,
-        int>>();
+        int>>(userver::storages::postgres::kRowTag);
 
     return {
         std::get<0>(row),
-        std::get<1>(row),
-        std::get<2>(row),
-        std::get<3>(row),
-        std::get<4>(row),
-        std::get<5>(row),
-        std::get<6>(row),
+        ToEnumVector<models::AnimalType>(std::get<1>(row)),
+        ToEnumVector<models::AnimalSize>(std::get<2>(row)),
+        ToEnumVector<models::AnimalGender>(std::get<3>(row)),
+        ToEnumVector<models::CareLevel>(std::get<4>(row)),
+        ToEnumVector<models::AnimalColor>(std::get<5>(row)),
+        ToEnumVector<models::GoodWith>(std::get<6>(row)),
         std::get<7>(row),
         std::get<8>(row)
     };

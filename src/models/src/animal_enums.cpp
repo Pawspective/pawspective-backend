@@ -262,4 +262,128 @@ AnimalType Parse(const userver::formats::json::Value& value, userver::formats::p
     throw userver::formats::json::Exception("Invalid AnimalType: " + str);
 }
 
+AnimalType Parse(const std::string& str, userver::formats::parse::To<AnimalType>) {
+    if (str == "dog") {
+        return AnimalType::kDog;
+    }
+    if (str == "cat") {
+        return AnimalType::kCat;
+    }
+    if (str == "other") {
+        return AnimalType::kOther;
+    }
+    throw std::invalid_argument("Invalid AnimalType: " + str);
+}
+
+AnimalSize Parse(const std::string& str, userver::formats::parse::To<AnimalSize>) {
+    if (str == "small") {
+        return AnimalSize::kSmall;
+    }
+    if (str == "medium") {
+        return AnimalSize::kMedium;
+    }
+    if (str == "large") {
+        return AnimalSize::kLarge;
+    }
+    throw std::invalid_argument("Invalid AnimalSize: " + str);
+}
+
+AnimalGender Parse(const std::string& str, userver::formats::parse::To<AnimalGender>) {
+    if (str == "male") {
+        return AnimalGender::kMale;
+    }
+    if (str == "female") {
+        return AnimalGender::kFemale;
+    }
+    if (str == "unknown") {
+        return AnimalGender::kUnknown;
+    }
+    throw std::invalid_argument("Invalid AnimalGender: " + str);
+}
+
+CareLevel Parse(const std::string& str, userver::formats::parse::To<CareLevel>) {
+    if (str == "easy") {
+        return CareLevel::kEasy;
+    }
+    if (str == "moderate") {
+        return CareLevel::kModerate;
+    }
+    if (str == "difficult") {
+        return CareLevel::kDifficult;
+    }
+    if (str == "special_needs") {
+        return CareLevel::kSpecialNeeds;
+    }
+    throw std::invalid_argument("Invalid CareLevel: " + str);
+}
+
+GoodWith Parse(const std::string& str, userver::formats::parse::To<GoodWith>) {
+    if (str == "dogs") {
+        return GoodWith::kDogs;
+    }
+    if (str == "cats") {
+        return GoodWith::kCats;
+    }
+    if (str == "children") {
+        return GoodWith::kChildren;
+    }
+    if (str == "elderly") {
+        return GoodWith::kElderly;
+    }
+    throw std::invalid_argument("Invalid GoodWith: " + str);
+}
+
+AnimalColor Parse(const std::string& str, userver::formats::parse::To<AnimalColor>) {
+    if (str == "black") {
+        return AnimalColor::kBlack;
+    }
+    if (str == "white") {
+        return AnimalColor::kWhite;
+    }
+    if (str == "brown") {
+        return AnimalColor::kBrown;
+    }
+    if (str == "grey") {
+        return AnimalColor::kGrey;
+    }
+    if (str == "orange") {
+        return AnimalColor::kOrange;
+    }
+    if (str == "cream") {
+        return AnimalColor::kCream;
+    }
+    if (str == "tan") {
+        return AnimalColor::kTan;
+    }
+    if (str == "golden") {
+        return AnimalColor::kGolden;
+    }
+    if (str == "spotted") {
+        return AnimalColor::kSpotted;
+    }
+    if (str == "striped") {
+        return AnimalColor::kStriped;
+    }
+    if (str == "brindle") {
+        return AnimalColor::kBrindle;
+    }
+    if (str == "mixed") {
+        return AnimalColor::kMixed;
+    }
+    throw std::invalid_argument("Invalid AnimalColor: " + str);
+}
+
+AnimalStatus Parse(const std::string& str, userver::formats::parse::To<AnimalStatus>) {
+    if (str == "available") {
+        return AnimalStatus::kAvailable;
+    }
+    if (str == "adopted") {
+        return AnimalStatus::kAdopted;
+    }
+    if (str == "unavailable") {
+        return AnimalStatus::kUnavailable;
+    }
+    throw std::invalid_argument("Invalid AnimalStatus: " + str);
+}
+
 }  // namespace pawspective::models
