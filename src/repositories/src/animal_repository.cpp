@@ -154,39 +154,76 @@ models::AnimalFilters AnimalRepository::GetAvailableFilters() const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
         "SELECT "
-        "ARRAY(SELECT DISTINCT breed_id FROM animals WHERE breed_id IS NOT NULL), "
-        "ARRAY(SELECT DISTINCT b.animal_type FROM animals a JOIN breeds b ON a.breed_id = b.id), "
-        "ARRAY(SELECT DISTINCT size FROM animals), "
-        "ARRAY(SELECT DISTINCT gender FROM animals), "
-        "ARRAY(SELECT DISTINCT care_level FROM animals), "
-        "ARRAY(SELECT DISTINCT color FROM animals), "
-        "ARRAY(SELECT DISTINCT good_with FROM animals), "
+        "ARRAY(SELECT DISTINCT id FROM breeds WHERE id IS NOT NULL), "
+        "ARRAY(SELECT unnest(enum_range(NULL::animal_type))::text), "
+        "ARRAY(SELECT unnest(enum_range(NULL::animal_size))::text), "
+        "ARRAY(SELECT unnest(enum_range(NULL::animal_gender))::text), "
+        "ARRAY(SELECT unnest(enum_range(NULL::care_level))::text), "
+        "ARRAY(SELECT unnest(enum_range(NULL::animal_color))::text), "
+        "ARRAY(SELECT unnest(enum_range(NULL::good_with))::text), "
         "COALESCE(MIN(age), 0), "
-        "COALESCE(MAX(age), 0) "
+        "COALESCE(MAX(age), 100) "
         "FROM animals"
     );
 
     auto row = result.AsSingleRow<std::tuple<
         std::vector<std::int64_t>,
-        std::vector<models::AnimalType>,
-        std::vector<models::AnimalSize>,
-        std::vector<models::AnimalGender>,
-        std::vector<models::CareLevel>,
-        std::vector<models::AnimalColor>,
-        std::vector<models::GoodWith>,
+        std::vector<std::string>,
+        std::vector<std::string>,
+        std::vector<std::string>,
+        std::vector<std::string>,
+        std::vector<std::string>,
+        std::vector<std::string>,
         int,
-        int>>();
+        int>>(userver::storages::postgres::kRowTag);
+
+    
+    std::vector<models::AnimalType> animal_types;
+    for (const auto& val : std::get<1>(row)) {
+        animal_types.push_back(models::Parse(userver::formats::json::ValueBuilder(val).ExtractValue(), 
+                                            userver::formats::parse::To<models::AnimalType>()));
+    }
+
+    std::vector<models::AnimalSize> sizes;
+    for (const auto& val : std::get<2>(row)) {
+        sizes.push_back(models::Parse(userver::formats::json::ValueBuilder(val).ExtractValue(),
+                                      userver::formats::parse::To<models::AnimalSize>()));
+    }
+
+    std::vector<models::AnimalGender> genders;
+    for (const auto& val : std::get<3>(row)) {
+        genders.push_back(models::Parse(userver::formats::json::ValueBuilder(val).ExtractValue(),
+                                        userver::formats::parse::To<models::AnimalGender>()));
+    }
+
+    std::vector<models::CareLevel> care_levels;
+    for (const auto& val : std::get<4>(row)) {
+        care_levels.push_back(models::Parse(userver::formats::json::ValueBuilder(val).ExtractValue(),
+                                           userver::formats::parse::To<models::CareLevel>()));
+    }
+
+    std::vector<models::AnimalColor> colors;
+    for (const auto& val : std::get<5>(row)) {
+        colors.push_back(models::Parse(userver::formats::json::ValueBuilder(val).ExtractValue(),
+                                       userver::formats::parse::To<models::AnimalColor>()));
+    }
+
+    std::vector<models::GoodWith> good_withs;
+    for (const auto& val : std::get<6>(row)) {
+        good_withs.push_back(models::Parse(userver::formats::json::ValueBuilder(val).ExtractValue(),
+                                          userver::formats::parse::To<models::GoodWith>()));
+    }
 
     return {
-        std::get<0>(row),
-        std::get<1>(row),
-        std::get<2>(row),
-        std::get<3>(row),
-        std::get<4>(row),
-        std::get<5>(row),
-        std::get<6>(row),
-        std::get<7>(row),
-        std::get<8>(row)
+        std::get<0>(row),  
+        animal_types,
+        sizes,
+        genders,
+        care_levels,
+        colors,
+        good_withs,
+        std::get<7>(row),  
+        std::get<8>(row)   
     };
 }
 
