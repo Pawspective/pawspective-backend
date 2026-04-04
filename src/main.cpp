@@ -20,6 +20,7 @@
 #include "auth_logout_handler.hpp"
 #include "auth_me_handler.hpp"
 #include "auth_refresh_handler.hpp"
+#include "breed_list_handler.hpp"
 #include "breed_repository_component.hpp"
 #include "breed_service_component.hpp"
 #include "city_list_handler.hpp"
@@ -81,7 +82,8 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::handlers::OrganizationAnimalHandler>()
             .Append<pawspective::handlers::AnimalGetHandler>()
             .Append<pawspective::handlers::AnimalListHandler>()
-            .Append<pawspective::handlers::AnimalFiltersHandler>();
+            .Append<pawspective::handlers::AnimalFiltersHandler>()
+            .Append<pawspective::handlers::BreedListHandler>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }

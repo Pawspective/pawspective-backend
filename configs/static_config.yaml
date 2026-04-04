@@ -136,6 +136,11 @@ components_manager:
             method: GET
             task_processor: main-task-processor
 
+        handler-breed-list:
+            path: /breeds
+            method: GET
+            task_processor: main-task-processor
+
         handler-org-registration:
             path: /orgs
             method: POST
