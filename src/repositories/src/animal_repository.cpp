@@ -4,6 +4,7 @@
 #include <fmt/format.h>
 #include <algorithm>
 #include <boost/algorithm/string/join.hpp>
+#include <iterator>
 #include <userver/storages/postgres/io/array_types.hpp>
 #include <userver/storages/postgres/io/enum_types.hpp>
 #include <userver/storages/postgres/io/range_types.hpp>
@@ -150,6 +151,16 @@ std::optional<models::Animal> AnimalRepository::Update(const models::Animal& ani
     return result.AsSingleRow<models::Animal>(userver::storages::postgres::kRowTag);
 }
 
+template <typename T>
+std::vector<T> ToEnumVector(const std::vector<std::string>& strings) {
+    std::vector<T> enums;
+    enums.reserve(strings.size());
+    std::transform(strings.begin(), strings.end(), std::back_inserter(enums), [](const std::string& s) {
+        return models::Parse(s, userver::formats::parse::To<T>{});
+    });
+    return enums;
+}
+
 models::AnimalFilters AnimalRepository::GetAvailableFilters() const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
@@ -177,53 +188,16 @@ models::AnimalFilters AnimalRepository::GetAvailableFilters() const {
         int,
         int>>(userver::storages::postgres::kRowTag);
 
-    
-    std::vector<models::AnimalType> animal_types;
-    for (const auto& val : std::get<1>(row)) {
-        animal_types.push_back(models::Parse(userver::formats::json::ValueBuilder(val).ExtractValue(), 
-                                            userver::formats::parse::To<models::AnimalType>()));
-    }
-
-    std::vector<models::AnimalSize> sizes;
-    for (const auto& val : std::get<2>(row)) {
-        sizes.push_back(models::Parse(userver::formats::json::ValueBuilder(val).ExtractValue(),
-                                      userver::formats::parse::To<models::AnimalSize>()));
-    }
-
-    std::vector<models::AnimalGender> genders;
-    for (const auto& val : std::get<3>(row)) {
-        genders.push_back(models::Parse(userver::formats::json::ValueBuilder(val).ExtractValue(),
-                                        userver::formats::parse::To<models::AnimalGender>()));
-    }
-
-    std::vector<models::CareLevel> care_levels;
-    for (const auto& val : std::get<4>(row)) {
-        care_levels.push_back(models::Parse(userver::formats::json::ValueBuilder(val).ExtractValue(),
-                                           userver::formats::parse::To<models::CareLevel>()));
-    }
-
-    std::vector<models::AnimalColor> colors;
-    for (const auto& val : std::get<5>(row)) {
-        colors.push_back(models::Parse(userver::formats::json::ValueBuilder(val).ExtractValue(),
-                                       userver::formats::parse::To<models::AnimalColor>()));
-    }
-
-    std::vector<models::GoodWith> good_withs;
-    for (const auto& val : std::get<6>(row)) {
-        good_withs.push_back(models::Parse(userver::formats::json::ValueBuilder(val).ExtractValue(),
-                                          userver::formats::parse::To<models::GoodWith>()));
-    }
-
     return {
-        std::get<0>(row),  
-        animal_types,
-        sizes,
-        genders,
-        care_levels,
-        colors,
-        good_withs,
-        std::get<7>(row),  
-        std::get<8>(row)   
+        std::get<0>(row),
+        ToEnumVector<models::AnimalType>(std::get<1>(row)),
+        ToEnumVector<models::AnimalSize>(std::get<2>(row)),
+        ToEnumVector<models::AnimalGender>(std::get<3>(row)),
+        ToEnumVector<models::CareLevel>(std::get<4>(row)),
+        ToEnumVector<models::AnimalColor>(std::get<5>(row)),
+        ToEnumVector<models::GoodWith>(std::get<6>(row)),
+        std::get<7>(row),
+        std::get<8>(row)
     };
 }
 

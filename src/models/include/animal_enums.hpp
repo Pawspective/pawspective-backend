@@ -72,6 +72,14 @@ Serialize(AnimalType value, userver::formats::serialize::To<userver::formats::js
 
 AnimalType Parse(const userver::formats::json::Value& value, userver::formats::parse::To<AnimalType>);
 
+AnimalType Parse(const std::string& str, userver::formats::parse::To<AnimalType>);
+AnimalSize Parse(const std::string& str, userver::formats::parse::To<AnimalSize>);
+AnimalGender Parse(const std::string& str, userver::formats::parse::To<AnimalGender>);
+CareLevel Parse(const std::string& str, userver::formats::parse::To<CareLevel>);
+GoodWith Parse(const std::string& str, userver::formats::parse::To<GoodWith>);
+AnimalColor Parse(const std::string& str, userver::formats::parse::To<AnimalColor>);
+AnimalStatus Parse(const std::string& str, userver::formats::parse::To<AnimalStatus>);
+
 }  // namespace pawspective::models
 
 namespace userver::storages::postgres::io {
