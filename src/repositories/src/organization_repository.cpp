@@ -69,6 +69,9 @@ std::optional<models::Organization> OrganizationRepository::Update(const models:
         updates.push_back(fmt::format("city_id = ${}", parameters.Size() + 1));
         parameters.PushBack(org.city_id);
     }
+    if (updates.empty()) {
+        return GetById(org.id);
+    }
     auto query = fmt::format(
         "UPDATE organizations SET {} WHERE id = $1 "
         "RETURNING id, name, description, city_id",

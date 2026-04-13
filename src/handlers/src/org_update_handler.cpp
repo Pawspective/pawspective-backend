@@ -65,7 +65,7 @@ userver::formats::json::Value OrgUpdateHandler::HandleRequestJsonThrow(
         LOG_WARNING() << "Organization not found: " << org_id;
         utils::ErrorResponse(utils::error_code::kValidationError, "Organization not found").ThrowNotFound();
     } catch (const services::CityNotFoundException& e) {
-        utils::ErrorResponse(utils::error_code::kCityNotFound, "City not found").ThrowClientError();
+        utils::ErrorResponse(utils::error_code::kCityNotFound, "City not found").ThrowNotFound();
     } catch (const services::ForbiddenException& e) {
         LOG_WARNING() << "User " << user_id << " tried to update organization " << org_id << " without permission";
         utils::ErrorResponse(utils::error_code::kForbidden, "You are not allowed to update this organization")
