@@ -11,6 +11,7 @@ set(DTO_SOURCES
     src/animal_update_dto.cpp
     src/breed_dto.cpp
     src/animal_filter_dto.cpp
+    src/animal_list_dto.cpp
 )
 
 add_library(pawspective_dto STATIC ${DTO_SOURCES})

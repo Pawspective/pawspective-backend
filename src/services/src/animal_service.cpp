@@ -72,19 +72,21 @@ dto::AnimalFilterDTO AnimalService::GetFilterOptions() const {
     return models::AnimalFilters::to_dto(filters);
 }
 
-std::vector<dto::AnimalDTO> AnimalService::FindByFilters(const dto::AnimalFilterDTO& dto) const {
-    auto filter_model = models::AnimalFilters::from_dto(dto);
-    auto animals = repository_.FindByFilters(filter_model);
+dto::AnimalListDTO AnimalService::FindByFilters(const dto::AnimalFilterDTO& filter_dto, int page) const {
+    static constexpr int kPageSize = 20;
 
-    std::vector<dto::AnimalDTO> results;
-    results.reserve(animals.size());
+    auto filter_model = models::AnimalFilters::from_dto(filter_dto);
+    auto [animals, total_count] = repository_.FindByFiltersPaginated(filter_model, page, kPageSize);
 
+    std::vector<dto::AnimalDTO> items;
+    items.reserve(animals.size());
     for (const auto& animal : animals) {
         auto breed_dto = breed_service_.Get(animal.breed_id);
-        results.push_back(models::Animal::to_dto(animal, breed_dto));
+        items.push_back(models::Animal::to_dto(animal, breed_dto));
     }
 
-    return results;
+    const int total_pages = total_count == 0 ? 1 : (total_count + kPageSize - 1) / kPageSize;
+    return {std::move(items), page, kPageSize, total_count, total_pages};
 }
 
 }  // namespace pawspective::services

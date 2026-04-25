@@ -239,4 +239,57 @@ std::vector<models::Animal> AnimalRepository::FindByFilters(const models::Animal
     return result.AsContainer<std::vector<models::Animal>>(userver::storages::postgres::kRowTag);
 }
 
+std::pair<std::vector<models::Animal>, int> AnimalRepository::FindByFiltersPaginated(
+    const models::AnimalFilters& filter,
+    int page,
+    int limit
+) const {
+    auto build_conditions = [&]() {
+        utils::sql::QueryFilter qf;
+        auto add_any_enum = [&](const std::string& key, const auto& vec) {
+            if (!vec.empty()) {
+                qf.conditions.push_back(utils::sql::Condition::Any(key, EnumsToLiterals(vec)));
+            }
+        };
+        if (!filter.breed_ids.empty()) {
+            qf.conditions.push_back(utils::sql::Condition::Any("breeds", filter.breed_ids));
+        }
+        add_any_enum("animalTypes", filter.animal_types);
+        add_any_enum("sizes", filter.sizes);
+        add_any_enum("genders", filter.genders);
+        add_any_enum("careLevels", filter.care_levels);
+        add_any_enum("colors", filter.colors);
+        add_any_enum("goodWiths", filter.good_withs);
+        qf.conditions.push_back(utils::sql::Condition::Ge("age", filter.min_age));
+        qf.conditions.push_back(utils::sql::Condition::Le("age", filter.max_age));
+        return qf;
+    };
+
+    auto count_filter = build_conditions();
+    auto [count_clause, count_params] = utils::sql::BuildQueryClause(count_filter, kFilterWhitelist);
+    auto count_result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kSlave,
+        "SELECT COUNT(*) FROM animals a LEFT JOIN breeds b ON a.breed_id = b.id" + count_clause,
+        count_params
+    );
+    const int total_count = count_result.AsSingleRow<int>();
+
+    auto data_filter = build_conditions();
+    data_filter.page_spec.limit = limit;
+    data_filter.page_spec.offset = (page - 1) * limit;
+    data_filter.sort_specs.push_back({"id", utils::sql::SortOrder::kAsc});
+    auto [data_clause, data_params] = utils::sql::BuildQueryClause(data_filter, kFilterWhitelist);
+    auto data_result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kSlave,
+        "SELECT a.id, a.organization_id, a.name, a.breed_id, a.size, a.gender, "
+        "a.care_level, a.good_with, a.color, a.age, a.description, a.status "
+        "FROM animals a LEFT JOIN breeds b ON a.breed_id = b.id" +
+            data_clause,
+        data_params
+    );
+    auto animals = data_result.AsContainer<std::vector<models::Animal>>(userver::storages::postgres::kRowTag);
+
+    return {std::move(animals), total_count};
+}
+
 }  // namespace pawspective::repositories

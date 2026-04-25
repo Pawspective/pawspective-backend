@@ -1,4 +1,5 @@
 import uuid
+import math
 import pytest
 
 
@@ -111,23 +112,45 @@ async def create_animal(
     return response.json()
 
 
+# --- Basic response structure ---
+
 async def test_animal_list_returns_200(service_client):
     """GET /animals returns 200 without auth"""
     response = await service_client.get('/animals')
     assert response.status == 200
 
 
-async def test_animal_list_returns_array(service_client):
-    """GET /animals returns a JSON array"""
+async def test_animal_list_returns_paginated_object(service_client):
+    """GET /animals returns a paginated object, not a bare array"""
     response = await service_client.get('/animals')
     assert response.status == 200
-    assert isinstance(response.json(), list)
+    data = response.json()
+    assert isinstance(data, dict)
+    assert 'items' in data
+    assert 'page' in data
+    assert 'limit' in data
+    assert 'total_count' in data
+    assert 'total_pages' in data
 
 
 async def test_animal_list_no_auth_required(service_client):
     """GET /animals is publicly accessible"""
     response = await service_client.get('/animals')
     assert response.status == 200
+
+
+async def test_animal_list_default_page_is_1(service_client):
+    """Default page is 1 when not specified"""
+    response = await service_client.get('/animals')
+    assert response.status == 200
+    assert response.json()['page'] == 1
+
+
+async def test_animal_list_default_limit(service_client):
+    """Default limit is 20"""
+    response = await service_client.get('/animals')
+    assert response.status == 200
+    assert response.json()['limit'] == 20
 
 
 async def test_animal_list_contains_created_animal(
@@ -143,8 +166,8 @@ async def test_animal_list_contains_created_animal(
 
     response = await service_client.get('/animals')
     assert response.status == 200
-    data = response.json()
-    assert any(a['id'] == animal['id'] for a in data)
+    items = response.json()['items']
+    assert any(a['id'] == animal['id'] for a in items)
 
 
 async def test_animal_list_response_shape(
@@ -161,8 +184,8 @@ async def test_animal_list_response_shape(
 
     response = await service_client.get('/animals')
     assert response.status == 200
-    data = response.json()
-    item = next(a for a in data if a['id'] == animal['id'])
+    items = response.json()['items']
+    item = next(a for a in items if a['id'] == animal['id'])
     assert 'id' in item
     assert 'name' in item
     assert 'organization_id' in item
@@ -175,6 +198,8 @@ async def test_animal_list_response_shape(
     assert 'age' in item
     assert 'status' in item
 
+
+# --- Filters ---
 
 async def test_animal_list_filter_by_size(
     service_client, authenticated_user, registered_org, dog_breed
@@ -197,8 +222,7 @@ async def test_animal_list_filter_by_size(
 
     response = await service_client.get('/animals?sizes=small')
     assert response.status == 200
-    data = response.json()
-    ids = [a['id'] for a in data]
+    ids = [a['id'] for a in response.json()['items']]
     assert small['id'] in ids
     assert large['id'] not in ids
 
@@ -224,8 +248,7 @@ async def test_animal_list_filter_by_gender(
 
     response = await service_client.get('/animals?genders=female')
     assert response.status == 200
-    data = response.json()
-    ids = [a['id'] for a in data]
+    ids = [a['id'] for a in response.json()['items']]
     assert female['id'] in ids
     assert male['id'] not in ids
 
@@ -251,8 +274,7 @@ async def test_animal_list_filter_by_color(
 
     response = await service_client.get('/animals?colors=white')
     assert response.status == 200
-    data = response.json()
-    ids = [a['id'] for a in data]
+    ids = [a['id'] for a in response.json()['items']]
     assert white['id'] in ids
     assert grey['id'] not in ids
 
@@ -278,8 +300,7 @@ async def test_animal_list_filter_by_age_range(
 
     response = await service_client.get('/animals?age_gte=1&age_lte=3')
     assert response.status == 200
-    data = response.json()
-    ids = [a['id'] for a in data]
+    ids = [a['id'] for a in response.json()['items']]
     assert young['id'] in ids
     assert old['id'] not in ids
 
@@ -303,8 +324,7 @@ async def test_animal_list_filter_by_breed(
 
     response = await service_client.get(f'/animals?breeds={dog_breed["id"]}')
     assert response.status == 200
-    data = response.json()
-    ids = [a['id'] for a in data]
+    ids = [a['id'] for a in response.json()['items']]
     assert dog['id'] in ids
     assert cat['id'] not in ids
 
@@ -312,7 +332,7 @@ async def test_animal_list_filter_by_breed(
 async def test_animal_list_filter_no_match_returns_empty(
     service_client, authenticated_user, registered_org, dog_breed
 ):
-    """Filters that match nothing return an empty list"""
+    """Filters that match nothing return empty items and zero total_count"""
     await create_animal(
         service_client,
         authenticated_user['token'],
@@ -324,8 +344,8 @@ async def test_animal_list_filter_no_match_returns_empty(
     response = await service_client.get('/animals?age_gte=100&age_lte=200')
     assert response.status == 200
     data = response.json()
-    assert isinstance(data, list)
-    assert len(data) == 0
+    assert data['items'] == []
+    assert data['total_count'] == 0
 
 
 async def test_animal_list_filter_size_and_gender(
@@ -356,8 +376,7 @@ async def test_animal_list_filter_size_and_gender(
 
     response = await service_client.get('/animals?sizes=small&genders=female')
     assert response.status == 200
-    data = response.json()
-    ids = [a['id'] for a in data]
+    ids = [a['id'] for a in response.json()['items']]
     assert match['id'] in ids
     assert wrong_gender['id'] not in ids
     assert wrong_size['id'] not in ids
@@ -393,8 +412,7 @@ async def test_animal_list_filter_color_and_age(
         '/animals?colors=golden&age_gte=1&age_lte=3'
     )
     assert response.status == 200
-    data = response.json()
-    ids = [a['id'] for a in data]
+    ids = [a['id'] for a in response.json()['items']]
     assert match['id'] in ids
     assert wrong_color['id'] not in ids
     assert wrong_age['id'] not in ids
@@ -428,8 +446,7 @@ async def test_animal_list_filter_multiple_sizes(
 
     response = await service_client.get('/animals?sizes=small&sizes=large')
     assert response.status == 200
-    data = response.json()
-    ids = [a['id'] for a in data]
+    ids = [a['id'] for a in response.json()['items']]
     assert small['id'] in ids
     assert large['id'] in ids
     assert medium['id'] not in ids
@@ -465,8 +482,157 @@ async def test_animal_list_filter_breed_and_size(
         f'/animals?breeds={dog_breed["id"]}&sizes=large'
     )
     assert response.status == 200
-    data = response.json()
-    ids = [a['id'] for a in data]
+    ids = [a['id'] for a in response.json()['items']]
     assert match['id'] in ids
     assert wrong_breed['id'] not in ids
     assert wrong_size['id'] not in ids
+
+
+# --- Pagination ---
+
+async def test_animal_list_page_param_accepted(service_client):
+    """?page=1 is accepted and returns page 1"""
+    response = await service_client.get('/animals?page=1')
+    assert response.status == 200
+    assert response.json()['page'] == 1
+
+
+async def test_animal_list_total_count_reflects_created(
+    service_client, authenticated_user, registered_org, dog_breed
+):
+    """total_count increases after creating animals"""
+    before = (await service_client.get('/animals')).json()['total_count']
+
+    await create_animal(
+        service_client,
+        authenticated_user['token'],
+        registered_org['id'],
+        dog_breed['id'],
+    )
+    await create_animal(
+        service_client,
+        authenticated_user['token'],
+        registered_org['id'],
+        dog_breed['id'],
+    )
+
+    after = (await service_client.get('/animals')).json()['total_count']
+    assert after == before + 2
+
+
+async def test_animal_list_total_pages_calculated_correctly(
+    service_client, authenticated_user, registered_org, dog_breed
+):
+    """total_pages = ceil(total_count / limit)"""
+    response = await service_client.get('/animals')
+    data = response.json()
+    expected_pages = max(1, math.ceil(data['total_count'] / data['limit']))
+    assert data['total_pages'] == expected_pages
+
+
+async def test_animal_list_page_2_different_from_page_1(
+    service_client, authenticated_user, registered_org, dog_breed
+):
+    """When there are more than 20 animals, page 2 differs from page 1"""
+    for _ in range(22):
+        await create_animal(
+            service_client,
+            authenticated_user['token'],
+            registered_org['id'],
+            dog_breed['id'],
+        )
+
+    page1 = await service_client.get('/animals?page=1')
+    page2 = await service_client.get('/animals?page=2')
+
+    assert page1.status == 200
+    assert page2.status == 200
+
+    ids1 = {a['id'] for a in page1.json()['items']}
+    ids2 = {a['id'] for a in page2.json()['items']}
+
+    assert len(ids1) == 20
+    assert len(ids2) > 0
+    assert ids1.isdisjoint(ids2)
+
+
+async def test_animal_list_page_beyond_last_returns_empty(
+    service_client,
+):
+    """Requesting a page beyond total_pages returns empty items"""
+    response = await service_client.get('/animals?page=999999')
+    assert response.status == 200
+    data = response.json()
+    assert data['items'] == []
+    assert data['page'] == 999999
+
+
+async def test_animal_list_items_count_on_last_page(
+    service_client, authenticated_user, registered_org, dog_breed
+):
+    """Last page may have fewer than limit items"""
+    before = (await service_client.get('/animals')).json()['total_count']
+
+    needed = 21 - (before % 20) if before % 20 != 0 else 1
+    for _ in range(needed):
+        await create_animal(
+            service_client,
+            authenticated_user['token'],
+            registered_org['id'],
+            dog_breed['id'],
+        )
+
+    data = (await service_client.get('/animals')).json()
+    total_pages = data['total_pages']
+
+    last_page = (
+        await service_client.get(f'/animals?page={total_pages}')
+    ).json()
+    remainder = data['total_count'] % data['limit']
+    expected_last = remainder if remainder != 0 else data['limit']
+    assert len(last_page['items']) == expected_last
+
+
+async def test_animal_list_new_animal_reflected_in_total_count_on_next_page(
+    service_client, authenticated_user, registered_org, dog_breed
+):
+    """Adding an animal between page requests is reflected in total_count.
+
+    With offset-based pagination there is no consistency guarantee across
+    pages — the new item may or may not appear in the current window.
+    What we DO guarantee: each response contains a fresh total_count that
+    counts all animals at the time of that specific request.
+    """
+    # Fill to the next multiple of 20 so page 1 is exactly full
+    before = (await service_client.get('/animals')).json()['total_count']
+    needed = (20 - before % 20) % 20
+    if before + needed < 20:
+        needed += 20
+    for _ in range(needed):
+        await create_animal(
+            service_client,
+            authenticated_user['token'],
+            registered_org['id'],
+            dog_breed['id'],
+        )
+
+    page1 = (await service_client.get('/animals?page=1')).json()
+    assert len(page1['items']) == 20
+
+    # Add a new animal between the two page requests
+    new_animal = await create_animal(
+        service_client,
+        authenticated_user['token'],
+        registered_org['id'],
+        dog_breed['id'],
+    )
+
+    page2 = (await service_client.get('/animals?page=2')).json()
+
+    # total_count must reflect the newly added animal
+    assert page2['total_count'] == page1['total_count'] + 1
+
+    # The new animal must appear somewhere across both pages combined
+    all_ids = {a['id'] for a in page1['items']} | {a['id']
+                                                   for a in page2['items']}
+    assert new_animal['id'] in all_ids

@@ -78,8 +78,9 @@ userver::formats::json::Value AnimalListHandler::HandleRequestJsonThrow(
     userver::server::request::RequestContext& /*context*/
 ) const {
     const auto filters = ParseFiltersFromRequest(request);
-    const auto animals = animal_service_.get_service().FindByFilters(filters);
-    return userver::formats::json::ValueBuilder{animals}.ExtractValue();
+    const int page = ParseOptionalInt(request, "page").value_or(1);
+    const auto result = animal_service_.get_service().FindByFilters(filters, page);
+    return userver::formats::json::ValueBuilder{result}.ExtractValue();
 }
 
 }  // namespace pawspective::handlers
