@@ -85,7 +85,7 @@ dto::AnimalListDTO AnimalService::FindByFilters(const dto::AnimalFilterDTO& filt
         items.push_back(models::Animal::to_dto(animal, breed_dto));
     }
 
-    const int total_pages = total_count == 0 ? 1 : (total_count + kPageSize - 1) / kPageSize;
+    const std::int64_t total_pages = total_count == 0 ? 1 : (total_count + kPageSize - 1) / kPageSize;
     return {std::move(items), page, kPageSize, total_count, total_pages};
 }
 

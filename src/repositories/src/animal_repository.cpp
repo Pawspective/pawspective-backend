@@ -239,11 +239,15 @@ std::vector<models::Animal> AnimalRepository::FindByFilters(const models::Animal
     return result.AsContainer<std::vector<models::Animal>>(userver::storages::postgres::kRowTag);
 }
 
-std::pair<std::vector<models::Animal>, int> AnimalRepository::FindByFiltersPaginated(
+std::pair<std::vector<models::Animal>, std::int64_t> AnimalRepository::FindByFiltersPaginated(
     const models::AnimalFilters& filter,
     int page,
     int limit
 ) const {
+    if (page < 1 || limit <= 0) {
+        throw std::invalid_argument("page must be >= 1 and limit must be > 0");
+    }
+
     auto build_conditions = [&]() {
         utils::sql::QueryFilter qf;
         auto add_any_enum = [&](const std::string& key, const auto& vec) {
@@ -272,11 +276,11 @@ std::pair<std::vector<models::Animal>, int> AnimalRepository::FindByFiltersPagin
         "SELECT COUNT(*) FROM animals a LEFT JOIN breeds b ON a.breed_id = b.id" + count_clause,
         count_params
     );
-    const int total_count = count_result.AsSingleRow<int>();
+    const std::int64_t total_count = count_result.AsSingleRow<std::int64_t>();
 
     auto data_filter = build_conditions();
     data_filter.page_spec.limit = limit;
-    data_filter.page_spec.offset = (page - 1) * limit;
+    data_filter.page_spec.offset = static_cast<int>(static_cast<std::int64_t>(page - 1) * limit);
     data_filter.sort_specs.push_back({"id", utils::sql::SortOrder::kAsc});
     auto [data_clause, data_params] = utils::sql::BuildQueryClause(data_filter, kFilterWhitelist);
     auto data_result = pg_cluster_->Execute(

@@ -13,8 +13,8 @@ struct AnimalListDTO {
     std::vector<AnimalDTO> items;
     int page{};
     int limit{};
-    int total_count{};
-    int total_pages{};
+    std::int64_t total_count{};
+    std::int64_t total_pages{};
 };
 
 userver::formats::json::Value

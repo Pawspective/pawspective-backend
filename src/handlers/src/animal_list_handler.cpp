@@ -6,6 +6,7 @@
 #include <userver/formats/serialize/common_containers.hpp>  // NOLINT
 #include "animal_filter_dto.hpp"
 #include "animal_service_component.hpp"
+#include "utils/error_response.hpp"
 
 namespace pawspective::handlers {
 
@@ -78,7 +79,19 @@ userver::formats::json::Value AnimalListHandler::HandleRequestJsonThrow(
     userver::server::request::RequestContext& /*context*/
 ) const {
     const auto filters = ParseFiltersFromRequest(request);
-    const int page = ParseOptionalInt(request, "page").value_or(1);
+    int page = 1;
+    if (request.HasArg("page")) {
+        try {
+            page = std::stoi(std::string(request.GetArg("page")));
+        } catch (const std::exception&) {
+            utils::ErrorResponse(utils::error_code::kValidationError, "page must be a positive integer")
+                .ThrowClientError();
+        }
+        if (page < 1) {
+            utils::ErrorResponse(utils::error_code::kValidationError, "page must be a positive integer")
+                .ThrowClientError();
+        }
+    }
     const auto result = animal_service_.get_service().FindByFilters(filters, page);
     return userver::formats::json::ValueBuilder{result}.ExtractValue();
 }
