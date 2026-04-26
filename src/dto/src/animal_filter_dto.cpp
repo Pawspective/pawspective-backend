@@ -8,6 +8,7 @@ AnimalFilterDTO Parse(const userver::formats::json::Value& json, userver::format
     AnimalFilterDTO dto;
 
     dto.breeds = json["breeds"].As<std::optional<std::vector<std::int64_t>>>();
+    dto.city_ids = json["city_ids"].As<std::optional<std::vector<std::int64_t>>>();
     dto.animal_types = json["animal_types"].As<std::optional<std::vector<models::AnimalType>>>();
     dto.sizes = json["sizes"].As<std::optional<std::vector<models::AnimalSize>>>();
     dto.genders = json["genders"].As<std::optional<std::vector<models::AnimalGender>>>();
@@ -24,6 +25,7 @@ userver::formats::json::Value
 Serialize(const AnimalFilterDTO& filters, userver::formats::serialize::To<userver::formats::json::Value>) {
     userver::formats::json::ValueBuilder builder;
     builder["breeds"] = filters.breeds;
+    builder["cityIds"] = filters.city_ids;
     builder["animalTypes"] = filters.animal_types;
     builder["sizes"] = filters.sizes;
     builder["genders"] = filters.genders;
