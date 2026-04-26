@@ -858,3 +858,47 @@ async def test_animal_list_filter_multiple_cities(
 
     assert len(result2) == 1
     assert result2[0]['name'] == animals[2]['name']
+
+
+# --- Input validation ---
+
+async def test_animal_list_invalid_breeds_returns_400(service_client):
+    """Non-integer breeds param returns 400, not 500"""
+    response = await service_client.get('/animals?breeds=abc')
+    assert response.status == 400
+
+
+async def test_animal_list_invalid_city_ids_returns_400(service_client):
+    """Non-integer city_ids param returns 400, not 500"""
+    response = await service_client.get('/animals?city_ids=not_a_number')
+    assert response.status == 400
+
+
+async def test_animal_list_invalid_age_gte_returns_400(service_client):
+    """Non-integer age_gte param returns 400, not 500"""
+    response = await service_client.get('/animals?age_gte=abc')
+    assert response.status == 400
+
+
+async def test_animal_list_invalid_age_lte_returns_400(service_client):
+    """Non-integer age_lte param returns 400, not 500"""
+    response = await service_client.get('/animals?age_lte=abc')
+    assert response.status == 400
+
+
+async def test_animal_list_invalid_page_returns_400(service_client):
+    """Non-integer page param returns 400, not 500"""
+    response = await service_client.get('/animals?page=abc')
+    assert response.status == 400
+
+
+async def test_animal_list_negative_page_returns_400(service_client):
+    """page=0 and negative page return 400"""
+    assert (await service_client.get('/animals?page=0')).status == 400
+    assert (await service_client.get('/animals?page=-1')).status == 400
+
+
+async def test_animal_list_mixed_valid_invalid_breeds_returns_400(service_client):
+    """One invalid value among multiple breeds returns 400"""
+    response = await service_client.get('/animals?breeds=1&breeds=abc')
+    assert response.status == 400

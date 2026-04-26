@@ -1,6 +1,5 @@
 #include "animal_list_handler.hpp"
 
-#include <algorithm>
 #include <userver/components/component_context.hpp>
 #include <userver/formats/json/value_builder.hpp>
 #include <userver/formats/serialize/common_containers.hpp>  // NOLINT
@@ -30,13 +29,24 @@ std::optional<std::vector<T>> ParseEnumVector(const std::vector<std::string>& ar
     return result;
 }
 
-std::optional<std::vector<std::int64_t>> ParseInt64Vector(const std::vector<std::string>& args) {
+std::optional<std::vector<std::int64_t>> ParseInt64Vector(
+    const std::vector<std::string>& args, std::string_view param_name
+) {
     if (args.empty()) {
         return std::nullopt;
     }
     std::vector<std::int64_t> result;
     result.reserve(args.size());
-    std::transform(args.begin(), args.end(), std::back_inserter(result), [](const auto& s) { return std::stoll(s); });
+    for (const auto& s : args) {
+        try {
+            result.push_back(std::stoll(s));
+        } catch (const std::exception&) {
+            utils::ErrorResponse(
+                utils::error_code::kValidationError,
+                fmt::format("{} must contain only integers", param_name)
+            ).ThrowClientError();
+        }
+    }
     return result;
 }
 
@@ -44,14 +54,22 @@ std::optional<int> ParseOptionalInt(const userver::server::http::HttpRequest& re
     if (!request.HasArg(name)) {
         return std::nullopt;
     }
-    return std::stoi(std::string(request.GetArg(name)));
+    try {
+        return std::stoi(std::string(request.GetArg(name)));
+    } catch (const std::exception&) {
+        utils::ErrorResponse(
+            utils::error_code::kValidationError,
+            fmt::format("{} must be an integer", name)
+        ).ThrowClientError();
+    }
+    return std::nullopt;
 }
 
 dto::AnimalFilterDTO ParseFiltersFromRequest(const userver::server::http::HttpRequest& request) {
     dto::AnimalFilterDTO dto;
 
-    dto.breeds = ParseInt64Vector(request.GetArgVector("breeds"));
-    dto.city_ids = ParseInt64Vector(request.GetArgVector("city_ids"));
+    dto.breeds = ParseInt64Vector(request.GetArgVector("breeds"), "breeds");
+    dto.city_ids = ParseInt64Vector(request.GetArgVector("city_ids"), "city_ids");
     dto.animal_types = ParseEnumVector<models::AnimalType>(request.GetArgVector("animal_types"));
     dto.sizes = ParseEnumVector<models::AnimalSize>(request.GetArgVector("sizes"));
     dto.genders = ParseEnumVector<models::AnimalGender>(request.GetArgVector("genders"));
