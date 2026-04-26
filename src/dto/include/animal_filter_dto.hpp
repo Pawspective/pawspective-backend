@@ -11,6 +11,7 @@ namespace pawspective::dto {
 
 struct AnimalFilterDTO {
     std::optional<std::vector<std::int64_t>> breeds;
+    std::optional<std::vector<std::int64_t>> city_ids;
     std::optional<std::vector<models::AnimalType>> animal_types;
     std::optional<std::vector<models::AnimalSize>> sizes;
     std::optional<std::vector<models::AnimalGender>> genders;

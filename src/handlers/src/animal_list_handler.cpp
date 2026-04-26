@@ -50,6 +50,7 @@ dto::AnimalFilterDTO ParseFiltersFromRequest(const userver::server::http::HttpRe
     dto::AnimalFilterDTO dto;
 
     dto.breeds = ParseInt64Vector(request.GetArgVector("breeds"));
+    dto.city_ids = ParseInt64Vector(request.GetArgVector("city_ids"));
     dto.animal_types = ParseEnumVector<models::AnimalType>(request.GetArgVector("animal_types"));
     dto.sizes = ParseEnumVector<models::AnimalSize>(request.GetArgVector("sizes"));
     dto.genders = ParseEnumVector<models::AnimalGender>(request.GetArgVector("genders"));

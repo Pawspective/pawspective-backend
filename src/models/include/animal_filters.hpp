@@ -13,6 +13,7 @@ struct AnimalFilters {
     static dto::AnimalFilterDTO to_dto(const AnimalFilters& model);
 
     std::vector<std::int64_t> breed_ids;
+    std::vector<std::int64_t> city_ids;
     std::vector<AnimalType> animal_types;
     std::vector<AnimalSize> sizes;
     std::vector<AnimalGender> genders;

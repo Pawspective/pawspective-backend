@@ -15,6 +15,7 @@ namespace {
 
 const utils::sql::QueryWhitelist kFilterWhitelist{
     {{"breeds", "a.breed_id"},
+     {"cityIds", "o.city_id"},
      {"animalTypes", "b.animal_type::text"},
      {"sizes", "a.size::text"},
      {"genders", "a.gender::text"},
@@ -166,6 +167,7 @@ models::AnimalFilters AnimalRepository::GetAvailableFilters() const {
         userver::storages::postgres::ClusterHostType::kSlave,
         "SELECT "
         "ARRAY(SELECT DISTINCT id FROM breeds WHERE id IS NOT NULL), "
+        "ARRAY(SELECT DISTINCT o.city_id FROM animals a JOIN organizations o ON a.organization_id = o.id), "
         "ARRAY(SELECT unnest(enum_range(NULL::animal_type))::text), "
         "ARRAY(SELECT unnest(enum_range(NULL::animal_size))::text), "
         "ARRAY(SELECT unnest(enum_range(NULL::animal_gender))::text), "
@@ -179,6 +181,7 @@ models::AnimalFilters AnimalRepository::GetAvailableFilters() const {
 
     auto row = result.AsSingleRow<std::tuple<
         std::vector<std::int64_t>,
+        std::vector<std::int64_t>,
         std::vector<std::string>,
         std::vector<std::string>,
         std::vector<std::string>,
@@ -190,14 +193,15 @@ models::AnimalFilters AnimalRepository::GetAvailableFilters() const {
 
     return {
         std::get<0>(row),
-        ToEnumVector<models::AnimalType>(std::get<1>(row)),
-        ToEnumVector<models::AnimalSize>(std::get<2>(row)),
-        ToEnumVector<models::AnimalGender>(std::get<3>(row)),
-        ToEnumVector<models::CareLevel>(std::get<4>(row)),
-        ToEnumVector<models::AnimalColor>(std::get<5>(row)),
-        ToEnumVector<models::GoodWith>(std::get<6>(row)),
-        std::get<7>(row),
-        std::get<8>(row)
+        std::get<1>(row),
+        ToEnumVector<models::AnimalType>(std::get<2>(row)),
+        ToEnumVector<models::AnimalSize>(std::get<3>(row)),
+        ToEnumVector<models::AnimalGender>(std::get<4>(row)),
+        ToEnumVector<models::CareLevel>(std::get<5>(row)),
+        ToEnumVector<models::AnimalColor>(std::get<6>(row)),
+        ToEnumVector<models::GoodWith>(std::get<7>(row)),
+        std::get<8>(row),
+        std::get<9>(row)
     };
 }
 
@@ -212,6 +216,10 @@ std::vector<models::Animal> AnimalRepository::FindByFilters(const models::Animal
 
     if (!filter.breed_ids.empty()) {
         query_filter.conditions.push_back(utils::sql::Condition::Any("breeds", filter.breed_ids));
+    }
+
+    if (!filter.city_ids.empty()) {
+        query_filter.conditions.push_back(utils::sql::Condition::Any("cityIds", filter.city_ids));
     }
 
     add_any_enum("animalTypes", filter.animal_types);
@@ -231,7 +239,8 @@ std::vector<models::Animal> AnimalRepository::FindByFilters(const models::Animal
         "SELECT a.id, a.organization_id, a.name, a.breed_id, a.size, a.gender, "
         "a.care_level, a.good_with, a.color, a.age, a.description, a.status "
         "FROM animals a "
-        "LEFT JOIN breeds b ON a.breed_id = b.id " +
+        "LEFT JOIN breeds b ON a.breed_id = b.id "
+        "LEFT JOIN organizations o ON a.organization_id = o.id " +
             query_suffix,
         params
     );
