@@ -470,3 +470,223 @@ async def test_animal_list_filter_breed_and_size(
     assert match['id'] in ids
     assert wrong_breed['id'] not in ids
     assert wrong_size['id'] not in ids
+
+
+async def test_animal_list_filter_by_city(
+    service_client, authenticated_user, dog_breed, pgsql
+):
+    conn = pgsql['postgres-db']
+    cursor = conn.cursor()
+    city1_name = f'City1_{uuid.uuid4().hex[:8]}'
+    city2_name = f'City2_{uuid.uuid4().hex[:8]}'
+
+    cursor.execute(
+        'INSERT INTO cities (name) VALUES (%s) RETURNING id, name',
+        (city1_name,),
+    )
+    city1 = {'id': cursor.fetchone()[0], 'name': city1_name}
+
+    cursor.execute(
+        'INSERT INTO cities (name) VALUES (%s) RETURNING id, name',
+        (city2_name,),
+    )
+    city2 = {'id': cursor.fetchone()[0], 'name': city2_name}
+
+    org1_response = await service_client.post(
+        '/orgs',
+        json={
+            'name': f'Shelter_City1_{uuid.uuid4().hex[:8]}',
+            'city_id': city1['id'],
+        },
+        headers={'Authorization': f"Bearer {authenticated_user['token']}"},
+    )
+    assert org1_response.status == 201
+    org1 = org1_response.json()
+
+    user2_email = f'owner2_{uuid.uuid4().hex[:8]}@example.com'
+    user2_password = 'TestPassword123'
+
+    await service_client.post(
+        '/user/register',
+        json={
+            'email': user2_email,
+            'first_name': 'Owner2',
+            'last_name': 'User',
+            'password': user2_password,
+        },
+    )
+
+    login2_response = await service_client.post(
+        '/auth/login',
+        json={'email': user2_email, 'password': user2_password},
+    )
+    assert login2_response.status == 200
+    user2_token = login2_response.json()['access_token']
+
+    org2_response = await service_client.post(
+        '/orgs',
+        json={
+            'name': f'Shelter_City2_{uuid.uuid4().hex[:8]}',
+            'city_id': city2['id'],
+        },
+        headers={'Authorization': f"Bearer {user2_token}"},
+    )
+    assert org2_response.status == 201
+    org2 = org2_response.json()
+
+    animal1_response = await service_client.post(
+        '/animals',
+        json={
+            'organization_id': org1['id'],
+            'name': f'Dog_City1_{uuid.uuid4().hex[:8]}',
+            'breed_id': dog_breed['id'],
+            'size': 'medium',
+            'gender': 'male',
+            'care_level': 'easy',
+            'good_with': 'dogs',
+            'color': 'black',
+            'age': 3,
+            'status': 'available',
+        },
+        headers={'Authorization': f"Bearer {authenticated_user['token']}"},
+    )
+    assert animal1_response.status == 201
+
+    animal2_response = await service_client.post(
+        '/animals',
+        json={
+            'organization_id': org2['id'],
+            'name': f'Dog_City2_{uuid.uuid4().hex[:8]}',
+            'breed_id': dog_breed['id'],
+            'size': 'large',
+            'gender': 'female',
+            'care_level': 'moderate',
+            'good_with': 'cats',
+            'color': 'white',
+            'age': 5,
+            'status': 'available',
+        },
+        headers={'Authorization': f"Bearer {user2_token}"},
+    )
+    assert animal2_response.status == 201
+
+    list_response = await service_client.get(
+        '/animals',
+        params={'city_ids': str(city1['id'])},
+    )
+    assert list_response.status == 200
+    animals = list_response.json()
+
+    assert len(animals) == 1
+    assert animals[0]['name'] == animal1_response.json()['name']
+
+    list_response2 = await service_client.get(
+        '/animals',
+        params={'city_ids': str(city2['id'])},
+    )
+    assert list_response2.status == 200
+    animals2 = list_response2.json()
+
+    assert len(animals2) == 1
+    assert animals2[0]['name'] == animal2_response.json()['name']
+
+
+async def test_animal_list_filter_multiple_cities(
+    service_client, authenticated_user, dog_breed, pgsql
+):
+    conn = pgsql['postgres-db']
+    cursor = conn.cursor()
+
+    city_names = [f'City_{uuid.uuid4().hex[:8]}' for _ in range(3)]
+    cities = []
+
+    for city_name in city_names:
+        cursor.execute(
+            'INSERT INTO cities (name) VALUES (%s) RETURNING id, name',
+            (city_name,),
+        )
+        cities.append({'id': cursor.fetchone()[0], 'name': city_name})
+
+    orgs = []
+    tokens = [authenticated_user['token']]
+
+    for i, city in enumerate(cities):
+        if i == 0:
+            token = authenticated_user['token']
+        else:
+            user_email = f'owner_multi_{i}_{uuid.uuid4().hex[:8]}@example.com'
+            user_password = 'TestPassword123'
+
+            await service_client.post(
+                '/user/register',
+                json={
+                    'email': user_email,
+                    'first_name': f'Owner{i}',
+                    'last_name': 'User',
+                    'password': user_password,
+                },
+            )
+
+            login_response = await service_client.post(
+                '/auth/login',
+                json={'email': user_email, 'password': user_password},
+            )
+            assert login_response.status == 200
+            token = login_response.json()['access_token']
+            tokens.append(token)
+
+        org_response = await service_client.post(
+            '/orgs',
+            json={
+                'name': f'Shelter_{city["name"]}',
+                'city_id': city['id'],
+            },
+            headers={'Authorization': f"Bearer {token}"},
+        )
+        assert org_response.status == 201
+        orgs.append(org_response.json())
+
+    animals = []
+    for i, org in enumerate(orgs):
+        animal_response = await service_client.post(
+            '/animals',
+            json={
+                'organization_id': org['id'],
+                'name': f'Dog_City{i}_{uuid.uuid4().hex[:8]}',
+                'breed_id': dog_breed['id'],
+                'size': 'small' if i == 0 else 'medium' if i == 1 else 'large',
+                'gender': 'male' if i % 2 == 0 else 'female',
+                'care_level': 'easy',
+                'good_with': 'dogs',
+                'color': 'black',
+                'age': i + 1,
+                'status': 'available',
+            },
+            headers={'Authorization': f"Bearer {tokens[i]}"},
+        )
+        assert animal_response.status == 201
+        animals.append(animal_response.json())
+
+    list_response = await service_client.get(
+        '/animals',
+        params={'city_ids': [str(cities[0]['id']), str(cities[1]['id'])]},
+    )
+    assert list_response.status == 200
+    result = list_response.json()
+
+    assert len(result) == 2
+    result_names = {a['name'] for a in result}
+    expected_names = {animals[0]['name'], animals[1]['name']}
+    assert result_names == expected_names
+
+    assert animals[2]['name'] not in result_names
+
+    list_response2 = await service_client.get(
+        '/animals',
+        params={'city_ids': str(cities[2]['id'])},
+    )
+    assert list_response2.status == 200
+    result2 = list_response2.json()
+
+    assert len(result2) == 1
+    assert result2[0]['name'] == animals[2]['name']
