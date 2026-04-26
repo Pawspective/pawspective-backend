@@ -30,7 +30,8 @@ std::optional<std::vector<T>> ParseEnumVector(const std::vector<std::string>& ar
 }
 
 std::optional<std::vector<std::int64_t>> ParseInt64Vector(
-    const std::vector<std::string>& args, std::string_view param_name
+    const std::vector<std::string>& args,
+    std::string_view param_name
 ) {
     if (args.empty()) {
         return std::nullopt;
@@ -44,7 +45,8 @@ std::optional<std::vector<std::int64_t>> ParseInt64Vector(
             utils::ErrorResponse(
                 utils::error_code::kValidationError,
                 fmt::format("{} must contain only integers", param_name)
-            ).ThrowClientError();
+            )
+                .ThrowClientError();
         }
     }
     return result;
@@ -57,10 +59,8 @@ std::optional<int> ParseOptionalInt(const userver::server::http::HttpRequest& re
     try {
         return std::stoi(std::string(request.GetArg(name)));
     } catch (const std::exception&) {
-        utils::ErrorResponse(
-            utils::error_code::kValidationError,
-            fmt::format("{} must be an integer", name)
-        ).ThrowClientError();
+        utils::ErrorResponse(utils::error_code::kValidationError, fmt::format("{} must be an integer", name))
+            .ThrowClientError();
     }
     return std::nullopt;
 }
