@@ -244,7 +244,8 @@ std::pair<std::vector<models::Animal>, std::int64_t> AnimalRepository::FindByFil
         userver::storages::postgres::ClusterHostType::kSlave,
         "SELECT COUNT(*) FROM animals a "
         "LEFT JOIN breeds b ON a.breed_id = b.id "
-        "LEFT JOIN organizations o ON a.organization_id = o.id" + count_clause,
+        "LEFT JOIN organizations o ON a.organization_id = o.id" +
+            count_clause,
         count_params
     );
     const std::int64_t total_count = count_result.AsSingleRow<std::int64_t>();
