@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cctype>
 #include <string>
+#include <sstream>
 #include <userver/utils/regex.hpp>
 #include "utils/exception.hpp"
 
