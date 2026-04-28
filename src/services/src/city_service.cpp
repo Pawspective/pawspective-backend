@@ -28,4 +28,13 @@ std::vector<dto::CityDTO> CityService::GetAll() const {
     return dtos;
 }
 
+std::unordered_map<int64_t, dto::CityDTO> CityService::GetByIds(const std::vector<int64_t>& ids) const {
+    auto cities = repository_.GetByIds(ids);
+    std::unordered_map<int64_t, dto::CityDTO> result;
+    for (auto& city : cities) {
+        result[city.id] = models::City::ToDTO(std::move(city));
+    }
+    return result;
+}
+
 }  // namespace pawspective::services
