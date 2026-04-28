@@ -31,8 +31,9 @@ std::vector<dto::CityDTO> CityService::GetAll() const {
 std::unordered_map<int64_t, dto::CityDTO> CityService::GetByIds(const std::vector<int64_t>& ids) const {
     auto cities = repository_.GetByIds(ids);
     std::unordered_map<int64_t, dto::CityDTO> result;
+    result.reserve(cities.size());
     for (auto& city : cities) {
-        result[city.id] = models::City::ToDTO(std::move(city));
+        result.emplace(city.id, models::City::ToDTO(std::move(city)));
     }
     return result;
 }

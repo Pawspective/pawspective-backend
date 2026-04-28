@@ -35,6 +35,7 @@ dto::OrganizationDTO OrganizationService::Get(int64_t id) const {
 std::vector<dto::OrganizationDTO> OrganizationService::FindByNameContaining(const std::string& name) const {
     auto orgs = repository_.FindByNameContaining(name);
     std::vector<dto::OrganizationDTO> dtos;
+    dtos.reserve(orgs.size());
     std::vector<int64_t> city_ids;
     std::transform(orgs.begin(), orgs.end(), std::back_inserter(city_ids), [](const auto& org) { return org.city_id; });
     auto city_dtos = city_service_.GetByIds(city_ids);

@@ -59,6 +59,7 @@ std::vector<dto::AnimalDTO> AnimalService::GetByOrganization(int64_t org_id) con
 
     auto animals = repository_.GetByOrganizationId(org_id);
     std::vector<dto::AnimalDTO> dtos;
+    dtos.reserve(animals.size());
     std::vector<int64_t> breed_ids;
 
     std::transform(animals.begin(), animals.end(), std::back_inserter(breed_ids), [](const auto& animal) {
