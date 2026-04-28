@@ -13,6 +13,7 @@ public:
 
     [[nodiscard]] std::optional<models::Breed> GetById(int64_t id) const;
     [[nodiscard]] std::vector<models::Breed> GetByType(models::AnimalType type) const;
+    [[nodiscard]] std::vector<models::Breed> GetByIds(const std::vector<int64_t>& ids) const;
 
 private:
     const userver::storages::postgres::ClusterPtr pg_cluster_;
