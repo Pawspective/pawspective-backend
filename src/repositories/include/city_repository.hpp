@@ -13,6 +13,7 @@ public:
 
     [[nodiscard]] std::optional<models::City> GetById(int64_t id) const;
     [[nodiscard]] std::vector<models::City> GetAll() const;
+    [[nodiscard]] std::vector<models::City> GetByIds(const std::vector<int64_t>& ids) const;
 
 private:
     const userver::storages::postgres::ClusterPtr pg_cluster_;

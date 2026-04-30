@@ -27,4 +27,14 @@ std::vector<dto::BreedDTO> BreedService::GetByType(models::AnimalType type) cons
     return dtos;
 }
 
+std::unordered_map<int64_t, dto::BreedDTO> BreedService::GetByIds(const std::vector<int64_t>& ids) const {
+    auto breeds = repository_.GetByIds(ids);
+    std::unordered_map<int64_t, dto::BreedDTO> result;
+    result.reserve(breeds.size());
+    for (auto& breed : breeds) {
+        result.emplace(breed.id, models::Breed::ToDTO(std::move(breed)));
+    }
+    return result;
+}
+
 }  // namespace pawspective::services

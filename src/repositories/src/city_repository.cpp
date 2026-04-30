@@ -23,4 +23,16 @@ std::vector<models::City> CityRepository::GetAll() const {
     return result.AsContainer<std::vector<models::City>>(userver::storages::postgres::kRowTag);
 }
 
+std::vector<models::City> CityRepository::GetByIds(const std::vector<int64_t>& ids) const {
+    if (ids.empty()) {
+        return {};
+    }
+    auto result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kSlave,
+        "SELECT id, name FROM cities WHERE id = ANY($1)",
+        ids
+    );
+    return result.AsContainer<std::vector<models::City>>(userver::storages::postgres::kRowTag);
+}
+
 }  // namespace pawspective::repositories

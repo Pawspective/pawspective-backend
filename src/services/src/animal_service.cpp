@@ -59,11 +59,21 @@ std::vector<dto::AnimalDTO> AnimalService::GetByOrganization(int64_t org_id) con
 
     auto animals = repository_.GetByOrganizationId(org_id);
     std::vector<dto::AnimalDTO> dtos;
+    dtos.reserve(animals.size());
+    std::vector<int64_t> breed_ids;
 
-    for (const auto& animal : animals) {
-        auto breed_dto = breed_service_.Get(animal.breed_id);
-        dtos.push_back(models::Animal::to_dto(animal, breed_dto));
-    }
+    std::transform(animals.begin(), animals.end(), std::back_inserter(breed_ids), [](const auto& animal) {
+        return animal.breed_id;
+    });
+    auto breed_dtos = breed_service_.GetByIds(breed_ids);
+    std::transform(
+        std::make_move_iterator(animals.begin()),
+        std::make_move_iterator(animals.end()),
+        std::back_inserter(dtos),
+        [&breed_dtos](models::Animal&& animal) {
+            return models::Animal::to_dto(std::move(animal), breed_dtos[animal.breed_id]);
+        }
+    );
     return dtos;
 }
 
@@ -80,10 +90,20 @@ dto::AnimalListDTO AnimalService::FindByFilters(const dto::AnimalFilterDTO& filt
 
     std::vector<dto::AnimalDTO> items;
     items.reserve(animals.size());
-    for (const auto& animal : animals) {
-        auto breed_dto = breed_service_.Get(animal.breed_id);
-        items.push_back(models::Animal::to_dto(animal, breed_dto));
-    }
+    std::vector<int64_t> breed_ids;
+
+    std::transform(animals.begin(), animals.end(), std::back_inserter(breed_ids), [](const auto& animal) {
+        return animal.breed_id;
+    });
+    auto breed_dtos = breed_service_.GetByIds(breed_ids);
+    std::transform(
+        std::make_move_iterator(animals.begin()),
+        std::make_move_iterator(animals.end()),
+        std::back_inserter(items),
+        [&breed_dtos](models::Animal&& animal) {
+            return models::Animal::to_dto(std::move(animal), breed_dtos[animal.breed_id]);
+        }
+    );
 
     const std::int64_t total_pages = total_count == 0 ? 1 : (total_count + kPageSize - 1) / kPageSize;
     return {std::move(items), page, kPageSize, total_count, total_pages};
