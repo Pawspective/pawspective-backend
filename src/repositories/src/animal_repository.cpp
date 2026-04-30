@@ -205,47 +205,69 @@ models::AnimalFilters AnimalRepository::GetAvailableFilters() const {
     };
 }
 
-std::vector<models::Animal> AnimalRepository::FindByFilters(const models::AnimalFilters& filter) const {
-    utils::sql::QueryFilter query_filter;
+std::pair<std::vector<models::Animal>, std::int64_t> AnimalRepository::FindByFiltersPaginated(
+    const models::AnimalFilters& filter,
+    int page,
+    int limit
+) const {
+    if (page < 1 || limit <= 0) {
+        throw std::invalid_argument("page must be >= 1 and limit must be > 0");
+    }
 
-    auto add_any_enum = [&](const std::string& key, const auto& vec) {
-        if (!vec.empty()) {
-            query_filter.conditions.push_back(utils::sql::Condition::Any(key, EnumsToLiterals(vec)));
+    auto build_conditions = [&]() {
+        utils::sql::QueryFilter qf;
+        auto add_any_enum = [&](const std::string& key, const auto& vec) {
+            if (!vec.empty()) {
+                qf.conditions.push_back(utils::sql::Condition::Any(key, EnumsToLiterals(vec)));
+            }
+        };
+        if (!filter.breed_ids.empty()) {
+            qf.conditions.push_back(utils::sql::Condition::Any("breeds", filter.breed_ids));
         }
+        if (!filter.city_ids.empty()) {
+            qf.conditions.push_back(utils::sql::Condition::Any("cityIds", filter.city_ids));
+        }
+        add_any_enum("animalTypes", filter.animal_types);
+        add_any_enum("sizes", filter.sizes);
+        add_any_enum("genders", filter.genders);
+        add_any_enum("careLevels", filter.care_levels);
+        add_any_enum("colors", filter.colors);
+        add_any_enum("goodWiths", filter.good_withs);
+        qf.conditions.push_back(utils::sql::Condition::Ge("age", filter.min_age));
+        qf.conditions.push_back(utils::sql::Condition::Le("age", filter.max_age));
+        return qf;
     };
 
-    if (!filter.breed_ids.empty()) {
-        query_filter.conditions.push_back(utils::sql::Condition::Any("breeds", filter.breed_ids));
-    }
+    auto count_filter = build_conditions();
+    auto [count_clause, count_params] = utils::sql::BuildQueryClause(count_filter, kFilterWhitelist);
+    auto count_result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kSlave,
+        "SELECT COUNT(*) FROM animals a "
+        "LEFT JOIN breeds b ON a.breed_id = b.id "
+        "LEFT JOIN organizations o ON a.organization_id = o.id" +
+            count_clause,
+        count_params
+    );
+    const std::int64_t total_count = count_result.AsSingleRow<std::int64_t>();
 
-    if (!filter.city_ids.empty()) {
-        query_filter.conditions.push_back(utils::sql::Condition::Any("cityIds", filter.city_ids));
-    }
-
-    add_any_enum("animalTypes", filter.animal_types);
-    add_any_enum("sizes", filter.sizes);
-    add_any_enum("genders", filter.genders);
-    add_any_enum("careLevels", filter.care_levels);
-    add_any_enum("colors", filter.colors);
-    add_any_enum("goodWiths", filter.good_withs);
-
-    query_filter.conditions.push_back(utils::sql::Condition::Ge("age", filter.min_age));
-    query_filter.conditions.push_back(utils::sql::Condition::Le("age", filter.max_age));
-
-    auto [query_suffix, params] = utils::sql::BuildQueryClause(query_filter, kFilterWhitelist);
-
-    auto result = pg_cluster_->Execute(
+    auto data_filter = build_conditions();
+    data_filter.page_spec.limit = limit;
+    data_filter.page_spec.offset = static_cast<int>(static_cast<std::int64_t>(page - 1) * limit);
+    data_filter.sort_specs.push_back({"id", utils::sql::SortOrder::kAsc});
+    auto [data_clause, data_params] = utils::sql::BuildQueryClause(data_filter, kFilterWhitelist);
+    auto data_result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
         "SELECT a.id, a.organization_id, a.name, a.breed_id, a.size, a.gender, "
         "a.care_level, a.good_with, a.color, a.age, a.description, a.status "
         "FROM animals a "
         "LEFT JOIN breeds b ON a.breed_id = b.id "
-        "LEFT JOIN organizations o ON a.organization_id = o.id " +
-            query_suffix,
-        params
+        "LEFT JOIN organizations o ON a.organization_id = o.id" +
+            data_clause,
+        data_params
     );
+    auto animals = data_result.AsContainer<std::vector<models::Animal>>(userver::storages::postgres::kRowTag);
 
-    return result.AsContainer<std::vector<models::Animal>>(userver::storages::postgres::kRowTag);
+    return {std::move(animals), total_count};
 }
 
 }  // namespace pawspective::repositories

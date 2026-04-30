@@ -18,7 +18,11 @@ public:
     models::Animal Create(const models::Animal& animal) const;
     std::optional<models::Animal> Update(const models::Animal& animal) const;
     [[nodiscard]] models::AnimalFilters GetAvailableFilters() const;
-    [[nodiscard]] std::vector<models::Animal> FindByFilters(const models::AnimalFilters& filter) const;
+    [[nodiscard]] std::pair<std::vector<models::Animal>, std::int64_t> FindByFiltersPaginated(
+        const models::AnimalFilters& filter,
+        int page,
+        int limit
+    ) const;
 
     // void Delete(std::int64_t id) const; //TODO: add delete method when needed
 

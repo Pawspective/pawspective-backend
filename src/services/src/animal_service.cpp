@@ -82,12 +82,14 @@ dto::AnimalFilterDTO AnimalService::GetFilterOptions() const {
     return models::AnimalFilters::to_dto(filters);
 }
 
-std::vector<dto::AnimalDTO> AnimalService::FindByFilters(const dto::AnimalFilterDTO& dto) const {
-    auto filter_model = models::AnimalFilters::from_dto(dto);
-    auto animals = repository_.FindByFilters(filter_model);
+dto::AnimalListDTO AnimalService::FindByFilters(const dto::AnimalFilterDTO& filter_dto, int page) const {
+    static constexpr int kPageSize = 20;
 
-    std::vector<dto::AnimalDTO> results;
-    results.reserve(animals.size());
+    auto filter_model = models::AnimalFilters::from_dto(filter_dto);
+    auto [animals, total_count] = repository_.FindByFiltersPaginated(filter_model, page, kPageSize);
+
+    std::vector<dto::AnimalDTO> items;
+    items.reserve(animals.size());
     std::vector<int64_t> breed_ids;
 
     std::transform(animals.begin(), animals.end(), std::back_inserter(breed_ids), [](const auto& animal) {
@@ -97,13 +99,14 @@ std::vector<dto::AnimalDTO> AnimalService::FindByFilters(const dto::AnimalFilter
     std::transform(
         std::make_move_iterator(animals.begin()),
         std::make_move_iterator(animals.end()),
-        std::back_inserter(results),
+        std::back_inserter(items),
         [&breed_dtos](models::Animal&& animal) {
             return models::Animal::to_dto(std::move(animal), breed_dtos[animal.breed_id]);
         }
     );
 
-    return results;
+    const std::int64_t total_pages = total_count == 0 ? 1 : (total_count + kPageSize - 1) / kPageSize;
+    return {std::move(items), page, kPageSize, total_count, total_pages};
 }
 
 }  // namespace pawspective::services
