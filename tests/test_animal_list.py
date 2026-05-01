@@ -497,6 +497,13 @@ async def test_animal_list_page_param_accepted(service_client):
     assert response.json()['page'] == 1
 
 
+async def test_animal_list_by_organization_id_page_param_accepted(service_client, registered_org):
+    """?page=1 is accepted and returns page 1 when filtering by organization_id"""
+    response = await service_client.get(f'/orgs/{registered_org["id"]}/animals?page=1')
+    assert response.status == 200
+    assert response.json()['page'] == 1
+
+
 async def test_animal_list_total_count_reflects_created(
     service_client, authenticated_user, registered_org, dog_breed
 ):
@@ -520,11 +527,44 @@ async def test_animal_list_total_count_reflects_created(
     assert after == before + 2
 
 
+async def test_animal_list_by_organization_id_total_count_reflects_created(
+    service_client, authenticated_user, registered_org, dog_breed
+):
+    """total_count increases after creating animals when filtering by organization_id"""
+    before = (await service_client.get(f'/orgs/{registered_org["id"]}/animals')).json()['total_count']
+
+    await create_animal(
+        service_client,
+        authenticated_user['token'],
+        registered_org['id'],
+        dog_breed['id'],
+    )
+    await create_animal(
+        service_client,
+        authenticated_user['token'],
+        registered_org['id'],
+        dog_breed['id'],
+    )
+
+    after = (await service_client.get(f'/orgs/{registered_org["id"]}/animals')).json()['total_count']
+    assert after == before + 2
+
+
 async def test_animal_list_total_pages_calculated_correctly(
     service_client, authenticated_user, registered_org, dog_breed
 ):
     """total_pages = ceil(total_count / limit)"""
     response = await service_client.get('/animals')
+    data = response.json()
+    expected_pages = max(1, math.ceil(data['total_count'] / data['limit']))
+    assert data['total_pages'] == expected_pages
+
+
+async def test_animal_list_by_organization_id_total_pages_calculated_correctly(
+    service_client, authenticated_user, registered_org, dog_breed
+):
+    """total_pages = ceil(total_count / limit) when filtering by organization_id"""
+    response = await service_client.get(f'/orgs/{registered_org["id"]}/animals')
     data = response.json()
     expected_pages = max(1, math.ceil(data['total_count'] / data['limit']))
     assert data['total_pages'] == expected_pages
@@ -556,11 +596,47 @@ async def test_animal_list_page_2_different_from_page_1(
     assert ids1.isdisjoint(ids2)
 
 
+async def test_animal_list_by_organization_id_page_2_different_from_page_1(
+    service_client, authenticated_user, registered_org, dog_breed
+):
+    """When there are more than 20 animals, page 2 differs from page 1 when filtering by organization_id"""
+    for _ in range(22):
+        await create_animal(
+            service_client,
+            authenticated_user['token'],
+            registered_org['id'],
+            dog_breed['id'],
+        )
+
+    page1 = await service_client.get(f'/orgs/{registered_org["id"]}/animals?page=1')
+    page2 = await service_client.get(f'/orgs/{registered_org["id"]}/animals?page=2')
+
+    assert page1.status == 200
+    assert page2.status == 200
+
+    ids1 = {a['id'] for a in page1.json()['items']}
+    ids2 = {a['id'] for a in page2.json()['items']}
+
+    assert len(ids1) == 20
+    assert len(ids2) > 0
+    assert ids1.isdisjoint(ids2)
+
+
 async def test_animal_list_page_beyond_last_returns_empty(
     service_client,
 ):
     """Requesting a page beyond total_pages returns empty items"""
     response = await service_client.get('/animals?page=999999')
+    assert response.status == 200
+    data = response.json()
+    assert data['items'] == []
+    assert data['page'] == 999999
+
+
+async def test_animal_list_by_organization_id_page_beyond_last_returns_empty(
+        service_client, registered_org):
+    """Requesting a page beyond total_pages returns empty items when filtering by organization_id"""
+    response = await service_client.get(f'/orgs/{registered_org["id"]}/animals?page=999999')
     assert response.status == 200
     data = response.json()
     assert data['items'] == []
@@ -587,6 +663,32 @@ async def test_animal_list_items_count_on_last_page(
 
     last_page = (
         await service_client.get(f'/animals?page={total_pages}')
+    ).json()
+    remainder = data['total_count'] % data['limit']
+    expected_last = remainder if remainder != 0 else data['limit']
+    assert len(last_page['items']) == expected_last
+
+
+async def test_animal_list_by_organization_id_items_count_on_last_page(
+    service_client, authenticated_user, registered_org, dog_breed
+):
+    """Last page may have fewer than limit items when filtering by organization_id"""
+    before = (await service_client.get(f'/orgs/{registered_org["id"]}/animals')).json()['total_count']
+
+    needed = 21 - (before % 20) if before % 20 != 0 else 1
+    for _ in range(needed):
+        await create_animal(
+            service_client,
+            authenticated_user['token'],
+            registered_org['id'],
+            dog_breed['id'],
+        )
+
+    data = (await service_client.get(f'/orgs/{registered_org["id"]}/animals')).json()
+    total_pages = data['total_pages']
+
+    last_page = (
+        await service_client.get(f'/orgs/{registered_org["id"]}/animals?page={total_pages}')
     ).json()
     remainder = data['total_count'] % data['limit']
     expected_last = remainder if remainder != 0 else data['limit']
@@ -633,6 +735,41 @@ async def test_animal_list_new_animal_reflected_in_total_count_on_next_page(
     assert page2['total_count'] == page1['total_count'] + 1
 
     # The new animal must appear somewhere across both pages combined
+    all_ids = {a['id'] for a in page1['items']} | {a['id']
+                                                   for a in page2['items']}
+    assert new_animal['id'] in all_ids
+
+
+async def test_animal_list_by_organization_id_new_animal_reflected_in_total_count_on_next_page(
+    service_client, authenticated_user, registered_org, dog_breed
+):
+    """Adding an animal between page requests is reflected in total_count when filtering by organization_id."""
+    before = (await service_client.get(f'/orgs/{registered_org["id"]}/animals')).json()['total_count']
+    needed = (20 - before % 20) % 20
+    if before + needed < 20:
+        needed += 20
+    for _ in range(needed):
+        await create_animal(
+            service_client,
+            authenticated_user['token'],
+            registered_org['id'],
+            dog_breed['id'],
+        )
+
+    page1 = (await service_client.get(f'/orgs/{registered_org["id"]}/animals?page=1')).json()
+    assert len(page1['items']) == 20
+
+    new_animal = await create_animal(
+        service_client,
+        authenticated_user['token'],
+        registered_org['id'],
+        dog_breed['id'],
+    )
+
+    page2 = (await service_client.get(f'/orgs/{registered_org["id"]}/animals?page=2')).json()
+
+    assert page2['total_count'] == page1['total_count'] + 1
+
     all_ids = {a['id'] for a in page1['items']} | {a['id']
                                                    for a in page2['items']}
     assert new_animal['id'] in all_ids

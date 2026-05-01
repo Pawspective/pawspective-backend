@@ -54,12 +54,15 @@ dto::AnimalDTO AnimalService::Get(int64_t id) const {
     return models::Animal::to_dto(*animal, breed_dto);
 }
 
-std::vector<dto::AnimalDTO> AnimalService::GetByOrganization(int64_t org_id) const {
+dto::AnimalListDTO AnimalService::GetByOrganizationPaginated(int64_t org_id, int page) const {
+    static constexpr int kPageSize = 20;
+
     (void)org_service_.Get(org_id);
 
-    auto animals = repository_.GetByOrganizationId(org_id);
-    std::vector<dto::AnimalDTO> dtos;
-    dtos.reserve(animals.size());
+    auto [animals, total_count] = repository_.GetByOrganizationIdPaginated(org_id, page, kPageSize);
+
+    std::vector<dto::AnimalDTO> items;
+    items.reserve(animals.size());
     std::vector<int64_t> breed_ids;
 
     std::transform(animals.begin(), animals.end(), std::back_inserter(breed_ids), [](const auto& animal) {
@@ -69,12 +72,14 @@ std::vector<dto::AnimalDTO> AnimalService::GetByOrganization(int64_t org_id) con
     std::transform(
         std::make_move_iterator(animals.begin()),
         std::make_move_iterator(animals.end()),
-        std::back_inserter(dtos),
+        std::back_inserter(items),
         [&breed_dtos](models::Animal&& animal) {
             return models::Animal::to_dto(std::move(animal), breed_dtos[animal.breed_id]);
         }
     );
-    return dtos;
+
+    const std::int64_t total_pages = total_count == 0 ? 1 : (total_count + kPageSize - 1) / kPageSize;
+    return {std::move(items), page, kPageSize, total_count, total_pages};
 }
 
 dto::AnimalFilterDTO AnimalService::GetFilterOptions() const {
