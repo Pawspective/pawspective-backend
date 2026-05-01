@@ -3,7 +3,6 @@
 #include <userver/components/component_context.hpp>
 #include <userver/formats/json/exception.hpp>
 #include <userver/server/http/http_status.hpp>
-#include "animal_register_dto.hpp"
 #include "animal_service_component.hpp"
 #include "services/exception.hpp"
 #include "utils/error_response.hpp"
@@ -36,10 +35,23 @@ userver::formats::json::Value OrganizationAnimalHandler::HandleRequestJsonThrow(
             .ThrowNotFound();
     }
 
-    try {
-        const std::vector<dto::AnimalDTO> animals = animal_service_.get_service().GetByOrganization(org_id);
+    int page = 1;
+    if (request.HasArg("page")) {
+        try {
+            page = std::stoi(std::string(request.GetArg("page")));
+        } catch (const std::exception&) {
+            utils::ErrorResponse(utils::error_code::kValidationError, "page must be a positive integer")
+                .ThrowClientError();
+        }
+        if (page < 1) {
+            utils::ErrorResponse(utils::error_code::kValidationError, "page must be a positive integer")
+                .ThrowClientError();
+        }
+    }
 
-        return userver::formats::json::ValueBuilder{animals}.ExtractValue();
+    try {
+        const auto result = animal_service_.get_service().GetByOrganizationPaginated(org_id, page);
+        return userver::formats::json::ValueBuilder{result}.ExtractValue();
     } catch (const services::OrganizationNotFoundException& e) {
         LOG_WARNING() << "Organization not found for ID: " << org_id;
         utils::ErrorResponse(utils::error_code::kOrganizationNotFound, "Organization not found").ThrowNotFound();

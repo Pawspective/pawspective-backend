@@ -77,15 +77,36 @@ AnimalRepository::AnimalRepository(userver::storages::postgres::ClusterPtr pg_cl
     return result.AsSingleRow<models::Animal>(userver::storages::postgres::kRowTag);
 }
 
-[[nodiscard]] std::vector<models::Animal> AnimalRepository::GetByOrganizationId(int64_t org_id) const {
-    auto result = pg_cluster_->Execute(
+std::pair<std::vector<models::Animal>, std::int64_t> AnimalRepository::GetByOrganizationIdPaginated(
+    int64_t org_id,
+    int page,
+    int limit
+) const {
+    if (page < 1 || limit <= 0) {
+        throw std::invalid_argument("page must be >= 1 and limit must be > 0");
+    }
+
+    auto count_result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kSlave,
+        "SELECT COUNT(*) FROM animals WHERE organization_id = $1",
+        org_id
+    );
+    const std::int64_t total_count = count_result.AsSingleRow<std::int64_t>();
+
+    auto data_result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
         "SELECT id, organization_id, name, breed_id, size, gender, "
         "care_level, good_with, color, age, description, status "
-        "FROM animals WHERE organization_id = $1",
-        org_id
+        "FROM animals WHERE organization_id = $1 "
+        "ORDER BY id ASC "
+        "LIMIT $2 OFFSET $3",
+        org_id,
+        limit,
+        static_cast<std::int64_t>(page - 1) * limit
     );
-    return result.AsContainer<std::vector<models::Animal>>(userver::storages::postgres::kRowTag);
+    auto animals = data_result.AsContainer<std::vector<models::Animal>>(userver::storages::postgres::kRowTag);
+
+    return {std::move(animals), total_count};
 }
 
 models::Animal AnimalRepository::Create(const models::Animal& animal) const {
