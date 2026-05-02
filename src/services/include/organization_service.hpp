@@ -22,7 +22,6 @@ public:
     dto::OrganizationDTO Register(int64_t user_id, const dto::OrganizationRegisterDTO& dto) const;
     [[nodiscard]] dto::OrganizationDTO Get(int64_t id) const;
     dto::OrganizationDTO Update(int64_t user_id, int64_t org_id, const dto::OrganizationUpdateDTO& dto) const;
-    [[nodiscard]] std::vector<dto::OrganizationDTO> FindByNameContaining(const std::string& name) const;
     [[nodiscard]] dto::OrganizationListDTO FindByNameContainingPaginated(const std::string& name, int page) const;
 
 private:

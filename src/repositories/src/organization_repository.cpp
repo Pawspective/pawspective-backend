@@ -22,25 +22,6 @@ OrganizationRepository::OrganizationRepository(userver::storages::postgres::Clus
     return result.AsSingleRow<models::Organization>(userver::storages::postgres::kRowTag);
 }
 
-[[nodiscard]] std::vector<models::Organization> OrganizationRepository::FindByNameContaining(const std::string_view name
-) const {
-    pawspective::utils::sql::QueryFilter filter;
-    filter.conditions.emplace_back(pawspective::utils::sql::Condition::Ilike("name", std::string(name)));
-    filter.page_spec.limit = 50;
-    static const pawspective::utils::sql::QueryWhitelist kWhitelist{
-        .filter_fields = {{"name", "name"}},
-        .sort_fields = {},
-    };
-    const auto query_clause = pawspective::utils::sql::BuildQueryClause(filter, kWhitelist);
-
-    auto result = pg_cluster_->Execute(
-        userver::storages::postgres::ClusterHostType::kSlave,
-        "SELECT id, name, description, city_id FROM organizations" + query_clause.query,
-        query_clause.parameters
-    );
-    return result.AsContainer<std::vector<models::Organization>>(userver::storages::postgres::kRowTag);
-}
-
 std::pair<std::vector<models::Organization>, std::int64_t> OrganizationRepository::FindByNameContainingPaginated(
     std::string_view name,
     int page,

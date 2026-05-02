@@ -32,24 +32,6 @@ dto::OrganizationDTO OrganizationService::Get(int64_t id) const {
     return models::Organization::to_dto(*org, city_dto);
 }
 
-std::vector<dto::OrganizationDTO> OrganizationService::FindByNameContaining(const std::string& name) const {
-    auto orgs = repository_.FindByNameContaining(name);
-    std::vector<dto::OrganizationDTO> dtos;
-    dtos.reserve(orgs.size());
-    std::vector<int64_t> city_ids;
-    std::transform(orgs.begin(), orgs.end(), std::back_inserter(city_ids), [](const auto& org) { return org.city_id; });
-    auto city_dtos = city_service_.GetByIds(city_ids);
-    std::transform(
-        std::make_move_iterator(orgs.begin()),
-        std::make_move_iterator(orgs.end()),
-        std::back_inserter(dtos),
-        [&city_dtos](models::Organization&& org) {
-            return models::Organization::to_dto(std::move(org), city_dtos[org.city_id]);
-        }
-    );
-    return dtos;
-}
-
 dto::OrganizationListDTO OrganizationService::FindByNameContainingPaginated(const std::string& name, int page) const {
     static constexpr int kPageSize = 20;
 
