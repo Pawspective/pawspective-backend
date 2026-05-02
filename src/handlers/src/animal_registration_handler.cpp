@@ -33,7 +33,10 @@ userver::formats::json::Value AnimalRegistrationHandler::HandleRequestJsonThrow(
         animal_data = request_json.As<dto::AnimalRegisterDTO>();
 
         utils::Validator validator;
-        validator.Field("name", animal_data.name).NotBlank();
+        validator.Field("name", animal_data.name).NotBlank().MaxLength(255);
+        if (animal_data.description.has_value()) {
+            validator.Field("description", *animal_data.description).MaxLength(2000);
+        }
         validator.ThrowIfInvalid();
 
         animal_dto = animal_service_.get_service().Create(user_id, animal_data);

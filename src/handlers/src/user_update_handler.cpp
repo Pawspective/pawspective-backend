@@ -63,16 +63,17 @@ userver::formats::json::Value UserUpdateHandler::HandleRequestJsonThrow(
         if (update_dto.email) {
             validator.Field("email", *update_dto.email)
                 .NotBlank()
+                .MaxLength(255)
                 .Matches(
                     userver::utils::regex{R"(^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$)"},
                     "Invalid email format"
                 );
         }
         if (update_dto.first_name) {
-            validator.Field("first_name", *update_dto.first_name).NotBlank();
+            validator.Field("first_name", *update_dto.first_name).NotBlank().MaxLength(255);
         }
         if (update_dto.last_name) {
-            validator.Field("last_name", *update_dto.last_name).NotBlank();
+            validator.Field("last_name", *update_dto.last_name).NotBlank().MaxLength(255);
         }
         validator.ThrowIfInvalid();
 

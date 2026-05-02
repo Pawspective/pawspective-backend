@@ -33,7 +33,10 @@ userver::formats::json::Value OrgRegistrationHandler::HandleRequestJsonThrow(
         org_data = request_json.As<dto::OrganizationRegisterDTO>();
 
         utils::Validator validator;
-        validator.Field("name", org_data.name).NotBlank();
+        validator.Field("name", org_data.name).NotBlank().MaxLength(255);
+        if (org_data.description.has_value()) {
+            validator.Field("description", *org_data.description).MaxLength(2000);
+        }
         validator.ThrowIfInvalid();
 
         org_dto = org_service_.get_service().Register(user_id, org_data);
