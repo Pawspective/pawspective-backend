@@ -4,6 +4,7 @@
 
 #include "city_service.hpp"
 #include "organization_dto.hpp"
+#include "organization_list_dto.hpp"
 #include "organization_register_dto.hpp"
 #include "organization_repository.hpp"
 #include "organization_update_dto.hpp"
@@ -22,6 +23,7 @@ public:
     [[nodiscard]] dto::OrganizationDTO Get(int64_t id) const;
     dto::OrganizationDTO Update(int64_t user_id, int64_t org_id, const dto::OrganizationUpdateDTO& dto) const;
     [[nodiscard]] std::vector<dto::OrganizationDTO> FindByNameContaining(const std::string& name) const;
+    [[nodiscard]] dto::OrganizationListDTO FindByNameContainingPaginated(const std::string& name, int page) const;
 
 private:
     const repositories::OrganizationRepository& repository_;

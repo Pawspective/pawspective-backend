@@ -15,6 +15,11 @@ public:
     models::Organization Create(const models::Organization& organization) const;
     std::optional<models::Organization> Update(const models::Organization& organization) const;
     [[nodiscard]] std::vector<models::Organization> FindByNameContaining(std::string_view name) const;
+    [[nodiscard]] std::pair<std::vector<models::Organization>, std::int64_t> FindByNameContainingPaginated(
+        std::string_view name,
+        int page,
+        int limit
+    ) const;
 
 private:
     const userver::storages::postgres::ClusterPtr pg_cluster_;
