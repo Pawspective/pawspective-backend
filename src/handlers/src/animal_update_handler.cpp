@@ -40,8 +40,11 @@ userver::formats::json::Value AnimalUpdateHandler::HandleRequestJsonThrow(
         auto update_dto = request_json.As<dto::AnimalUpdateDTO>();
 
         utils::Validator validator;
-        if (update_dto.name) {
-            validator.Field("name", *update_dto.name).NotBlank();
+        if (update_dto.name.has_value()) {
+            validator.Field("name", *update_dto.name).NotBlank().MaxLength(255);
+        }
+        if (update_dto.description.has_value()) {
+            validator.Field("description", *update_dto.description).MaxLength(2000);
         }
         validator.ThrowIfInvalid();
 

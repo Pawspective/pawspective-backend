@@ -30,6 +30,13 @@ Validator& Validator::MinLength(std::size_t min) {
     return *this;
 }
 
+Validator& Validator::MaxLength(std::size_t max) {
+    if (current_value_.length() > max) {
+        AddError("must not exceed " + std::to_string(max) + " characters");
+    }
+    return *this;
+}
+
 Validator& Validator::Matches(const userver::utils::regex& re, std::string msg) {
     if (!userver::utils::regex_match(current_value_, re)) {
         AddError(std::move(msg));

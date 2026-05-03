@@ -40,13 +40,14 @@ userver::formats::json::Value UserRegistrationHandler::HandleRequestJsonThrow(
         utils::Validator validator;
         validator.Field("email", user_data.email)
             .NotBlank()
+            .MaxLength(255)
             .Matches(
                 userver::utils::regex{R"(^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$)"},
                 "Invalid email format"
             );
-        validator.Field("password", user_data.password).NotBlank().MinLength(8);
-        validator.Field("first_name", user_data.first_name).NotBlank();
-        validator.Field("last_name", user_data.last_name).NotBlank();
+        validator.Field("password", user_data.password).NotBlank().MinLength(8).MaxLength(100);
+        validator.Field("first_name", user_data.first_name).NotBlank().MaxLength(255);
+        validator.Field("last_name", user_data.last_name).NotBlank().MaxLength(255);
         validator.ThrowIfInvalid();
         user = user_service_.get_service().RegisterUser(user_data);
     } catch (const userver::formats::json::MemberMissingException& e) {

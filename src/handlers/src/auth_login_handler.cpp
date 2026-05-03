@@ -39,11 +39,12 @@ userver::formats::json::Value AuthLoginHandler::HandleRequestJsonThrow(
         utils::Validator validator;
         validator.Field("email", email)
             .NotBlank()
+            .MaxLength(255)
             .Matches(
                 userver::utils::regex{R"(^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$)"},
                 "Invalid email format"
             );
-        validator.Field("password", password).NotBlank().MinLength(8);
+        validator.Field("password", password).NotBlank().MinLength(8).MaxLength(100);
         validator.ThrowIfInvalid();
     } catch (const userver::formats::json::MemberMissingException& e) {
         LOG_WARNING() << "Missing required field in login data: " << e.what();

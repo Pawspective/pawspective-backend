@@ -14,6 +14,8 @@ public:
 
     Validator& MinLength(std::size_t min);
 
+    Validator& MaxLength(std::size_t max);
+
     Validator& Matches(const userver::utils::regex& re, std::string msg);
 
     Validator& IsOneOf(const std::vector<std::string>& allowed);
