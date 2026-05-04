@@ -32,22 +32,27 @@ dto::OrganizationDTO OrganizationService::Get(int64_t id) const {
     return models::Organization::to_dto(*org, city_dto);
 }
 
-std::vector<dto::OrganizationDTO> OrganizationService::FindByNameContaining(const std::string& name) const {
-    auto orgs = repository_.FindByNameContaining(name);
-    std::vector<dto::OrganizationDTO> dtos;
-    dtos.reserve(orgs.size());
+dto::OrganizationListDTO OrganizationService::FindByNameContainingPaginated(const std::string& name, int page) const {
+    static constexpr int kPageSize = 20;
+
+    auto [orgs, total_count] = repository_.FindByNameContainingPaginated(name, page, kPageSize);
+
+    std::vector<dto::OrganizationDTO> items;
+    items.reserve(orgs.size());
     std::vector<int64_t> city_ids;
     std::transform(orgs.begin(), orgs.end(), std::back_inserter(city_ids), [](const auto& org) { return org.city_id; });
     auto city_dtos = city_service_.GetByIds(city_ids);
     std::transform(
         std::make_move_iterator(orgs.begin()),
         std::make_move_iterator(orgs.end()),
-        std::back_inserter(dtos),
+        std::back_inserter(items),
         [&city_dtos](models::Organization&& org) {
             return models::Organization::to_dto(std::move(org), city_dtos[org.city_id]);
         }
     );
-    return dtos;
+
+    const std::int64_t total_pages = total_count == 0 ? 1 : (total_count + kPageSize - 1) / kPageSize;
+    return {std::move(items), page, kPageSize, total_count, total_pages};
 }
 
 dto::OrganizationDTO OrganizationService::Update(
