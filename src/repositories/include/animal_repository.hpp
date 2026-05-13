@@ -27,6 +27,12 @@ public:
         int page,
         int limit
     ) const;
+    std::optional<models::Animal> Adopt(std::int64_t animal_id, std::int64_t user_id) const;
+    void UpdateStatusAndUserId(
+        std::int64_t animal_id,
+        models::AnimalStatus new_status,
+        std::optional<std::int64_t> user_id
+    ) const;
 
     // void Delete(std::int64_t id) const; //TODO: add delete method when needed
 

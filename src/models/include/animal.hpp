@@ -24,6 +24,7 @@ struct Animal {
     std::string name;
     // std::optional<std::string> photo_url;
     std::int64_t breed_id;
+    std::optional<std::int64_t> user_id{};
     AnimalSize size;
     AnimalGender gender;
     CareLevel care_level;
@@ -39,6 +40,7 @@ struct Animal {
             organization_id,
             name /*, photo_url*/,
             breed_id,
+            user_id,
             size,
             gender,
             care_level,

@@ -44,6 +44,22 @@ dto::AnimalDTO AnimalService::Update(int64_t user_id, int64_t animal_id, const d
     return models::Animal::to_dto(*updated, breed_dto);
 }
 
+dto::AnimalDTO AnimalService::Adopt(int64_t user_id, int64_t animal_id) const {
+    auto existing = repository_.GetById(animal_id);
+    if (!existing) {
+        throw AnimalNotFoundException();
+    }
+    if (existing->status != models::AnimalStatus::kAvailable) {
+        throw AnimalNotAvailableException();
+    }
+    auto adopted = repository_.Adopt(animal_id, user_id);
+    if (!adopted) {
+        throw AnimalNotFoundException();
+    }
+    auto breed_dto = breed_service_.Get(adopted->breed_id);
+    return models::Animal::to_dto(*adopted, breed_dto);
+}
+
 dto::AnimalDTO AnimalService::Get(int64_t id) const {
     auto animal = repository_.GetById(id);
     if (!animal) {

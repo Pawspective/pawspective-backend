@@ -22,6 +22,7 @@ struct AnimalDTO {
     models::GoodWith good_with = models::GoodWith::kUnspecified;
     std::int32_t age{};
     std::optional<std::string> description;
+    std::optional<std::int64_t> user_id{};
     models::AnimalStatus status = models::AnimalStatus::kUnspecified;
 };
 

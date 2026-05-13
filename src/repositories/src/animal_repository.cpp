@@ -66,7 +66,7 @@ AnimalRepository::AnimalRepository(userver::storages::postgres::ClusterPtr pg_cl
 [[nodiscard]] std::optional<models::Animal> AnimalRepository::GetById(int64_t id) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
-        "SELECT id, organization_id, name, breed_id, size, gender, "
+        "SELECT id, organization_id, name, breed_id, user_id, size, gender, "
         "care_level, good_with, color, age, description, status "
         "FROM animals WHERE id = $1",
         id
@@ -95,7 +95,7 @@ std::pair<std::vector<models::Animal>, std::int64_t> AnimalRepository::GetByOrga
 
     auto data_result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
-        "SELECT id, organization_id, name, breed_id, size, gender, "
+        "SELECT id, organization_id, name, breed_id, user_id, size, gender, "
         "care_level, good_with, color, age, description, status "
         "FROM animals WHERE organization_id = $1 "
         "ORDER BY id ASC "
@@ -115,7 +115,7 @@ models::Animal AnimalRepository::Create(const models::Animal& animal) const {
         "INSERT INTO animals (organization_id, name, breed_id, size, gender, "
         "care_level, good_with, color, age, description, status) "
         "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) "
-        "RETURNING id, organization_id, name, breed_id, size, gender, "
+        "RETURNING id, organization_id, name, breed_id, user_id, size, gender, "
         "care_level, good_with, color, age, description, status",
         animal.organization_id,
         animal.name,
@@ -155,7 +155,10 @@ std::optional<models::Animal> AnimalRepository::Update(const models::Animal& ani
     if (animal.care_level != models::CareLevel::kUnspecified) {
         add_field("care_level", animal.care_level);
     }
-    if (animal.status != models::AnimalStatus::kUnspecified) {
+    if (animal.status == models::AnimalStatus::kAvailable || animal.status == models::AnimalStatus::kUnavailable) {
+        add_field("status", animal.status);
+        updates.push_back("user_id = NULL");
+    } else if (animal.status != models::AnimalStatus::kUnspecified) {
         add_field("status", animal.status);
     }
     if (animal.description.has_value()) {
@@ -172,7 +175,7 @@ std::optional<models::Animal> AnimalRepository::Update(const models::Animal& ani
     }
     auto query = fmt::format(
         "UPDATE animals SET {} WHERE id = $1 "
-        "RETURNING id, organization_id, name, breed_id, size, gender, "
+        "RETURNING id, organization_id, name, breed_id, user_id, size, gender, "
         "care_level, good_with, color, age, description, status",
         fmt::join(updates, ", ")
     );
@@ -278,7 +281,7 @@ std::pair<std::vector<models::Animal>, std::int64_t> AnimalRepository::FindByFil
     auto [data_clause, data_params] = utils::sql::BuildQueryClause(data_filter, kFilterWhitelist);
     auto data_result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
-        "SELECT a.id, a.organization_id, a.name, a.breed_id, a.size, a.gender, "
+        "SELECT a.id, a.organization_id, a.name, a.breed_id, a.user_id, a.size, a.gender, "
         "a.care_level, a.good_with, a.color, a.age, a.description, a.status "
         "FROM animals a "
         "LEFT JOIN breeds b ON a.breed_id = b.id "
@@ -289,6 +292,38 @@ std::pair<std::vector<models::Animal>, std::int64_t> AnimalRepository::FindByFil
     auto animals = data_result.AsContainer<std::vector<models::Animal>>(userver::storages::postgres::kRowTag);
 
     return {std::move(animals), total_count};
+}
+
+std::optional<models::Animal> AnimalRepository::Adopt(std::int64_t animal_id, std::int64_t user_id) const {
+    auto result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kMaster,
+        "UPDATE animals SET user_id = $2, status = 'adopted' WHERE id = $1 "
+        "RETURNING id, organization_id, name, breed_id, user_id, size, gender, "
+        "care_level, good_with, color, age, description, status",
+        animal_id,
+        user_id
+    );
+    if (result.IsEmpty()) {
+        return std::nullopt;
+    }
+    return result.AsSingleRow<models::Animal>(userver::storages::postgres::kRowTag);
+}
+
+void AnimalRepository::UpdateStatusAndUserId(
+    std::int64_t animal_id,
+    models::AnimalStatus new_status,
+    std::optional<std::int64_t> user_id
+) const {
+    if (animal_id <= 0) {
+        throw std::invalid_argument("animal_id must be positive");
+    }
+    pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kMaster,
+        "UPDATE animals SET status = $2, user_id = $3 WHERE id = $1",
+        animal_id,
+        new_status,
+        user_id
+    );
 }
 
 }  // namespace pawspective::repositories
