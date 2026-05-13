@@ -157,7 +157,7 @@ std::optional<models::Animal> AnimalRepository::Update(const models::Animal& ani
     }
     if (animal.status == models::AnimalStatus::kAvailable || animal.status == models::AnimalStatus::kUnavailable) {
         add_field("status", animal.status);
-        updates.push_back("user_id = NULL");
+        add_field("user_id", std::optional<std::int64_t>{std::nullopt});
     } else if (animal.status != models::AnimalStatus::kUnspecified) {
         add_field("status", animal.status);
     }

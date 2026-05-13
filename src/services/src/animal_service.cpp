@@ -28,6 +28,10 @@ dto::AnimalDTO AnimalService::Update(int64_t user_id, int64_t animal_id, const d
         throw AnimalNotFoundException();
     }
 
+    if (dto.status == models::AnimalStatus::kAdopted) {
+        throw ForbiddenException();
+    }
+
     auto user_org_id = user_service_.GetOrganizationId(user_id);
     if (!user_org_id || *user_org_id != existing->organization_id) {
         throw ForbiddenException();

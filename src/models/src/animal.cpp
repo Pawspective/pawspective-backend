@@ -43,7 +43,6 @@ dto::AnimalDTO Animal::to_dto(const Animal& model, const dto::BreedDTO& breed) {
     dto.age = model.age;
     dto.description = model.description;
     dto.status = model.status;
-    dto.user_id = model.user_id;
 
     return dto;
 }
