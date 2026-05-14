@@ -136,4 +136,12 @@ models::User UserRepository::link_organization(std::int64_t id, std::int64_t org
 
     return result.AsSingleRow<models::Organization>(userver::storages::postgres::kRowTag);
 }
+void UserRepository::delete_user(std::int64_t id) const {
+    auto result =
+        pg_cluster_
+            ->Execute(userver::storages::postgres::ClusterHostType::kMaster, "DELETE FROM users WHERE id = $1", id);
+    if (result.RowsAffected() == 0) {
+        throw std::runtime_error("User not found");
+    }
+}
 }  // namespace pawspective::repositories

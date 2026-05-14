@@ -18,6 +18,7 @@ public:
     std::optional<std::int64_t> GetOrganizationId(std::int64_t user_id) const;
     models::User UpdateUser(std::int64_t user_id, const dto::UserUpdateDTO& dto) const;
     bool CanUserCreateOrganization(std::int64_t user_id) const;
+    void DeleteUser(std::int64_t user_id) const;
 
 private:
     const repositories::UserRepository& user_repository_;

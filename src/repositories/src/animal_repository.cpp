@@ -290,5 +290,13 @@ std::pair<std::vector<models::Animal>, std::int64_t> AnimalRepository::FindByFil
 
     return {std::move(animals), total_count};
 }
+void AnimalRepository::Delete(std::int64_t id) const {
+    auto result =
+        pg_cluster_
+            ->Execute(userver::storages::postgres::ClusterHostType::kMaster, "DELETE FROM animals WHERE id = $1", id);
+    if (result.RowsAffected() == 0) {
+        throw std::runtime_error("Animal not found");
+    }
+}
 
 }  // namespace pawspective::repositories

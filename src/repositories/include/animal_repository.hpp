@@ -27,8 +27,7 @@ public:
         int page,
         int limit
     ) const;
-
-    // void Delete(std::int64_t id) const; //TODO: add delete method when needed
+    void Delete(std::int64_t id) const;
 
 private:
     const userver::storages::postgres::ClusterPtr pg_cluster_;

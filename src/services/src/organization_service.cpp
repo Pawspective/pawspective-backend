@@ -77,4 +77,16 @@ dto::OrganizationDTO OrganizationService::Update(
     return models::Organization::to_dto(*result, city_dto);
 }
 
+void OrganizationService::Delete(int64_t user_id, int64_t org_id) const {
+    auto user = user_service_.GetUserById(user_id);
+    if (!user.organization_id || user.organization_id != org_id) {
+        throw ForbiddenException();
+    }
+    auto org = repository_.GetById(org_id);
+    if (!org) {
+        throw OrganizationNotFoundException();
+    }
+    repository_.Delete(org_id);
+}
+
 }  // namespace pawspective::services

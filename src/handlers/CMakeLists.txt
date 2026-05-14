@@ -20,6 +20,9 @@ set(HANDLERS_SOURCES
     src/animal_get_handler.cpp
     src/animal_list_handler.cpp
     src/breed_list_handler.cpp
+    src/animal_delete_handler.cpp
+    src/org_delete_handler.cpp
+    src/user_delete_handler.cpp
 )
 
 add_library(pawspective_handlers STATIC ${HANDLERS_SOURCES})

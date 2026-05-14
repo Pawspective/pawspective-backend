@@ -131,6 +131,15 @@ components_manager:
                     - jwt
                 required: true
 
+        handler-user-delete:
+            path: /user/{id}
+            method: DELETE
+            task_processor: main-task-processor
+            auth:
+                types:
+                    - jwt
+                required: true
+
         handler-city-list:
             path: /city
             method: GET
@@ -169,6 +178,15 @@ components_manager:
             method: GET
             task_processor: main-task-processor
 
+        handler-org-delete:
+            path: /orgs/{id}
+            method: DELETE
+            task_processor: main-task-processor
+            auth:
+                types:
+                    - jwt
+                required: true
+
         handler-animal-registration:
             path: /animals
             method: POST
@@ -206,3 +224,14 @@ components_manager:
             path: /animals/{id}
             method: GET
             task_processor: main-task-processor
+
+        handler-animal-delete:
+            path: /animals/{id}
+            method: DELETE
+            task_processor: main-task-processor
+            auth:
+                types:
+                    - jwt
+                required: true
+                
+
