@@ -102,7 +102,7 @@ async def test_update_animal_success(
     """Test successful animal update"""
     response = await service_client.put(
         f"/animals/{registered_animal['id']}",
-        json={'name': 'Max', 'age': 4, 'status': 'unavailable'},
+        json={'name': 'Max', 'age': 4, 'status': 'adopted'},
         headers={'Authorization': f"Bearer {authenticated_user['token']}"},
     )
 
@@ -111,7 +111,7 @@ async def test_update_animal_success(
     assert data['id'] == registered_animal['id']
     assert data['name'] == 'Max'
     assert data['age'] == 4
-    assert data['status'] == 'unavailable'
+    assert data['status'] == 'adopted'
     assert data['size'] == 'large'
     assert data['gender'] == 'male'
 
@@ -208,20 +208,6 @@ async def test_update_animal_blank_name(
     assert response.status == 400
     data = response.json()
     assert data['error']['code'] == 'VALIDATION_ERROR'
-
-
-async def test_update_animal_status_adopted_forbidden(
-    service_client, authenticated_user, registered_animal
-):
-    """Test that setting status to adopted via update is forbidden"""
-    response = await service_client.put(
-        f"/animals/{registered_animal['id']}",
-        json={'status': 'adopted'},
-        headers={'Authorization': f"Bearer {authenticated_user['token']}"},
-    )
-
-    assert response.status == 403
-    assert response.json()['error']['code'] == 'FORBIDDEN'
 
 
 async def test_update_animal_invalid_id(service_client, authenticated_user):

@@ -155,11 +155,9 @@ std::optional<models::Animal> AnimalRepository::Update(const models::Animal& ani
     if (animal.care_level != models::CareLevel::kUnspecified) {
         add_field("care_level", animal.care_level);
     }
-    if (animal.status == models::AnimalStatus::kAvailable || animal.status == models::AnimalStatus::kUnavailable) {
+    if (animal.status != models::AnimalStatus::kUnspecified) {
         add_field("status", animal.status);
         add_field("user_id", std::optional<std::int64_t>{std::nullopt});
-    } else if (animal.status != models::AnimalStatus::kUnspecified) {
-        add_field("status", animal.status);
     }
     if (animal.description.has_value()) {
         add_field("description", animal.description.value());
