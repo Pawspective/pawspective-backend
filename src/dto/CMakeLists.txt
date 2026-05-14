@@ -13,6 +13,10 @@ set(DTO_SOURCES
     src/animal_filter_dto.cpp
     src/animal_list_dto.cpp
     src/organization_list_dto.cpp
+    src/review_create_dto.cpp
+    src/review_dto.cpp
+    src/review_list_dto.cpp
+    src/review_update_dto.cpp
 )
 
 add_library(pawspective_dto STATIC ${DTO_SOURCES})
