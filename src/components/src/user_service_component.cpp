@@ -1,5 +1,5 @@
 #include "components/user_service_component.hpp"
-
+#include "organization_service_component.hpp"
 #include "user_repository_component.hpp"
 
 namespace pawspective::components {
