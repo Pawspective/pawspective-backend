@@ -19,7 +19,7 @@ public:
         int page,
         int limit
     ) const;
-    void Delete(int64_t organization_id) const;
+    bool Delete(int64_t organization_id) const;
 
 private:
     const userver::storages::postgres::ClusterPtr pg_cluster_;

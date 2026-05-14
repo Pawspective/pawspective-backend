@@ -86,7 +86,10 @@ void OrganizationService::Delete(int64_t user_id, int64_t org_id) const {
     if (!org) {
         throw OrganizationNotFoundException();
     }
-    repository_.Delete(org_id);
+    auto deleted = repository_.Delete(org_id);
+    if (!deleted) {
+        throw std::runtime_error("Failed to delete organization");
+    }
 }
 
 }  // namespace pawspective::services

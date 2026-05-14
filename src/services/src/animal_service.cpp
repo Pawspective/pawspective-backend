@@ -124,8 +124,10 @@ void AnimalService::Delete(int64_t user_id, int64_t animal_id) const {
     if (!user_org_id || *user_org_id != existing->organization_id) {
         throw ForbiddenException();
     }
-
-    repository_.Delete(animal_id);
+    auto deleted = repository_.Delete(animal_id);
+    if (!deleted) {
+        throw std::runtime_error("Failed to delete animal");
+    }
 }
 
 }  // namespace pawspective::services

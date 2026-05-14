@@ -25,6 +25,6 @@ public:
     [[nodiscard]] bool check_can_create_shelter(std::int64_t id) const;
     [[nodiscard]] std::optional<std::int64_t> get_organization_id_by_user_id(std::int64_t id) const;
     [[nodiscard]] std::optional<models::Organization> get_organization_by_user_id(std::int64_t id) const;
-    void delete_user(std::int64_t id) const;
+    bool delete_user(std::int64_t id) const;
 };
 }  // namespace pawspective::repositories

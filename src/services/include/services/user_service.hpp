@@ -7,6 +7,7 @@
 #include "user_update_dto.hpp"
 
 namespace pawspective::services {
+
 class UserService {
 public:
     explicit UserService(const repositories::UserRepository& user_repository);
