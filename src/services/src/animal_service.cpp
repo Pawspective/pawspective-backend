@@ -119,14 +119,13 @@ void AnimalService::Delete(int64_t user_id, int64_t animal_id) const {
     if (!existing) {
         throw AnimalNotFoundException();
     }
-
     auto user_org_id = user_service_.GetOrganizationId(user_id);
     if (!user_org_id || *user_org_id != existing->organization_id) {
         throw ForbiddenException();
     }
     auto deleted = repository_.Delete(animal_id);
     if (!deleted) {
-        throw std::runtime_error("Failed to delete animal");
+        throw AnimalNotFoundException();
     }
 }
 

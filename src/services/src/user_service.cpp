@@ -75,7 +75,7 @@ void UserService::DeleteUser(std::int64_t user_id) const {
     }
     auto deleted = user_repository_.delete_user(user_id);
     if (!deleted) {
-        throw std::runtime_error("Failed to delete user");
+        throw UserNotFoundException();
     }
 }
 }  // namespace pawspective::services
