@@ -86,6 +86,18 @@ CREATE TABLE IF NOT EXISTS posts (
     CONSTRAINT fk_posts_organization FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS reviews (
+    id BIGSERIAL PRIMARY KEY,
+    animal_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    text TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    
+    CONSTRAINT fk_reviews_animal FOREIGN KEY (animal_id) REFERENCES animals(id) ON DELETE CASCADE,
+    CONSTRAINT fk_reviews_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT unique_review_per_user_animal UNIQUE(user_id, animal_id)
+);
+
 CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
 CREATE INDEX IF NOT EXISTS idx_users_organization_id ON users (organization_id);
 CREATE INDEX IF NOT EXISTS idx_organizations_city_id ON organizations (city_id);
@@ -95,6 +107,8 @@ CREATE INDEX IF NOT EXISTS idx_animals_breed_id ON animals(breed_id);
 CREATE INDEX IF NOT EXISTS idx_animals_status ON animals(status);
 CREATE INDEX IF NOT EXISTS idx_posts_organization_id ON posts(organization_id);
 CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_reviews_animal_id ON reviews(animal_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_created_at ON reviews(created_at DESC);
 
 CREATE SCHEMA IF NOT EXISTS auth_schema;
 
