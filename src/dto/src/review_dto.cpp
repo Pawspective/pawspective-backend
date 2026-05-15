@@ -5,7 +5,6 @@
 
 namespace pawspective::dto {
 
-
 ReviewDTO Parse(const userver::formats::json::Value& json, userver::formats::parse::To<ReviewDTO>) {
     ReviewDTO review;
     review.id = json["id"].As<std::int64_t>();

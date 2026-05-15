@@ -15,7 +15,6 @@ struct ReviewDTO {
     bool can_edit = false;
 };
 
-
 ReviewDTO Parse(const userver::formats::json::Value& json, userver::formats::parse::To<ReviewDTO>);
 
 userver::formats::json::Value

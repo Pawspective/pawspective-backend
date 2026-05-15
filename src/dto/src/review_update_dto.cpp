@@ -11,7 +11,6 @@ ReviewUpdateDTO Parse(const userver::formats::json::Value& json, userver::format
     return dto;
 }
 
-
 userver::formats::json::Value
 Serialize(const ReviewUpdateDTO& review_update, userver::formats::serialize::To<userver::formats::json::Value>) {
     userver::formats::json::ValueBuilder builder;
