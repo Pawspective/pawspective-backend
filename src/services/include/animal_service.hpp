@@ -30,6 +30,7 @@ public:
     [[nodiscard]] dto::AnimalListDTO GetByOrganizationPaginated(int64_t org_id, int page) const;
     [[nodiscard]] dto::AnimalFilterDTO GetFilterOptions() const;
     [[nodiscard]] dto::AnimalListDTO FindByFilters(const dto::AnimalFilterDTO& dto, int page) const;
+    void Delete(int64_t user_id, int64_t animal_id) const;
 
 private:
     const repositories::AnimalRepository& repository_;

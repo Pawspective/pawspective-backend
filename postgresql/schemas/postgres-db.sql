@@ -103,4 +103,18 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_sessions_refresh_hash
 CREATE INDEX IF NOT EXISTS idx_sessions_user_id
     ON auth_schema.sessions (user_id);
 
+CREATE OR REPLACE FUNCTION delete_user_org_callback()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF OLD.organization_id IS NOT NULL THEN
+        DELETE FROM organizations WHERE id = OLD.organization_id;
+    END IF;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_after_delete_user ON users;
+CREATE TRIGGER trg_after_delete_user
+AFTER DELETE ON users
+FOR EACH ROW 
+EXECUTE FUNCTION delete_user_org_callback();
