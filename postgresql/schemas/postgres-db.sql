@@ -78,6 +78,14 @@ CREATE TABLE IF NOT EXISTS animals (
     CONSTRAINT fk_animals_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
+CREATE TABLE IF NOT EXISTS posts (
+    id BIGSERIAL PRIMARY KEY,
+    organization_id BIGINT NOT NULL,
+    text TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    CONSTRAINT fk_posts_organization FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE
+);
+
 CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
 CREATE INDEX IF NOT EXISTS idx_users_organization_id ON users (organization_id);
 CREATE INDEX IF NOT EXISTS idx_organizations_city_id ON organizations (city_id);
@@ -85,6 +93,8 @@ CREATE INDEX IF NOT EXISTS idx_org_name_trgm ON organizations USING gin (name gi
 CREATE INDEX IF NOT EXISTS idx_animals_org_id ON animals(organization_id);
 CREATE INDEX IF NOT EXISTS idx_animals_breed_id ON animals(breed_id);
 CREATE INDEX IF NOT EXISTS idx_animals_status ON animals(status);
+CREATE INDEX IF NOT EXISTS idx_posts_organization_id ON posts(organization_id);
+CREATE INDEX IF NOT EXISTS idx_posts_created_at ON posts(created_at DESC);
 
 CREATE SCHEMA IF NOT EXISTS auth_schema;
 

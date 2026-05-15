@@ -71,6 +71,9 @@ components_manager:
         breed-service:
             load-enabled: true
 
+        post-repository:
+            load-enabled: true
+
         server:
             listener:
                 port: $server-port
