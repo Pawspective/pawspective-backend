@@ -7,6 +7,7 @@ set(MODELS_SOURCES
     src/animal_enums.cpp
     src/breed.cpp
     src/animal_filters.cpp
+    src/review.cpp
     src/post.cpp
 )
 
