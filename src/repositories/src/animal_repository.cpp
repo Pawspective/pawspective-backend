@@ -307,21 +307,4 @@ std::optional<models::Animal> AnimalRepository::Adopt(std::int64_t animal_id, st
     return result.AsSingleRow<models::Animal>(userver::storages::postgres::kRowTag);
 }
 
-void AnimalRepository::UpdateStatusAndUserId(
-    std::int64_t animal_id,
-    models::AnimalStatus new_status,
-    std::optional<std::int64_t> user_id
-) const {
-    if (animal_id <= 0) {
-        throw std::invalid_argument("animal_id must be positive");
-    }
-    pg_cluster_->Execute(
-        userver::storages::postgres::ClusterHostType::kMaster,
-        "UPDATE animals SET status = $2, user_id = $3 WHERE id = $1",
-        animal_id,
-        new_status,
-        user_id
-    );
-}
-
 }  // namespace pawspective::repositories
