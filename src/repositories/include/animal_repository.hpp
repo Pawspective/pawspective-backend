@@ -27,8 +27,8 @@ public:
         int page,
         int limit
     ) const;
-
-    // void Delete(std::int64_t id) const; //TODO: add delete method when needed
+    std::optional<models::Animal> Adopt(std::int64_t animal_id, std::int64_t user_id) const;
+    bool Delete(std::int64_t id) const;
 
 private:
     const userver::storages::postgres::ClusterPtr pg_cluster_;

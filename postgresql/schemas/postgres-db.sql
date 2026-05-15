@@ -69,11 +69,13 @@ CREATE TABLE IF NOT EXISTS animals (
     good_with good_with NOT NULL,     
     color animal_color NOT NULL,      
     age INT NOT NULL,
+    user_id BIGINT,
     description TEXT,
     status animal_status NOT NULL DEFAULT 'available',
     
     CONSTRAINT fk_animals_organization FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE,
-    CONSTRAINT fk_animals_breed FOREIGN KEY (breed_id) REFERENCES breeds(id) ON DELETE RESTRICT
+    CONSTRAINT fk_animals_breed FOREIGN KEY (breed_id) REFERENCES breeds(id) ON DELETE RESTRICT,
+    CONSTRAINT fk_animals_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
@@ -101,4 +103,18 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_sessions_refresh_hash
 CREATE INDEX IF NOT EXISTS idx_sessions_user_id
     ON auth_schema.sessions (user_id);
 
+CREATE OR REPLACE FUNCTION delete_user_org_callback()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF OLD.organization_id IS NOT NULL THEN
+        DELETE FROM organizations WHERE id = OLD.organization_id;
+    END IF;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
 
+DROP TRIGGER IF EXISTS trg_after_delete_user ON users;
+CREATE TRIGGER trg_after_delete_user
+AFTER DELETE ON users
+FOR EACH ROW 
+EXECUTE FUNCTION delete_user_org_callback();

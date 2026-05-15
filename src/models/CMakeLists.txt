@@ -8,6 +8,7 @@ set(MODELS_SOURCES
     src/breed.cpp
     src/animal_filters.cpp
     src/review.cpp
+    src/post.cpp
 )
 
 add_library(pawspective_models STATIC ${MODELS_SOURCES})

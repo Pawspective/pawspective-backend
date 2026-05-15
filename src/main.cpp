@@ -8,6 +8,7 @@
 #include <userver/storages/secdist/provider_component.hpp>
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/utils/daemon_run.hpp>
+#include "animal_delete_handler.hpp"
 #include "animal_filters_handler.hpp"
 #include "animal_get_handler.hpp"
 #include "animal_list_handler.hpp"
@@ -30,6 +31,7 @@
 #include "health_handler.hpp"
 #include "jwt_component.hpp"
 #include "org_animals_handler.hpp"
+#include "org_delete_handler.hpp"
 #include "org_get_handler.hpp"
 #include "org_registration_handler.hpp"
 #include "org_search_handler.hpp"
@@ -37,6 +39,7 @@
 #include "organization_repository_component.hpp"
 #include "organization_service_component.hpp"
 #include "pg_session_component.hpp"
+#include "user_delete_handler.hpp"
 #include "user_registration_handler.hpp"
 #include "user_repository_component.hpp"
 #include "user_update_handler.hpp"
@@ -62,12 +65,12 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::handlers::UserRegistrationHandler>()
             .Append<pawspective::handlers::AuthLogoutHandler>()
             .Append<pawspective::handlers::AuthLoginHandler>()
+            .Append<pawspective::components::OrganizationServiceComponent>()
             .Append<pawspective::components::UserServiceComponent>()
             .Append<pawspective::handlers::UserUpdateHandler>()
             .Append<pawspective::components::CityRepositoryComponent>()
             .Append<pawspective::components::CityServiceComponent>()
             .Append<pawspective::components::OrganizationRepositoryComponent>()
-            .Append<pawspective::components::OrganizationServiceComponent>()
             .Append<pawspective::components::AnimalRepositoryComponent>()
             .Append<pawspective::components::AnimalServiceComponent>()
             .Append<pawspective::components::BreedRepositoryComponent>()
@@ -83,6 +86,9 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::handlers::AnimalGetHandler>()
             .Append<pawspective::handlers::AnimalListHandler>()
             .Append<pawspective::handlers::AnimalFiltersHandler>()
+            .Append<pawspective::handlers::UserDeleteHandler>()
+            .Append<pawspective::handlers::OrganizationDeleteHandler>()
+            .Append<pawspective::handlers::AnimalDeleteHandler>()
             .Append<pawspective::handlers::BreedListHandler>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);

@@ -219,3 +219,55 @@ async def test_update_animal_invalid_id(service_client, authenticated_user):
     )
 
     assert response.status == 404
+
+
+async def test_update_status_to_available_clears_user_id(
+    service_client, authenticated_user, registered_animal, pgsql
+):
+    """Test that changing status to available clears user_id"""
+    conn = pgsql['postgres-db']
+    cursor = conn.cursor()
+    cursor.execute(
+        'UPDATE animals SET user_id = (SELECT id FROM users LIMIT 1), status = %s WHERE id = %s',
+        ('adopted', registered_animal['id']),
+    )
+
+    response = await service_client.put(
+        f"/animals/{registered_animal['id']}",
+        json={'status': 'available'},
+        headers={'Authorization': f"Bearer {authenticated_user['token']}"},
+    )
+
+    assert response.status == 200
+    assert response.json()['status'] == 'available'
+
+    cursor.execute('SELECT user_id FROM animals WHERE id = %s',
+                   (registered_animal['id'],))
+    row = cursor.fetchone()
+    assert row[0] is None
+
+
+async def test_update_status_to_unavailable_clears_user_id(
+    service_client, authenticated_user, registered_animal, pgsql
+):
+    """Test that changing status to unavailable clears user_id"""
+    conn = pgsql['postgres-db']
+    cursor = conn.cursor()
+    cursor.execute(
+        'UPDATE animals SET user_id = (SELECT id FROM users LIMIT 1), status = %s WHERE id = %s',
+        ('adopted', registered_animal['id']),
+    )
+
+    response = await service_client.put(
+        f"/animals/{registered_animal['id']}",
+        json={'status': 'unavailable'},
+        headers={'Authorization': f"Bearer {authenticated_user['token']}"},
+    )
+
+    assert response.status == 200
+    assert response.json()['status'] == 'unavailable'
+
+    cursor.execute('SELECT user_id FROM animals WHERE id = %s',
+                   (registered_animal['id'],))
+    row = cursor.fetchone()
+    assert row[0] is None

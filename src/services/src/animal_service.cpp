@@ -44,6 +44,22 @@ dto::AnimalDTO AnimalService::Update(int64_t user_id, int64_t animal_id, const d
     return models::Animal::to_dto(*updated, breed_dto);
 }
 
+dto::AnimalDTO AnimalService::Adopt(int64_t user_id, int64_t animal_id) const {
+    auto existing = repository_.GetById(animal_id);
+    if (!existing) {
+        throw AnimalNotFoundException();
+    }
+    if (existing->status != models::AnimalStatus::kAvailable) {
+        throw AnimalNotAvailableException();
+    }
+    auto adopted = repository_.Adopt(animal_id, user_id);
+    if (!adopted) {
+        throw AnimalNotFoundException();
+    }
+    auto breed_dto = breed_service_.Get(adopted->breed_id);
+    return models::Animal::to_dto(*adopted, breed_dto);
+}
+
 dto::AnimalDTO AnimalService::Get(int64_t id) const {
     auto animal = repository_.GetById(id);
     if (!animal) {
@@ -112,6 +128,21 @@ dto::AnimalListDTO AnimalService::FindByFilters(const dto::AnimalFilterDTO& filt
 
     const std::int64_t total_pages = total_count == 0 ? 1 : (total_count + kPageSize - 1) / kPageSize;
     return {std::move(items), page, kPageSize, total_count, total_pages};
+}
+
+void AnimalService::Delete(int64_t user_id, int64_t animal_id) const {
+    auto existing = repository_.GetById(animal_id);
+    if (!existing) {
+        throw AnimalNotFoundException();
+    }
+    auto user_org_id = user_service_.GetOrganizationId(user_id);
+    if (!user_org_id || *user_org_id != existing->organization_id) {
+        throw ForbiddenException();
+    }
+    auto deleted = repository_.Delete(animal_id);
+    if (!deleted) {
+        throw AnimalNotFoundException();
+    }
 }
 
 }  // namespace pawspective::services

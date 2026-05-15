@@ -25,10 +25,12 @@ public:
 
     dto::AnimalDTO Create(int64_t user_id, const dto::AnimalRegisterDTO& dto) const;
     dto::AnimalDTO Update(int64_t user_id, int64_t animal_id, const dto::AnimalUpdateDTO& dto) const;
+    dto::AnimalDTO Adopt(int64_t user_id, int64_t animal_id) const;
     [[nodiscard]] dto::AnimalDTO Get(int64_t id) const;
     [[nodiscard]] dto::AnimalListDTO GetByOrganizationPaginated(int64_t org_id, int page) const;
     [[nodiscard]] dto::AnimalFilterDTO GetFilterOptions() const;
     [[nodiscard]] dto::AnimalListDTO FindByFilters(const dto::AnimalFilterDTO& dto, int page) const;
+    void Delete(int64_t user_id, int64_t animal_id) const;
 
 private:
     const repositories::AnimalRepository& repository_;

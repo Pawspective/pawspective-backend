@@ -14,3 +14,4 @@ Testing/
 Makefile.local
 CMakeUserPresets.json
 secdist.json
+${PREFIX:-~/.local}

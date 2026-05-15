@@ -67,4 +67,15 @@ models::User UserService::UpdateUser(std::int64_t user_id, const dto::UserUpdate
 bool UserService::CanUserCreateOrganization(std::int64_t user_id) const {
     return user_repository_.check_can_create_shelter(user_id);
 }
+
+void UserService::DeleteUser(std::int64_t user_id) const {
+    auto existing = user_repository_.get_by_id(user_id);
+    if (!existing) {
+        throw UserNotFoundException();
+    }
+    auto deleted = user_repository_.delete_user(user_id);
+    if (!deleted) {
+        throw UserNotFoundException();
+    }
+}
 }  // namespace pawspective::services

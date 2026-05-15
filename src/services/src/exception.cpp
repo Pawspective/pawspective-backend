@@ -19,4 +19,7 @@ BreedNotFoundException::BreedNotFoundException() : std::runtime_error("Breed not
 
 ForbiddenException::ForbiddenException() : std::runtime_error("Forbidden") {}
 
+AnimalNotAvailableException::AnimalNotAvailableException()
+    : std::runtime_error("Animal is not available for adoption") {}
+
 }  // namespace pawspective::services

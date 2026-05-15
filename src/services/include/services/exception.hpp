@@ -43,4 +43,9 @@ public:
     explicit ForbiddenException();
 };
 
+class AnimalNotAvailableException : public std::runtime_error {
+public:
+    explicit AnimalNotAvailableException();
+};
+
 }  // namespace pawspective::services

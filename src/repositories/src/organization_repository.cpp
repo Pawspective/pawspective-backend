@@ -103,5 +103,13 @@ std::optional<models::Organization> OrganizationRepository::Update(const models:
     }
     return result.AsSingleRow<models::Organization>(userver::storages::postgres::kRowTag);
 }
+bool OrganizationRepository::Delete(int64_t organization_id) const {
+    auto result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kMaster,
+        "DELETE FROM organizations WHERE id = $1",
+        organization_id
+    );
+    return result.RowsAffected() > 0;
+}
 
 }  // namespace pawspective::repositories
