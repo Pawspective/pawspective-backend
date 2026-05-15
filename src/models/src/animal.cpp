@@ -15,6 +15,7 @@ Animal Animal::from_register_dto(const dto::AnimalRegisterDTO& reg) {
         reg.name,
         // reg.photo_url, --- IGNORE ---
         reg.breed_id,
+        std::nullopt,  // user_id will be null when creating a new animal
         reg.size,
         reg.gender,
         reg.care_level,
@@ -53,6 +54,7 @@ Animal Animal::from_update_dto(std::int64_t id, const dto::AnimalUpdateDTO& upd)
         upd.name.value_or(""),
         // std::nullopt, --- IGNORE ---
         upd.breed_id.value_or(-1),
+        std::nullopt,  // user_id is set only via Adopt, not through general update
         upd.size.value_or(AnimalSize::kUnspecified),
         upd.gender.value_or(AnimalGender::kUnspecified),
         upd.care_level.value_or(CareLevel::kUnspecified),

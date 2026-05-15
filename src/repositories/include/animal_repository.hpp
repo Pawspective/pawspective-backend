@@ -27,6 +27,7 @@ public:
         int page,
         int limit
     ) const;
+    std::optional<models::Animal> Adopt(std::int64_t animal_id, std::int64_t user_id) const;
     bool Delete(std::int64_t id) const;
 
 private:
