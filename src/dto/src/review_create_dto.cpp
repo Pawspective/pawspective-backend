@@ -1,4 +1,5 @@
 #include "review_create_dto.hpp"
+#include <userver/formats/json/value_builder.hpp>
 
 namespace pawspective::dto {
 
@@ -9,4 +10,11 @@ ReviewCreateDTO Parse(const userver::formats::json::Value& json, userver::format
     return review_create_dto;
 }
 
+userver::formats::json::Value
+Serialize(const ReviewCreateDTO& review_create, userver::formats::serialize::To<userver::formats::json::Value>) {
+    userver::formats::json::ValueBuilder builder;
+    builder["animal_id"] = review_create.animal_id;
+    builder["text"] = review_create.text;
+    return builder.ExtractValue();
+}
 }  // namespace pawspective::dto

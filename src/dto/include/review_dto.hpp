@@ -15,6 +15,9 @@ struct ReviewDTO {
     bool can_edit = false;
 };
 
+
+ReviewDTO Parse(const userver::formats::json::Value& json, userver::formats::parse::To<ReviewDTO>);
+
 userver::formats::json::Value
 Serialize(const ReviewDTO& review, userver::formats::serialize::To<userver::formats::json::Value>);
 }  // namespace pawspective::dto

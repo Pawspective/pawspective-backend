@@ -12,9 +12,7 @@ Review Review::from_create_dto(const dto::ReviewCreateDTO& create, std::int64_t 
 Review Review::from_update_dto(const dto::ReviewUpdateDTO& update, const std::int64_t review_id) {
     Review review;
     review.id = review_id;
-    review.animal_id = -1;
-    review.user_id = -1;
-    review.text = update.text;
+    review.text = update.text.value_or("");
     return review;
 }
 

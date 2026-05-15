@@ -12,4 +12,7 @@ struct ReviewCreateDTO {
 };
 
 ReviewCreateDTO Parse(const userver::formats::json::Value& json, userver::formats::parse::To<ReviewCreateDTO>);
+
+userver::formats::json::Value
+Serialize(const ReviewCreateDTO& review_create, userver::formats::serialize::To<userver::formats::json::Value>);
 }  // namespace pawspective::dto
