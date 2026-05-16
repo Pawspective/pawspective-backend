@@ -21,6 +21,8 @@ set(DTO_SOURCES
     src/post_create_dto.cpp
     src/post_update_dto.cpp
     src/post_list_dto.cpp
+    src/adopt_request_dto.cpp
+    src/adopt_request_list_dto.cpp
 )
 
 add_library(pawspective_dto STATIC ${DTO_SOURCES})
