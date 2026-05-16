@@ -313,4 +313,21 @@ std::optional<models::Animal> AnimalRepository::Adopt(std::int64_t animal_id, st
     return result.AsSingleRow<models::Animal>(userver::storages::postgres::kRowTag);
 }
 
+[[nodiscard]] std::unordered_map<int64_t, std::string> AnimalRepository::GetNamesByIds(const std::vector<int64_t>& ids
+) const {
+    if (ids.empty()) {
+        return {};
+    }
+    auto result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kSlave,
+        "SELECT id, name FROM animals WHERE id = ANY($1)",
+        ids
+    );
+    std::unordered_map<int64_t, std::string> res;
+    for (const auto& row : result) {
+        res.emplace(row[0].As<int64_t>(), row[1].As<std::string>());
+    }
+    return res;
+}
+
 }  // namespace pawspective::repositories
