@@ -132,7 +132,8 @@ CREATE TABLE IF NOT EXISTS adopt_requests (
     animal_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
     CONSTRAINT fk_adopt_requests_animal FOREIGN KEY (animal_id) REFERENCES animals(id) ON DELETE CASCADE,
-    CONSTRAINT fk_adopt_requests_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    CONSTRAINT fk_adopt_requests_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT unique_adopt_request_per_user_animal UNIQUE (animal_id, user_id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_adopt_requests_animal_id ON adopt_requests (animal_id);

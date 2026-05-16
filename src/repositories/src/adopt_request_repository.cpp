@@ -28,4 +28,32 @@ std::optional<models::AdoptRequest> AdoptRequestRepository::GetById(std::int64_t
     return result.AsSingleRow<models::AdoptRequest>(userver::storages::postgres::kRowTag);
 }
 
+std::vector<models::AdoptRequest> AdoptRequestRepository::GetByOrganizationId(std::int64_t organization_id) const {
+    auto result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kSlave,
+        "SELECT ar.id, ar.animal_id, ar.user_id "
+        "FROM adopt_requests ar "
+        "JOIN animals a ON ar.animal_id = a.id "
+        "WHERE a.organization_id = $1",
+        organization_id
+    );
+    return result.AsContainer<std::vector<models::AdoptRequest>>(userver::storages::postgres::kRowTag);
+}
+
+void AdoptRequestRepository::DeleteById(std::int64_t id) const {
+    pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kMaster,
+        "DELETE FROM adopt_requests WHERE id = $1",
+        id
+    );
+}
+
+void AdoptRequestRepository::DeleteByAnimalId(std::int64_t animal_id) const {
+    pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kMaster,
+        "DELETE FROM adopt_requests WHERE animal_id = $1",
+        animal_id
+    );
+}
+
 }  // namespace pawspective::repositories
