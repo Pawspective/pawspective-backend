@@ -1,7 +1,5 @@
 #include <review_repository.hpp>
 
-#include "services/exception.hpp"
-
 namespace pawspective::repositories {
 ReviewRepository::ReviewRepository(userver::storages::postgres::ClusterPtr pg_cluster)
     : pg_cluster_(std::move(pg_cluster)) {}
