@@ -39,6 +39,7 @@
 #include "organization_repository_component.hpp"
 #include "organization_service_component.hpp"
 #include "pg_session_component.hpp"
+#include "adopt_request_repository_component.hpp"
 #include "post_repository_component.hpp"
 #include "review_repository_component.hpp"
 #include "user_delete_handler.hpp"
@@ -75,6 +76,7 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::components::OrganizationRepositoryComponent>()
             .Append<pawspective::components::PostRepositoryComponent>()
             .Append<pawspective::components::ReviewRepositoryComponent>()
+            .Append<pawspective::components::AdoptRequestRepositoryComponent>()
             .Append<pawspective::components::AnimalRepositoryComponent>()
             .Append<pawspective::components::AnimalServiceComponent>()
             .Append<pawspective::components::BreedRepositoryComponent>()
