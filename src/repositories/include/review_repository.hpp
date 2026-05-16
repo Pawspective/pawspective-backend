@@ -16,7 +16,7 @@ public:
         int limit
     ) const;
     models::Review Create(const models::Review& review) const;
-    models::Review UpdateTextById(int64_t review_id, const std::string& text) const;
+    std::optional<models::Review> UpdateTextById(int64_t review_id, const std::string& text) const;
     bool Delete(int64_t review_id) const;
 
 private:
