@@ -48,4 +48,14 @@ public:
     explicit AnimalNotAvailableException();
 };
 
+class ReviewNotFoundException : public std::runtime_error {
+public:
+    explicit ReviewNotFoundException();
+};
+
+class ReviewAlreadyExistsException : public std::runtime_error {
+public:
+    explicit ReviewAlreadyExistsException();
+};
+
 }  // namespace pawspective::services
