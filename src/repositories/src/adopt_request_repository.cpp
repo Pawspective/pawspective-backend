@@ -40,20 +40,22 @@ std::vector<models::AdoptRequest> AdoptRequestRepository::GetByOrganizationId(st
     return result.AsContainer<std::vector<models::AdoptRequest>>(userver::storages::postgres::kRowTag);
 }
 
-void AdoptRequestRepository::DeleteById(std::int64_t id) const {
-    pg_cluster_->Execute(
+bool AdoptRequestRepository::DeleteById(std::int64_t id) const {
+    auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster,
         "DELETE FROM adopt_requests WHERE id = $1",
         id
     );
+    return result.RowsAffected() > 0;
 }
 
-void AdoptRequestRepository::DeleteByAnimalId(std::int64_t animal_id) const {
-    pg_cluster_->Execute(
+bool AdoptRequestRepository::DeleteByAnimalId(std::int64_t animal_id) const {
+    auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster,
         "DELETE FROM adopt_requests WHERE animal_id = $1",
         animal_id
     );
+    return result.RowsAffected() > 0;
 }
 
 }  // namespace pawspective::repositories

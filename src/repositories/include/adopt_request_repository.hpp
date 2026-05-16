@@ -14,8 +14,8 @@ public:
     models::AdoptRequest Create(std::int64_t animal_id, std::int64_t user_id) const;
     [[nodiscard]] std::optional<models::AdoptRequest> GetById(std::int64_t id) const;
     [[nodiscard]] std::vector<models::AdoptRequest> GetByOrganizationId(std::int64_t organization_id) const;
-    void DeleteById(std::int64_t id) const;
-    void DeleteByAnimalId(std::int64_t animal_id) const;
+    bool DeleteById(std::int64_t id) const;
+    bool DeleteByAnimalId(std::int64_t animal_id) const;
 
 private:
     const userver::storages::postgres::ClusterPtr pg_cluster_;
