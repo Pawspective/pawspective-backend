@@ -1,5 +1,7 @@
 #include <review_repository.hpp>
 
+#include "services/exception.hpp"
+
 namespace pawspective::repositories {
 ReviewRepository::ReviewRepository(userver::storages::postgres::ClusterPtr pg_cluster)
     : pg_cluster_(std::move(pg_cluster)) {}
@@ -46,6 +48,16 @@ ReviewRepository::ReviewRepository(userver::storages::postgres::ClusterPtr pg_cl
     auto reviews = result.AsContainer<std::vector<models::Review>>(userver::storages::postgres::kRowTag);
 
     return {std::move(reviews), total_count};
+}
+
+bool ReviewRepository::ExistsUserReviewForAnimal(int64_t user_id, int64_t animal_id) const {
+    auto result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kSlave,
+        "SELECT EXISTS(SELECT 1 FROM reviews WHERE user_id = $1 AND animal_id = $2)",
+        user_id,
+        animal_id
+    );
+    return result.AsSingleRow<bool>();
 }
 
 models::Review ReviewRepository::Create(const models::Review& review) const {

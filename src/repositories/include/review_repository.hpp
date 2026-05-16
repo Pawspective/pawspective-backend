@@ -15,6 +15,7 @@ public:
         int page,
         int limit
     ) const;
+    [[nodiscard]] bool ExistsUserReviewForAnimal(int64_t user_id, int64_t animal_id) const;
     models::Review Create(const models::Review& review) const;
     std::optional<models::Review> UpdateTextById(int64_t review_id, const std::string& text) const;
     bool Delete(int64_t review_id) const;
