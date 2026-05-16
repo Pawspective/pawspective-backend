@@ -74,6 +74,9 @@ components_manager:
         post-repository:
             load-enabled: true
 
+        review-repository:
+            load-enabled: true
+
         server:
             listener:
                 port: $server-port

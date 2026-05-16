@@ -12,6 +12,7 @@ set(COMPONENTS_SOURCES
     src/animal_service_component.cpp
     src/breed_service_component.cpp
     src/post_repository_component.cpp
+    src/review_repository_component.cpp
 )
 
 add_library(pawspective_components STATIC ${COMPONENTS_SOURCES})
