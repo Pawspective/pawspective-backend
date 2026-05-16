@@ -8,6 +8,7 @@
 #include <userver/storages/secdist/provider_component.hpp>
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/utils/daemon_run.hpp>
+#include "adopt_request_repository_component.hpp"
 #include "animal_delete_handler.hpp"
 #include "animal_filters_handler.hpp"
 #include "animal_get_handler.hpp"
@@ -39,7 +40,6 @@
 #include "organization_repository_component.hpp"
 #include "organization_service_component.hpp"
 #include "pg_session_component.hpp"
-#include "adopt_request_repository_component.hpp"
 #include "post_repository_component.hpp"
 #include "review_repository_component.hpp"
 #include "user_delete_handler.hpp"
