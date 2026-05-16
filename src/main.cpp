@@ -8,6 +8,7 @@
 #include <userver/storages/secdist/provider_component.hpp>
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/utils/daemon_run.hpp>
+#include "adopt_request_repository_component.hpp"
 #include "animal_delete_handler.hpp"
 #include "animal_filters_handler.hpp"
 #include "animal_get_handler.hpp"
@@ -75,6 +76,7 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::components::OrganizationRepositoryComponent>()
             .Append<pawspective::components::PostRepositoryComponent>()
             .Append<pawspective::components::ReviewRepositoryComponent>()
+            .Append<pawspective::components::AdoptRequestRepositoryComponent>()
             .Append<pawspective::components::AnimalRepositoryComponent>()
             .Append<pawspective::components::AnimalServiceComponent>()
             .Append<pawspective::components::BreedRepositoryComponent>()
