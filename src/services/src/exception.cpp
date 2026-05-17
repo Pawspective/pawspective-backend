@@ -23,6 +23,7 @@ AnimalNotAvailableException::AnimalNotAvailableException()
     : std::runtime_error("Animal is not available for adoption") {}
 
 PostNotFoundException::PostNotFoundException() : std::runtime_error("Post not found") {}
+
 ReviewNotFoundException::ReviewNotFoundException() : std::runtime_error("Review not found") {}
 
 ReviewAlreadyExistsException::ReviewAlreadyExistsException()
