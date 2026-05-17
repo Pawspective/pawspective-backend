@@ -63,4 +63,12 @@ void PgSessionService::revoke_session(std::string_view refresh_token) const {
     );
 }
 
+std::size_t PgSessionService::revoke_expired_sessions() const {
+    auto res = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kMaster,
+        "DELETE FROM auth_schema.sessions WHERE expires_at < NOW()"
+    );
+    return res.RowsAffected();
+}
+
 }  // namespace pawspective::services
