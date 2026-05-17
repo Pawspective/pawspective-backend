@@ -9,6 +9,12 @@ pytest_plugins = [
 
 
 @pytest.fixture(scope='session')
+def userver_default_log_level() -> str:
+    """Lower service log verbosity for testsuite runner."""
+    return 'debug'
+
+
+@pytest.fixture(scope='session')
 def pgsql_local(service_source_dir, pgsql_local_create):
     databases = discover.find_schemas(
         service_name=None,
