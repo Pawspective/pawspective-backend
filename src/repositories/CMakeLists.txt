@@ -6,6 +6,7 @@ set(REPOSITORIES_SOURCES
     src/breed_repository.cpp
     src/post_repository.cpp
     src/review_repository.cpp
+    src/adopt_request_repository.cpp
 )
 
 add_library(pawspective_repositories STATIC ${REPOSITORIES_SOURCES})

@@ -59,7 +59,10 @@ components_manager:
         user-service:
             load-enabled: true
 
-        animal-repository: 
+        animal-repository:
+            load-enabled: true
+
+        adopt-request-repository:
             load-enabled: true
 
         breed-repository: 
