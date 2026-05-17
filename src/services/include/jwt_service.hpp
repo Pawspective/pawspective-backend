@@ -112,6 +112,14 @@ public:
      */
     [[nodiscard]] std::optional<TokenPayload> validate_refresh_token(std::string_view token) const;
 
+    /**
+     * @brief Extracts expiration time in seconds
+     *
+     * @param token JWT string
+     * @return Time in seconds
+     */
+    [[nodiscard]] std::chrono::system_clock::time_point ExtractExpirationTime(std::string_view token) const;
+
 private:
     /**
      * @brief Internal helper for token creation.
