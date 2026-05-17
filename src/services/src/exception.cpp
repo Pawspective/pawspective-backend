@@ -22,4 +22,6 @@ ForbiddenException::ForbiddenException() : std::runtime_error("Forbidden") {}
 AnimalNotAvailableException::AnimalNotAvailableException()
     : std::runtime_error("Animal is not available for adoption") {}
 
+PostNotFoundException::PostNotFoundException() : std::runtime_error("Post not found") {}
+
 }  // namespace pawspective::services

@@ -88,6 +88,7 @@ inline constexpr std::string_view kOrganizationNotFound = "ORGANIZATION_NOT_FOUN
 inline constexpr std::string_view kCityNotFound = "CITY_NOT_FOUND";
 inline constexpr std::string_view kBreedNotFound = "BREED_NOT_FOUND";
 inline constexpr std::string_view kAnimalNotFound = "ANIMAL_NOT_FOUND";
+inline constexpr std::string_view kPostNotFound = "POST_NOT_FOUND";
 }  // namespace error_code
 
 }  // namespace pawspective::utils

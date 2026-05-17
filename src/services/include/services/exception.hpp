@@ -48,4 +48,9 @@ public:
     explicit AnimalNotAvailableException();
 };
 
+class PostNotFoundException : public std::runtime_error {
+public:
+    explicit PostNotFoundException();
+};
+
 }  // namespace pawspective::services
