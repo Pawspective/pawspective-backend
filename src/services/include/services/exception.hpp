@@ -67,10 +67,6 @@ public:
     using std::runtime_error::runtime_error;
 
 };
-class PostNotFoundException : public std::runtime_error {
-public:
-    explicit PostNotFoundException();
-};
 
 class AdoptRequestNotFoundException : public std::runtime_error {
 public:
