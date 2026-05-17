@@ -22,11 +22,8 @@ dto::AdoptRequestDTO AdoptRequestService::Create(std::int64_t user_id, std::int6
     return models::AdoptRequest::to_dto(request, user.email, animal_dto);
 }
 
-dto::AdoptRequestListDTO AdoptRequestService::GetByOrganizationId(
-    std::int64_t user_id,
-    std::int64_t org_id,
-    int page
-) const {
+dto::AdoptRequestListDTO AdoptRequestService::GetByOrganizationId(std::int64_t user_id, std::int64_t org_id, int page)
+    const {
     static constexpr int kPageSize = 20;
 
     auto user_org_id = user_service_.GetOrganizationId(user_id);
