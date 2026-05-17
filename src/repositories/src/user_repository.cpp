@@ -136,7 +136,7 @@ models::User UserRepository::link_organization(std::int64_t id, std::int64_t org
 
     return result.AsSingleRow<models::Organization>(userver::storages::postgres::kRowTag);
 }
-std::vector<models::User> UserRepository::get_by_ids(const std::vector<std::int64_t>& ids) const {
+std::unordered_map<std::int64_t, models::User> UserRepository::get_by_ids(const std::vector<std::int64_t>& ids) const {
     if (ids.empty()) {
         return {};
     }
@@ -146,7 +146,13 @@ std::vector<models::User> UserRepository::get_by_ids(const std::vector<std::int6
         "FROM users WHERE id = ANY($1)",
         ids
     );
-    return result.AsContainer<std::vector<models::User>>(userver::storages::postgres::kRowTag);
+    auto users = result.AsContainer<std::vector<models::User>>(userver::storages::postgres::kRowTag);
+    std::unordered_map<std::int64_t, models::User> map;
+    map.reserve(users.size());
+    for (auto& u : users) {
+        map.emplace(u.id, std::move(u));
+    }
+    return map;
 }
 
 bool UserRepository::delete_user(std::int64_t id) const {

@@ -41,7 +41,7 @@ models::User UserService::AuthenticateUser(const std::string& email, const std::
     return *user;
 }
 
-std::vector<models::User> UserService::GetUsersByIds(const std::vector<std::int64_t>& ids) const {
+std::unordered_map<std::int64_t, models::User> UserService::GetUsersByIds(const std::vector<std::int64_t>& ids) const {
     return user_repository_.get_by_ids(ids);
 }
 

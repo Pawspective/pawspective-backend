@@ -1,5 +1,6 @@
 #include "adopt_request_service.hpp"
 
+#include <userver/storages/postgres/exceptions.hpp>
 #include "adopt_request.hpp"
 #include "services/exception.hpp"
 
@@ -17,7 +18,12 @@ dto::AdoptRequestDTO AdoptRequestService::Create(std::int64_t user_id, std::int6
     if (animal_dto.status != models::AnimalStatus::kAvailable) {
         throw AnimalNotAvailableException();
     }
-    auto request = repository_.Create(animal_id, user_id);
+    models::AdoptRequest request;
+    try {
+        request = repository_.Create(animal_id, user_id);
+    } catch (const userver::storages::postgres::UniqueViolation&) {
+        throw AdoptRequestAlreadyExistsException();
+    }
     auto user = user_service_.GetUserById(user_id);
     return models::AdoptRequest::to_dto(request, user.email, animal_dto);
 }
@@ -54,16 +60,10 @@ dto::AdoptRequestListDTO AdoptRequestService::GetByOrganizationId(std::int64_t u
         animal_map.emplace(a.id, &a);
     }
 
-    std::unordered_map<std::int64_t, std::string> email_map;
-    email_map.reserve(users.size());
-    for (const auto& u : users) {
-        email_map.emplace(u.id, u.email);
-    }
-
     std::vector<dto::AdoptRequestDTO> items;
     items.reserve(requests.size());
     std::transform(requests.begin(), requests.end(), std::back_inserter(items), [&](const auto& req) {
-        return models::AdoptRequest::to_dto(req, email_map.at(req.user_id), *animal_map.at(req.animal_id));
+        return models::AdoptRequest::to_dto(req, users.at(req.user_id).email, *animal_map.at(req.animal_id));
     });
 
     const std::int64_t total_pages = total_count == 0 ? 1 : (total_count + kPageSize - 1) / kPageSize;

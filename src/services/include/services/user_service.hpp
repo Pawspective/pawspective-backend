@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include <unordered_map>
 #include <vector>
 #include "user.hpp"
 #include "user_register_dto.hpp"
@@ -15,7 +14,7 @@ public:
     explicit UserService(const repositories::UserRepository& user_repository);
 
     models::User GetUserById(std::int64_t user_id) const;
-    std::vector<models::User> GetUsersByIds(const std::vector<std::int64_t>& ids) const;
+    std::unordered_map<std::int64_t, models::User> GetUsersByIds(const std::vector<std::int64_t>& ids) const;
     models::User RegisterUser(const dto::UserRegisterDTO& dto) const;
     models::User AuthenticateUser(const std::string& email, const std::string& password) const;
     models::User LinkOrganization(std::int64_t user_id, std::int64_t organization_id) const;
