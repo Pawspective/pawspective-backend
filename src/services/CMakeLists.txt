@@ -9,6 +9,7 @@ set(SERVICES_SOURCES
     src/breed_service.cpp
     src/post_service.cpp
     src/review_service.cpp
+    src/adopt_request_service.cpp
 )
 
 add_library(pawspective_services STATIC ${SERVICES_SOURCES})

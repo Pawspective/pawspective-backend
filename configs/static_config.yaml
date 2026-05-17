@@ -65,6 +65,9 @@ components_manager:
         adopt-request-repository:
             load-enabled: true
 
+        adopt-request-service:
+            load-enabled: true
+
         breed-repository: 
             load-enabled: true
 
