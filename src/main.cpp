@@ -3,6 +3,7 @@
 #include <userver/clients/http/middlewares/pipeline_component.hpp>
 #include <userver/components/minimal_server_component_list.hpp>
 #include <userver/server/handlers/auth/auth_checker_factory.hpp>
+#include <userver/server/handlers/tests_control.hpp>
 #include <userver/storages/postgres/component.hpp>
 #include <userver/storages/secdist/component.hpp>
 #include <userver/storages/secdist/provider_component.hpp>
@@ -57,6 +58,7 @@ int main(int argc, char* argv[]) {
             .Append<userver::components::HttpClient>()      // NOLINT
             .Append<userver::clients::http::MiddlewarePipelineComponent>()
             .Append<userver::clients::dns::Component>()
+            .Append<userver::server::handlers::TestsControl>()
             .Append<pawspective::handlers::HealthCheck>()
             .Append<pawspective::handlers::AuthMeHandler>()
             .Append<userver::components::DefaultSecdistProvider>()

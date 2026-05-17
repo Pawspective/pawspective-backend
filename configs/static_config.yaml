@@ -11,6 +11,13 @@ components_manager:
 
     components:
         testsuite-support:
+            testsuite-tasks-enabled: true
+
+        tests-control:
+            load-enabled: $is-testing
+            path: /tests/{action}
+            method: POST
+            task_processor: main-task-processor
 
         http-client:
 
