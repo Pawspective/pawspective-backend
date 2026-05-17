@@ -12,6 +12,16 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Cache ccache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/ccache
+          key: ${{ runner.os }}-ccache-lint-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-ccache-lint-
 
       - name: Cache CMake build
         uses: actions/cache@v4
@@ -22,11 +32,46 @@ jobs:
             ${{ runner.os }}-cmake-lint-
 
       - name: Install dependencies
-        run: sudo apt update && sudo apt install -y clang-format clang-tidy cppcheck python3-autopep8 libargon2-dev
+        run: sudo apt update && sudo apt install -y clang-format clang-tidy cppcheck python3-autopep8 libargon2-dev ccache
+
+      - name: Configure ccache
+        run: |
+          ccache --set-config=cache_dir=/tmp/ccache
+          ccache --set-config=max_size=500M
+          ccache --set-config=compression=true
+          ccache --zero-stats
 
       - name: Generate Compilation Database
+        env:
+          CCACHE_DIR: /tmp/ccache
         run: |
-          cmake -B build-debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DUSERVER_USE_ZSTD=OFF .
+          cmake -B build-debug \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DUSERVER_USE_ZSTD=OFF \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+            .
 
-      - name: Run lint checks
+      - name: Get changed C++ files
+        id: changed-files
+        if: github.event_name == 'pull_request'
+        run: |
+          FILES=$(git diff --name-only "${{ github.event.pull_request.base.sha }}" HEAD \
+            | grep -E '\.(cpp|hpp)$' | grep '^src/' | tr '\n' ' ' || true)
+          echo "files=$FILES" >> $GITHUB_OUTPUT
+
+      - name: Run lint checks (all files)
+        if: github.event_name != 'pull_request'
         run: make lint
+
+      - name: Run lint checks (changed files only)
+        if: github.event_name == 'pull_request'
+        env:
+          CHANGED_FILES: ${{ steps.changed-files.outputs.files }}
+        run: make lint
+
+      - name: Show ccache stats
+        if: always()
+        env:
+          CCACHE_DIR: /tmp/ccache
+        run: ccache --show-stats
