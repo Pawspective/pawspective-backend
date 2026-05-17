@@ -28,13 +28,38 @@ dto::AdoptRequestListDTO AdoptRequestService::GetByOrganizationId(std::int64_t o
         throw ForbiddenException();
     }
     auto requests = repository_.GetByOrganizationId(org_id);
+    if (requests.empty()) {
+        return {{}, 1, 0, 0, 1};
+    }
+
+    std::vector<std::int64_t> animal_ids;
+    std::vector<std::int64_t> user_ids;
+    animal_ids.reserve(requests.size());
+    user_ids.reserve(requests.size());
+    for (const auto& req : requests) {
+        animal_ids.push_back(req.animal_id);
+        user_ids.push_back(req.user_id);
+    }
+
+    auto animal_dtos = animal_service_.GetByIds(animal_ids);
+    auto users = user_service_.GetUsersByIds(user_ids);
+
+    std::unordered_map<std::int64_t, const dto::AnimalDTO*> animal_map;
+    animal_map.reserve(animal_dtos.size());
+    for (const auto& a : animal_dtos) {
+        animal_map.emplace(a.id, &a);
+    }
+
+    std::unordered_map<std::int64_t, std::string> email_map;
+    email_map.reserve(users.size());
+    for (const auto& u : users) {
+        email_map.emplace(u.id, u.email);
+    }
 
     std::vector<dto::AdoptRequestDTO> items;
     items.reserve(requests.size());
     for (const auto& req : requests) {
-        auto animal_dto = animal_service_.Get(req.animal_id);
-        auto user = user_service_.GetUserById(req.user_id);
-        items.push_back(models::AdoptRequest::to_dto(req, user.email, animal_dto));
+        items.push_back(models::AdoptRequest::to_dto(req, email_map.at(req.user_id), *animal_map.at(req.animal_id)));
     }
 
     const auto total = static_cast<std::int64_t>(items.size());

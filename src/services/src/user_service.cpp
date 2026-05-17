@@ -41,6 +41,10 @@ models::User UserService::AuthenticateUser(const std::string& email, const std::
     return *user;
 }
 
+std::vector<models::User> UserService::GetUsersByIds(const std::vector<std::int64_t>& ids) const {
+    return user_repository_.get_by_ids(ids);
+}
+
 std::optional<std::int64_t> UserService::GetOrganizationId(std::int64_t user_id) const {
     return user_repository_.get_organization_id_by_user_id(user_id);
 }
