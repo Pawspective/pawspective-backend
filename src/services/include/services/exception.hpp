@@ -48,6 +48,10 @@ public:
     explicit AnimalNotAvailableException();
 };
 
+class PostNotFoundException : public std::runtime_error {
+public:
+    explicit PostNotFoundException();
+};
 class ReviewNotFoundException : public std::runtime_error {
 public:
     explicit ReviewNotFoundException();

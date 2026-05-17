@@ -7,6 +7,7 @@ set(SERVICES_SOURCES
     src/organization_service.cpp
     src/animal_service.cpp
     src/breed_service.cpp
+    src/post_service.cpp
     src/review_service.cpp
 )
 
