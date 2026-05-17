@@ -1,4 +1,7 @@
 #include "animal_service.hpp"
+
+#include <algorithm>
+#include <iterator>
 #include "services/exception.hpp"
 
 namespace pawspective::services {
@@ -58,6 +61,29 @@ dto::AnimalDTO AnimalService::Adopt(int64_t user_id, int64_t animal_id) const {
     }
     auto breed_dto = breed_service_.Get(adopted->breed_id);
     return models::Animal::to_dto(*adopted, breed_dto);
+}
+
+std::vector<dto::AnimalDTO> AnimalService::GetByIds(const std::vector<std::int64_t>& ids) const {
+    auto animals = repository_.GetByIds(ids);
+
+    std::vector<std::int64_t> breed_ids;
+    breed_ids.reserve(animals.size());
+    std::transform(animals.begin(), animals.end(), std::back_inserter(breed_ids), [](const auto& a) {
+        return a.breed_id;
+    });
+    auto breed_dtos = breed_service_.GetByIds(breed_ids);
+
+    std::vector<dto::AnimalDTO> result;
+    result.reserve(animals.size());
+    std::transform(
+        std::make_move_iterator(animals.begin()),
+        std::make_move_iterator(animals.end()),
+        std::back_inserter(result),
+        [&breed_dtos](models::Animal&& animal) {
+            return models::Animal::to_dto(std::move(animal), breed_dtos[animal.breed_id]);
+        }
+    );
+    return result;
 }
 
 dto::AnimalDTO AnimalService::Get(int64_t id) const {

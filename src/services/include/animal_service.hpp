@@ -29,6 +29,7 @@ public:
     dto::AnimalDTO Adopt(int64_t user_id, int64_t animal_id) const;
     [[nodiscard]] dto::AnimalDTO Get(int64_t id) const;
     [[nodiscard]] std::unordered_map<int64_t, std::string> GetNames(const std::vector<int64_t>& ids) const;
+    [[nodiscard]] std::vector<dto::AnimalDTO> GetByIds(const std::vector<std::int64_t>& ids) const;
     [[nodiscard]] dto::AnimalListDTO GetByOrganizationPaginated(int64_t org_id, int page) const;
     [[nodiscard]] dto::AnimalFilterDTO GetFilterOptions() const;
     [[nodiscard]] dto::AnimalListDTO FindByFilters(const dto::AnimalFilterDTO& dto, int page) const;

@@ -28,4 +28,9 @@ ReviewNotFoundException::ReviewNotFoundException() : std::runtime_error("Review 
 ReviewAlreadyExistsException::ReviewAlreadyExistsException()
     : std::runtime_error("User has already reviewed this animal") {}
 
+AdoptRequestNotFoundException::AdoptRequestNotFoundException() : std::runtime_error("Adopt request not found") {}
+
+AdoptRequestAlreadyExistsException::AdoptRequestAlreadyExistsException()
+    : std::runtime_error("Adopt request already exists") {}
+
 }  // namespace pawspective::services

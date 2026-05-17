@@ -62,4 +62,14 @@ public:
     explicit ReviewAlreadyExistsException();
 };
 
+class AdoptRequestNotFoundException : public std::runtime_error {
+public:
+    explicit AdoptRequestNotFoundException();
+};
+
+class AdoptRequestAlreadyExistsException : public std::runtime_error {
+public:
+    explicit AdoptRequestAlreadyExistsException();
+};
+
 }  // namespace pawspective::services

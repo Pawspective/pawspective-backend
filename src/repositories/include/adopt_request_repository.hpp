@@ -2,6 +2,7 @@
 
 #include <optional>
 #include <userver/storages/postgres/cluster.hpp>
+#include <vector>
 
 #include "../../models/include/adopt_request.hpp"
 
@@ -13,7 +14,11 @@ public:
 
     models::AdoptRequest Create(std::int64_t animal_id, std::int64_t user_id) const;
     [[nodiscard]] std::optional<models::AdoptRequest> GetById(std::int64_t id) const;
-    [[nodiscard]] std::vector<models::AdoptRequest> GetByOrganizationId(std::int64_t organization_id) const;
+    [[nodiscard]] std::pair<std::vector<models::AdoptRequest>, std::int64_t> GetByOrganizationIdPaginated(
+        std::int64_t organization_id,
+        int page,
+        int limit
+    ) const;
     bool DeleteById(std::int64_t id) const;
     bool DeleteByAnimalId(std::int64_t animal_id) const;
 
