@@ -90,6 +90,19 @@ components_manager:
         review-service:
             load-enabled: true
 
+        session-cleaner:
+            load-enabled: true
+            cluster: postgres-db
+            table: service_distlocks
+            lock-ttl: 60s
+            pg-timeout: 10s
+            restart-delay: 30s
+            autostart: true
+            lockname: session-cleaner-lock
+            task-processor: main-task-processor
+            testsuite-support: true
+
+
         server:
             listener:
                 port: $server-port

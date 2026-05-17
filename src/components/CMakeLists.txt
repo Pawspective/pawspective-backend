@@ -15,6 +15,7 @@ set(COMPONENTS_SOURCES
     src/review_repository_component.cpp
     src/review_service_component.cpp
     src/adopt_request_repository_component.cpp
+    src/session_cleaner_component.cpp
 )
 
 add_library(pawspective_components STATIC ${COMPONENTS_SOURCES})
