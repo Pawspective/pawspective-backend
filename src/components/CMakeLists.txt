@@ -15,11 +15,8 @@ set(COMPONENTS_SOURCES
     src/review_repository_component.cpp
     src/review_service_component.cpp
     src/adopt_request_repository_component.cpp
-<<<<<<< HEAD
     src/post_service_component.cpp
-=======
     src/adopt_request_service_component.cpp
->>>>>>> 1c507f9 (feature: add adopt request service)
 )
 
 add_library(pawspective_components STATIC ${COMPONENTS_SOURCES})
