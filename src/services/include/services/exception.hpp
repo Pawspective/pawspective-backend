@@ -65,7 +65,16 @@ public:
 class InvalidToken : public std::runtime_error {
 public:
     using std::runtime_error::runtime_error;
+};
 
+class AdoptRequestNotFoundException : public std::runtime_error {
+public:
+    explicit AdoptRequestNotFoundException();
+};
+
+class AdoptRequestAlreadyExistsException : public std::runtime_error {
+public:
+    explicit AdoptRequestAlreadyExistsException();
 };
 
 class AdoptRequestNotFoundException : public std::runtime_error {
