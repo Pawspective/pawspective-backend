@@ -58,9 +58,9 @@ dto::AdoptRequestListDTO AdoptRequestService::GetByOrganizationId(std::int64_t o
 
     std::vector<dto::AdoptRequestDTO> items;
     items.reserve(requests.size());
-    for (const auto& req : requests) {
-        items.push_back(models::AdoptRequest::to_dto(req, email_map.at(req.user_id), *animal_map.at(req.animal_id)));
-    }
+    std::transform(requests.begin(), requests.end(), std::back_inserter(items), [&](const auto& req) {
+        return models::AdoptRequest::to_dto(req, email_map.at(req.user_id), *animal_map.at(req.animal_id));
+    });
 
     const auto total = static_cast<std::int64_t>(items.size());
     return {std::move(items), 1, static_cast<int>(total), total, 1};
