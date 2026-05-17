@@ -19,7 +19,7 @@ public:
     );
 
     dto::AdoptRequestDTO Create(std::int64_t user_id, std::int64_t animal_id) const;
-    [[nodiscard]] dto::AdoptRequestListDTO GetByOrganizationId(std::int64_t user_id) const;
+    [[nodiscard]] dto::AdoptRequestListDTO GetByOrganizationId(std::int64_t user_id, std::int64_t org_id) const;
     void Accept(std::int64_t org_user_id, std::int64_t request_id) const;
     void Deny(std::int64_t org_user_id, std::int64_t request_id) const;
 

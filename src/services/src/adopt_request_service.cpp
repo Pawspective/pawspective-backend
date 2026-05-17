@@ -22,12 +22,12 @@ dto::AdoptRequestDTO AdoptRequestService::Create(std::int64_t user_id, std::int6
     return models::AdoptRequest::to_dto(request, user.email, animal_dto);
 }
 
-dto::AdoptRequestListDTO AdoptRequestService::GetByOrganizationId(std::int64_t user_id) const {
-    auto org_id = user_service_.GetOrganizationId(user_id);
-    if (!org_id) {
+dto::AdoptRequestListDTO AdoptRequestService::GetByOrganizationId(std::int64_t user_id, std::int64_t org_id) const {
+    auto user_org_id = user_service_.GetOrganizationId(user_id);
+    if (!user_org_id || *user_org_id != org_id) {
         throw ForbiddenException();
     }
-    auto requests = repository_.GetByOrganizationId(*org_id);
+    auto requests = repository_.GetByOrganizationId(org_id);
     if (requests.empty()) {
         return {{}, 1, 0, 0, 1};
     }
