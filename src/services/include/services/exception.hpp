@@ -48,6 +48,10 @@ public:
     explicit AnimalNotAvailableException();
 };
 
+class PostNotFoundException : public std::runtime_error {
+public:
+    explicit PostNotFoundException();
+};
 class ReviewNotFoundException : public std::runtime_error {
 public:
     explicit ReviewNotFoundException();
@@ -61,6 +65,16 @@ public:
 class InvalidToken : public std::runtime_error {
 public:
     using std::runtime_error::runtime_error;
+};
+
+class AdoptRequestNotFoundException : public std::runtime_error {
+public:
+    explicit AdoptRequestNotFoundException();
+};
+
+class AdoptRequestAlreadyExistsException : public std::runtime_error {
+public:
+    explicit AdoptRequestAlreadyExistsException();
 };
 
 }  // namespace pawspective::services

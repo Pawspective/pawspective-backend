@@ -63,6 +63,20 @@ std::vector<T> ToEnumVector(const std::vector<std::string>& strings) {
 AnimalRepository::AnimalRepository(userver::storages::postgres::ClusterPtr pg_cluster)
     : pg_cluster_(std::move(pg_cluster)) {}
 
+[[nodiscard]] std::vector<models::Animal> AnimalRepository::GetByIds(const std::vector<std::int64_t>& ids) const {
+    if (ids.empty()) {
+        return {};
+    }
+    auto result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kSlave,
+        "SELECT id, organization_id, name, breed_id, user_id, size, gender, "
+        "care_level, good_with, color, age, description, status "
+        "FROM animals WHERE id = ANY($1)",
+        ids
+    );
+    return result.AsContainer<std::vector<models::Animal>>(userver::storages::postgres::kRowTag);
+}
+
 [[nodiscard]] std::optional<models::Animal> AnimalRepository::GetById(int64_t id) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,

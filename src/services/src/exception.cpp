@@ -22,9 +22,15 @@ ForbiddenException::ForbiddenException() : std::runtime_error("Forbidden") {}
 AnimalNotAvailableException::AnimalNotAvailableException()
     : std::runtime_error("Animal is not available for adoption") {}
 
+PostNotFoundException::PostNotFoundException() : std::runtime_error("Post not found") {}
 ReviewNotFoundException::ReviewNotFoundException() : std::runtime_error("Review not found") {}
 
 ReviewAlreadyExistsException::ReviewAlreadyExistsException()
     : std::runtime_error("User has already reviewed this animal") {}
+
+AdoptRequestNotFoundException::AdoptRequestNotFoundException() : std::runtime_error("Adopt request not found") {}
+
+AdoptRequestAlreadyExistsException::AdoptRequestAlreadyExistsException()
+    : std::runtime_error("Adopt request already exists") {}
 
 }  // namespace pawspective::services

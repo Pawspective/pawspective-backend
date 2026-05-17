@@ -17,6 +17,7 @@ public:
 
     [[nodiscard]] std::optional<models::User> get_by_id(std::int64_t id) const;
     [[nodiscard]] std::optional<models::User> get_by_email(const std::string& email) const;
+    [[nodiscard]] std::unordered_map<std::int64_t, models::User> get_by_ids(const std::vector<std::int64_t>& ids) const;
     // NOLINTBEGIN(modernize-use-nodiscard)
     models::User create_user(const models::User& user) const;
     models::User update_user(std::int64_t id, const models::User& user_upd) const;

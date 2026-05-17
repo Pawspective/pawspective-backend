@@ -72,6 +72,9 @@ components_manager:
         adopt-request-repository:
             load-enabled: true
 
+        adopt-request-service:
+            load-enabled: true
+
         breed-repository: 
             load-enabled: true
 
@@ -82,6 +85,9 @@ components_manager:
             load-enabled: true
 
         post-repository:
+            load-enabled: true
+
+        post-service:
             load-enabled: true
 
         review-repository:

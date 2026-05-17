@@ -14,6 +14,7 @@ public:
     explicit AnimalRepository(userver::storages::postgres::ClusterPtr pg_cluster);
 
     [[nodiscard]] std::optional<models::Animal> GetById(std::int64_t id) const;
+    [[nodiscard]] std::vector<models::Animal> GetByIds(const std::vector<std::int64_t>& ids) const;
     [[nodiscard]] std::pair<std::vector<models::Animal>, std::int64_t> GetByOrganizationIdPaginated(
         std::int64_t org_id,
         int page,
