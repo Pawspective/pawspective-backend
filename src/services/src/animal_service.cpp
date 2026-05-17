@@ -98,6 +98,10 @@ dto::AnimalListDTO AnimalService::GetByOrganizationPaginated(int64_t org_id, int
     return {std::move(items), page, kPageSize, total_count, total_pages};
 }
 
+std::unordered_map<int64_t, std::string> AnimalService::GetNames(const std::vector<int64_t>& ids) const {
+    return repository_.GetNamesByIds(ids);
+}
+
 dto::AnimalFilterDTO AnimalService::GetFilterOptions() const {
     auto filters = repository_.GetAvailableFilters();
     return models::AnimalFilters::to_dto(filters);

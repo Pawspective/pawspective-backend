@@ -80,6 +80,9 @@ components_manager:
         review-repository:
             load-enabled: true
 
+        review-service:
+            load-enabled: true
+
         server:
             listener:
                 port: $server-port
