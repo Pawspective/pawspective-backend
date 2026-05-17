@@ -25,9 +25,9 @@ ReviewService::ReviewService(
     auto [reviews, total_count] = review_repository_.GetByOrganizationIdPaginated(organization_id, page, kPageSize);
     dto::ReviewListDTO review_list_dto;
     std::vector<int64_t> animal_ids;
-    for (const auto& review : reviews) {
-        animal_ids.push_back(review.animal_id);
-    }
+    std::transform(reviews.begin(), reviews.end(), std::back_inserter(animal_ids), [](const models::Review& review) {
+        return review.animal_id;
+    });
     auto animal_names = animal_service_.GetNames(std::move(animal_ids));
     for (const auto& review : reviews) {
         review_list_dto.items.push_back(models::Review::to_dto(
