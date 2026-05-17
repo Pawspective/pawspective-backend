@@ -48,6 +48,16 @@ ReviewRepository::ReviewRepository(userver::storages::postgres::ClusterPtr pg_cl
     return {std::move(reviews), total_count};
 }
 
+bool ReviewRepository::ExistsUserReviewForAnimal(int64_t user_id, int64_t animal_id) const {
+    auto result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kSlave,
+        "SELECT EXISTS(SELECT 1 FROM reviews WHERE user_id = $1 AND animal_id = $2)",
+        user_id,
+        animal_id
+    );
+    return result.AsSingleRow<bool>();
+}
+
 models::Review ReviewRepository::Create(const models::Review& review) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster,
@@ -60,13 +70,16 @@ models::Review ReviewRepository::Create(const models::Review& review) const {
     return result.AsSingleRow<models::Review>(userver::storages::postgres::kRowTag);
 }
 
-models::Review ReviewRepository::UpdateTextById(int64_t review_id, const std::string& text) const {
+std::optional<models::Review> ReviewRepository::UpdateTextById(int64_t review_id, const std::string& text) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster,
         "UPDATE reviews SET text = $1 WHERE id = $2 RETURNING id, animal_id, user_id, text, created_at",
         text,
         review_id
     );
+    if (result.IsEmpty()) {
+        return std::nullopt;
+    }
     return result.AsSingleRow<models::Review>(userver::storages::postgres::kRowTag);
 }
 

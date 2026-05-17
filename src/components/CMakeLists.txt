@@ -13,6 +13,7 @@ set(COMPONENTS_SOURCES
     src/breed_service_component.cpp
     src/post_repository_component.cpp
     src/review_repository_component.cpp
+    src/review_service_component.cpp
     src/adopt_request_repository_component.cpp
     src/post_service_component.cpp
 )
