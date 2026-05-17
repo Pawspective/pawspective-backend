@@ -22,14 +22,21 @@ dto::AdoptRequestDTO AdoptRequestService::Create(std::int64_t user_id, std::int6
     return models::AdoptRequest::to_dto(request, user.email, animal_dto);
 }
 
-dto::AdoptRequestListDTO AdoptRequestService::GetByOrganizationId(std::int64_t user_id, std::int64_t org_id) const {
+dto::AdoptRequestListDTO AdoptRequestService::GetByOrganizationId(
+    std::int64_t user_id,
+    std::int64_t org_id,
+    int page
+) const {
+    static constexpr int kPageSize = 20;
+
     auto user_org_id = user_service_.GetOrganizationId(user_id);
     if (!user_org_id || *user_org_id != org_id) {
         throw ForbiddenException();
     }
-    auto requests = repository_.GetByOrganizationId(org_id);
+
+    auto [requests, total_count] = repository_.GetByOrganizationIdPaginated(org_id, page, kPageSize);
     if (requests.empty()) {
-        return {{}, 1, 0, 0, 1};
+        return {{}, page, kPageSize, total_count, 1};
     }
 
     std::vector<std::int64_t> animal_ids;
@@ -62,8 +69,8 @@ dto::AdoptRequestListDTO AdoptRequestService::GetByOrganizationId(std::int64_t u
         return models::AdoptRequest::to_dto(req, email_map.at(req.user_id), *animal_map.at(req.animal_id));
     });
 
-    const auto total = static_cast<std::int64_t>(items.size());
-    return {std::move(items), 1, static_cast<int>(total), total, 1};
+    const std::int64_t total_pages = total_count == 0 ? 1 : (total_count + kPageSize - 1) / kPageSize;
+    return {std::move(items), page, kPageSize, total_count, total_pages};
 }
 
 void AdoptRequestService::Accept(std::int64_t org_user_id, std::int64_t request_id) const {
