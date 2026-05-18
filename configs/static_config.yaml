@@ -11,6 +11,13 @@ components_manager:
 
     components:
         testsuite-support:
+            testsuite-tasks-enabled: true
+
+        tests-control:
+            load-enabled: $is-testing
+            path: /tests/{action}
+            method: POST
+            task_processor: main-task-processor
 
         http-client:
 
@@ -88,6 +95,19 @@ components_manager:
 
         review-service:
             load-enabled: true
+
+        session-cleaner:
+            load-enabled: true
+            cluster: postgres-db
+            table: service_distlocks
+            lock-ttl: 60s
+            pg-timeout: 10s
+            restart-delay: 30s
+            autostart: true
+            lockname: session-cleaner-lock
+            task-processor: main-task-processor
+            testsuite-support: true
+
 
         server:
             listener:

@@ -3,6 +3,7 @@
 #include <userver/clients/http/middlewares/pipeline_component.hpp>
 #include <userver/components/minimal_server_component_list.hpp>
 #include <userver/server/handlers/auth/auth_checker_factory.hpp>
+#include <userver/server/handlers/tests_control.hpp>
 #include <userver/storages/postgres/component.hpp>
 #include <userver/storages/secdist/component.hpp>
 #include <userver/storages/secdist/provider_component.hpp>
@@ -45,6 +46,7 @@
 #include "post_service_component.hpp"
 #include "review_repository_component.hpp"
 #include "review_service_component.hpp"
+#include "session_cleaner_component.hpp"
 #include "user_delete_handler.hpp"
 #include "user_registration_handler.hpp"
 #include "user_repository_component.hpp"
@@ -59,6 +61,7 @@ int main(int argc, char* argv[]) {
             .Append<userver::components::HttpClient>()      // NOLINT
             .Append<userver::clients::http::MiddlewarePipelineComponent>()
             .Append<userver::clients::dns::Component>()
+            .Append<userver::server::handlers::TestsControl>()
             .Append<pawspective::handlers::HealthCheck>()
             .Append<pawspective::handlers::AuthMeHandler>()
             .Append<userver::components::DefaultSecdistProvider>()
@@ -86,6 +89,7 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::components::AnimalServiceComponent>()
             .Append<pawspective::components::BreedRepositoryComponent>()
             .Append<pawspective::components::BreedServiceComponent>()
+            .Append<pawspective::components::SessionCleanerComponent>()
             .Append<pawspective::components::PostServiceComponent>()
             .Append<pawspective::handlers::OrgRegistrationHandler>()
             .Append<pawspective::handlers::OrgSearchHandler>()

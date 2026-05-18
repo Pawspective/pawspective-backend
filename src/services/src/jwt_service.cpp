@@ -10,6 +10,8 @@
 #include <userver/formats/json/value_builder.hpp>
 #include <userver/utils/datetime_light.hpp>
 
+#include "services/exception.hpp"
+
 namespace pawspective::services {
 
 JwtService::JwtService(const Config& config)
@@ -56,6 +58,22 @@ std::string JwtService::CreateToken(const std::string_view user_id, bool is_refr
 
     const std::string signature = signer_.Sign({to_sign});
     return to_sign + "." + userver::crypto::base64::Base64UrlEncode(signature);
+}
+
+std::chrono::system_clock::time_point JwtService::ExtractExpirationTime(const std::string_view token) const {
+    const auto first_dot = token.find('.');
+    const auto last_dot = token.rfind('.');
+
+    if (first_dot == std::string::npos || last_dot == first_dot) {
+        throw InvalidToken("Invalid token format");
+    }
+
+    const std::string_view payload_b64 = token.substr(first_dot + 1, last_dot - first_dot - 1);
+    auto payload_json = userver::formats::json::FromString(userver::crypto::base64::Base64UrlDecode(payload_b64));
+
+    auto exp = payload_json["exp"].As<std::int64_t>();
+
+    return std::chrono::system_clock::from_time_t(exp);
 }
 
 TokenValidationResult JwtService::ValidateToken(const std::string_view token) const {

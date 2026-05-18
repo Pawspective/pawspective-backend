@@ -23,14 +23,16 @@ SessionBundle PgSessionService::create_session(std::int64_t user_id) const {
     SessionBundle bundle{access_token, refresh_token};
 
     const auto hash = userver::crypto::hash::Sha256(bundle.refresh_token);
+    const auto expired_time = jwt_.ExtractExpirationTime(refresh_token);
 
     pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster,
         "INSERT INTO auth_schema.sessions (user_id, refresh_token_hash, "
         "expires_at) "
-        "VALUES ($1, $2, NOW() + INTERVAL '7 days')",
+        "VALUES ($1, $2, $3)",
         user_id,
-        hash
+        hash,
+        userver::storages::postgres::TimePointTz(expired_time)
     );
 
     return bundle;
@@ -61,6 +63,14 @@ void PgSessionService::revoke_session(std::string_view refresh_token) const {
         "DELETE FROM auth_schema.sessions WHERE refresh_token_hash = $1",
         hash
     );
+}
+
+std::size_t PgSessionService::revoke_expired_sessions() const {
+    auto res = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kMaster,
+        "DELETE FROM auth_schema.sessions WHERE expires_at < NOW()"
+    );
+    return res.RowsAffected();
 }
 
 }  // namespace pawspective::services

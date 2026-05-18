@@ -3,6 +3,13 @@ CREATE TABLE IF NOT EXISTS service_table (
     value TEXT
 );
 
+CREATE TABLE IF NOT EXISTS service_distlocks (
+    key             TEXT PRIMARY KEY,
+    owner           TEXT,
+    expiration_time TIMESTAMPTZ
+);
+
+
 -- Begin Extensions
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 -- End Extensions

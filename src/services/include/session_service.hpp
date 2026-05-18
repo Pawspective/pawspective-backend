@@ -67,6 +67,12 @@ public:
      */
     virtual void revoke_session(std::string_view refresh_token) const = 0;
 
+    /**
+     * @brief Revokes all expired sessions from storage.
+     *
+     */
+    virtual std::size_t revoke_expired_sessions() const = 0;
+
     virtual ~SessionService() = default;
     SessionService() = default;
     SessionService(const SessionService&) = delete;
