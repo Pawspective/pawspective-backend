@@ -23,7 +23,7 @@ userver::formats::json::Value PostsGetHandler::HandleRequestJsonThrow(
     const userver::formats::json::Value& /*request_json*/,
     userver::server::request::RequestContext& /*context*/
 ) const {
-    if (!request.HasPathArg("org_id")) {
+    if (!request.HasArg("org_id")) {
         utils::ErrorResponse(utils::error_code::kMissingField, "org_id query parameter is required").ThrowClientError();
     }
 
