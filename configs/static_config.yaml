@@ -290,7 +290,8 @@ components_manager:
             path: /posts
             method: GET
             task_processor: main-task-processor
-            
+
+
         handler-post-create:
             path: /posts
             method: POST
