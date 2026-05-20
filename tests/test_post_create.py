@@ -236,7 +236,6 @@ async def test_create_post_user_without_org_returns_403(service_client, city):
     assert response.json()['error']['code'] == 'FORBIDDEN'
 
 
-
 async def test_create_post_unicode_text(service_client, authenticated_user, registered_org):
     """Post can contain unicode characters"""
     unicode_text = 'Привет мир!'

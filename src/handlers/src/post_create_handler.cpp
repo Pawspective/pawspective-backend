@@ -33,7 +33,7 @@ userver::formats::json::Value PostCreateHandler::HandleRequestJsonThrow(
         post_data = request_json.As<dto::PostCreateDTO>();
 
         utils::Validator validator;
-        validator.Field("text", post_data.text).NotBlank().MaxLength(255);
+        validator.Field("text", post_data.text).NotBlank().MaxLength(2000);
         validator.ThrowIfInvalid();
 
         post_dto = post_service_.get_service().Create(user_id, post_data);
