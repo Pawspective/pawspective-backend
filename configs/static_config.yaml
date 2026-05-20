@@ -276,3 +276,12 @@ components_manager:
             path: /posts
             method: GET
             task_processor: main-task-processor
+            
+        handler-post-create:
+            path: /posts
+            method: POST
+            task_processor: main-task-processor
+            auth:
+                types:
+                    - jwt
+                required: true
