@@ -2,6 +2,7 @@ import uuid
 
 import pytest
 
+
 def make_unique_email(prefix='review_create'):
     random_part = uuid.uuid4().hex[:10]
     return f'{prefix}_{random_part}@example.com'
