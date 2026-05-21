@@ -351,6 +351,15 @@ components_manager:
                     - jwt
                 required: true
 
+        handler-review-update:
+            path: /reviews/{id}
+            method: PUT
+            task_processor: main-task-processor
+            auth:
+                types:
+                    - jwt
+                required: true
+
         handler-post-delete:
             path: /posts/{id}
             method: DELETE
