@@ -294,6 +294,11 @@ components_manager:
                 types:
                     - jwt
                 required: true
+
+        handler-review-get:
+            path: /reviews
+            method: GET
+            task_processor: main-task-processor
                 
         handler-post-update:
             path: /posts/{id}
