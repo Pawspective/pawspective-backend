@@ -303,7 +303,6 @@ components_manager:
                 types:
                     - jwt
                 required: true
-<<<<<<< feat/136-post-delete-handler
 
         handler-post-delete:
             path: /posts/{id}
@@ -314,5 +313,3 @@ components_manager:
                     - jwt
                 required: true
 
-=======
->>>>>>> main
