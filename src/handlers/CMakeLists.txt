@@ -25,6 +25,7 @@ set(HANDLERS_SOURCES
     src/user_delete_handler.cpp
     src/posts_get_handler.cpp
     src/post_create_handler.cpp
+    src/review_create_handler.cpp
     src/post_update_handler.cpp
 )
 
