@@ -285,3 +285,12 @@ components_manager:
                 types:
                     - jwt
                 required: true
+
+        handler-review-create:
+            path: /reviews
+            method: POST
+            task_processor: main-task-processor
+            auth:
+                types:
+                    - jwt
+                required: true
