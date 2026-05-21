@@ -285,3 +285,13 @@ components_manager:
                 types:
                     - jwt
                 required: true
+
+        handler-post-update:
+            path: /posts/{id}
+            method: PUT
+            task_processor: main-task-processor
+            auth:
+                types:
+                    - jwt
+                required: true
+
