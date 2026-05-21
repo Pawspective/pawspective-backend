@@ -43,6 +43,7 @@
 #include "organization_service_component.hpp"
 #include "pg_session_component.hpp"
 #include "post_create_handler.hpp"
+#include "post_delete_handler.hpp"
 #include "post_repository_component.hpp"
 #include "post_service_component.hpp"
 #include "post_update_handler.hpp"
@@ -111,7 +112,8 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::handlers::BreedListHandler>()
             .Append<pawspective::handlers::PostsGetHandler>()
             .Append<pawspective::handlers::PostCreateHandler>()
-            .Append<pawspective::handlers::PostUpdateHandler>();
+            .Append<pawspective::handlers::PostUpdateHandler>()
+            .Append<pawspective::handlers::PostDeleteHandler>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }
