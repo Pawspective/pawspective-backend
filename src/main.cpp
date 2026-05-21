@@ -49,6 +49,7 @@
 #include "post_update_handler.hpp"
 #include "posts_get_handler.hpp"
 #include "review_create_handler.hpp"
+#include "review_get_handler.hpp"
 #include "review_repository_component.hpp"
 #include "review_service_component.hpp"
 #include "session_cleaner_component.hpp"
@@ -108,6 +109,7 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::handlers::AnimalListHandler>()
             .Append<pawspective::handlers::AnimalFiltersHandler>()
             .Append<pawspective::handlers::ReviewCreateHandler>()
+            .Append<pawspective::handlers::ReviewGetHandler>()
             .Append<pawspective::handlers::UserDeleteHandler>()
             .Append<pawspective::handlers::OrganizationDeleteHandler>()
             .Append<pawspective::handlers::AnimalDeleteHandler>()
