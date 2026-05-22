@@ -52,9 +52,6 @@ userver::formats::json::Value AdoptRequestsGetHandler::HandleRequestJsonThrow(
     }
 
     const auto* user_id_ptr = context.GetDataOptional<int64_t>("user_id");
-    if (!user_id_ptr) {
-        utils::ErrorResponse(utils::error_code::kForbidden, "Authentication required").ThrowUnauthorized();
-    }
     const int64_t user_id = *user_id_ptr;
 
     try {
