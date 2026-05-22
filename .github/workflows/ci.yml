@@ -1,8 +1,14 @@
 name: CI (fast checks)
 
+
 on:
   push:
+    branches:
+      - main
+  
   pull_request:
+    branches:
+      - '**'
 
 jobs:
   lint:
