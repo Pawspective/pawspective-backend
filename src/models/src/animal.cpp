@@ -27,7 +27,7 @@ Animal Animal::from_register_dto(const dto::AnimalRegisterDTO& reg) {
     );
 }
 
-dto::AnimalDTO Animal::to_dto(const Animal& model, const dto::BreedDTO& breed) {
+dto::AnimalDTO Animal::to_dto(const Animal& model, const dto::BreedDTO& breed, bool can_be_adopted) {
     dto::AnimalDTO dto;
 
     dto.id = model.id;
@@ -43,6 +43,7 @@ dto::AnimalDTO Animal::to_dto(const Animal& model, const dto::BreedDTO& breed) {
     dto.age = model.age;
     dto.description = model.description;
     dto.status = model.status;
+    dto.can_be_adopted = can_be_adopted;
 
     return dto;
 }

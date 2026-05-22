@@ -95,7 +95,7 @@ AnimalListHandler::AnimalListHandler(
 userver::formats::json::Value AnimalListHandler::HandleRequestJsonThrow(
     const userver::server::http::HttpRequest& request,
     const userver::formats::json::Value& /*request_json*/,
-    userver::server::request::RequestContext& /*context*/
+    userver::server::request::RequestContext& context
 ) const {
     const auto filters = ParseFiltersFromRequest(request);
     int page = 1;
@@ -111,7 +111,11 @@ userver::formats::json::Value AnimalListHandler::HandleRequestJsonThrow(
                 .ThrowClientError();
         }
     }
-    const auto result = animal_service_.get_service().FindByFilters(filters, page);
+    std::optional<int64_t> user_id = std::nullopt;
+    if (const int64_t* user_id_value = context.GetDataOptional<int64_t>("user_id")) {
+        user_id = *user_id_value;
+    }
+    const auto result = animal_service_.get_service().FindByFilters(filters, page, user_id);
     return userver::formats::json::ValueBuilder{result}.ExtractValue();
 }
 

@@ -17,7 +17,7 @@ namespace pawspective::models {
 struct Animal {
     static Animal from_register_dto(const dto::AnimalRegisterDTO& reg);
     static Animal from_update_dto(std::int64_t id, const dto::AnimalUpdateDTO& upd);
-    static dto::AnimalDTO to_dto(const Animal& model, const dto::BreedDTO& breed);
+    static dto::AnimalDTO to_dto(const Animal& model, const dto::BreedDTO& breed, bool can_be_adopted);
 
     std::int64_t id{};
     std::int64_t organization_id{};

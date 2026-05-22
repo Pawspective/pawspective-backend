@@ -21,6 +21,7 @@ Serialize(const AnimalDTO& data, userver::formats::serialize::To<userver::format
     builder["age"] = data.age;
     builder["description"] = data.description;
     builder["status"] = data.status;
+    builder["can_be_adopted"] = data.can_be_adopted;
 
     return builder.ExtractValue();
 }
@@ -40,6 +41,7 @@ AnimalDTO Parse(const userver::formats::json::Value& json, userver::formats::par
     dto.age = json["age"].As<std::int32_t>();
     dto.description = json["description"].As<std::optional<std::string>>();
     dto.status = json["status"].As<pawspective::models::AnimalStatus>();
+    dto.can_be_adopted = json["can_be_adopted"].As<bool>();
 
     return dto;
 }

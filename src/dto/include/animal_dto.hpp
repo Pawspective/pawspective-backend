@@ -23,6 +23,7 @@ struct AnimalDTO {
     std::int32_t age{};
     std::optional<std::string> description;
     models::AnimalStatus status = models::AnimalStatus::kUnspecified;
+    bool can_be_adopted = false;
 };
 
 userver::formats::json::Value

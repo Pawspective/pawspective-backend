@@ -247,11 +247,19 @@ components_manager:
             path: /orgs/{id}/animals
             method: GET
             task_processor: main-task-processor
+            auth:
+                types:
+                    - jwt
+                required: false
 
         handler-animal-list:
             path: /animals
             method: GET
             task_processor: main-task-processor
+            auth:
+                types:
+                    - jwt
+                required: false
 
         handler-animal-filters:
             path: /animals/filters
@@ -262,6 +270,10 @@ components_manager:
             path: /animals/{id}
             method: GET
             task_processor: main-task-processor
+            auth:
+                types:
+                    - jwt
+                required: false
 
         handler-animal-delete:
             path: /animals/{id}

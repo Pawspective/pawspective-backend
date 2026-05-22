@@ -19,6 +19,7 @@ public:
         int page,
         int limit
     ) const;
+    [[nodiscard]] std::unordered_set<int64_t> GetAnimalIdsByUserId(std::int64_t user_id) const;
     bool DeleteById(std::int64_t id) const;
     bool DeleteByAnimalId(std::int64_t animal_id) const;
 

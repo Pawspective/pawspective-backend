@@ -30,6 +30,19 @@ std::optional<models::AdoptRequest> AdoptRequestRepository::GetById(std::int64_t
     return result.AsSingleRow<models::AdoptRequest>(userver::storages::postgres::kRowTag);
 }
 
+std::unordered_set<int64_t> AdoptRequestRepository::GetAnimalIdsByUserId(std::int64_t user_id) const {
+    auto result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kSlave,
+        "SELECT animal_id FROM adopt_requests WHERE user_id = $1",
+        user_id
+    );
+    std::unordered_set<int64_t> animal_ids;
+    for (const auto& row : result) {
+        animal_ids.insert(row["animal_id"].As<int64_t>());
+    }
+    return animal_ids;
+}
+
 std::pair<std::vector<models::AdoptRequest>, std::int64_t> AdoptRequestRepository::GetByOrganizationIdPaginated(
     std::int64_t organization_id,
     int page,
