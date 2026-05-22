@@ -1,8 +1,14 @@
 name: CI (fast checks)
 
+
 on:
   push:
+    branches:
+      - main
+  
   pull_request:
+    branches:
+      - '**'
 
 jobs:
   lint:
@@ -12,6 +18,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Cache CMake build
         uses: actions/cache@v4
@@ -26,7 +34,26 @@ jobs:
 
       - name: Generate Compilation Database
         run: |
-          cmake -B build-debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DUSERVER_USE_ZSTD=OFF .
+          cmake -B build-debug \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DUSERVER_USE_ZSTD=OFF \
+            .
 
-      - name: Run lint checks
+      - name: Get changed C++ files
+        id: changed-files
+        if: github.event_name == 'pull_request'
+        run: |
+          FILES=$(git diff --name-only --diff-filter=ACMR "${{ github.event.pull_request.base.sha }}" HEAD \
+            | grep -E '\.(cpp|hpp)$' | grep '^src/' | tr '\n' ' ' || true)
+          echo "files=$FILES" >> $GITHUB_OUTPUT
+
+      - name: Run lint checks (all files)
+        if: github.event_name != 'pull_request'
         run: make lint
+
+      - name: Run lint checks (changed files only)
+        if: github.event_name == 'pull_request'
+        env:
+          CHANGED_FILES: ${{ steps.changed-files.outputs.files }}
+        run: make lint
+

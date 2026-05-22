@@ -15,6 +15,22 @@ INCLUDE_DIRS := $(shell find src -type d -name "include" | sed 's/^/--extra-arg=
 DOCKER_ARGS = $(shell /bin/test -t 0 && /bin/echo -it || echo)
 PRESETS ?= debug release debug-custom release-custom
 
+# Space-separated list of changed C++ files to lint.
+# When set by CI (PR mode), only these files are checked; empty means no C++ changes.
+# When unset entirely (push/local), all src/**/*.{cpp,hpp} are checked.
+# Do NOT assign a default here — we use $(origin) to distinguish "unset" from "set to empty".
+
+ifeq ($(origin CHANGED_FILES),undefined)
+  LINT_CPP_FILES  := $(shell find src -name '*.[ch]pp' -type f)
+  CPPCHECK_FILTER := --file-filter=*/src/*
+else ifneq ($(strip $(CHANGED_FILES)),)
+  LINT_CPP_FILES  := $(CHANGED_FILES)
+  CPPCHECK_FILTER := $(foreach f,$(LINT_CPP_FILES),--file-filter=$(abspath $(f)))
+else
+  LINT_CPP_FILES  :=
+  CPPCHECK_FILTER :=
+endif
+
 -include Makefile.local
 
 .PHONY: all
@@ -81,24 +97,44 @@ format:
 
 # for CI
 format-check:
-	find src -name '*.[ch]pp' -type f | xargs $(CLANG_FORMAT) --dry-run --Werror
+ifdef LINT_CPP_FILES
+	$(CLANG_FORMAT) --dry-run --Werror $(LINT_CPP_FILES)
+else ifeq ($(origin CHANGED_FILES),undefined)
+	$(error No C++ source files found in src/)
+else
+	@echo "No C++ files changed in this PR, skipping clang-format."
+endif
 	find tests -name '*.py' -type f | xargs python3 -m autopep8 --diff
 
 #Static analyzers
 .PHONY: tidy cppcheck lint
 tidy:
 	@echo "Running clang-tidy..."
-	find src -name '*.[ch]pp' -type f | xargs $(CLANG_TIDY) -p $(TIDY_DB_DIR) \
+ifdef LINT_CPP_FILES
+	$(CLANG_TIDY) -p $(TIDY_DB_DIR) \
 		-j $(NPROCS) \
 		-extra-arg=-Wno-unknown-argument \
 		-extra-arg=-Wno-unknown-warning-option \
-		-extra-arg="-std=c++20"
+		-extra-arg="-std=c++20" \
+		$(abspath $(LINT_CPP_FILES))
+else ifeq ($(origin CHANGED_FILES),undefined)
+	$(error No C++ source files found in src/)
+else
+	@echo "No C++ files changed in this PR, skipping clang-tidy."
+endif
 
 cppcheck:
 	@echo "Running cppcheck..."
+ifdef LINT_CPP_FILES
 	$(CPPCHECK) --enable=all --error-exitcode=1 \
-		--project=build-debug/compile_commands.json \
+		--project=$(BUILD_DIR)/compile_commands.json \
 		--suppressions-list=.cppcheck_suppressions \
-		--file-filter="*/src/*" 
+		$(CPPCHECK_FILTER)
+else ifeq ($(origin CHANGED_FILES),undefined)
+	$(error No C++ source files found in src/)
+else
+	@echo "No C++ files changed in this PR, skipping cppcheck."
+endif
+
 lint: $(LINT_STEPS)
 	@echo "All lint check passed!"

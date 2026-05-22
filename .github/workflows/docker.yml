@@ -2,7 +2,12 @@ name: Docker build & test
 
 on:
   push:
+    branches:
+      - main
+  
   pull_request:
+    branches:
+      - '**'
 
 jobs:
     build-test:
@@ -34,18 +39,44 @@ jobs:
               key: ${{ runner.os }}-cpm-${{ matrix.build_type }}
               restore-keys: |
                 ${{ runner.os }}-cpm-${{ matrix.build_type }}-
-              
+
+          - name: Cache ccache
+            uses: actions/cache@v4
+            with:
+              path: /tmp/ccache
+              key: ${{ runner.os }}-ccache-${{ matrix.build_type }}-${{ github.sha }}
+              restore-keys: |
+                ${{ runner.os }}-ccache-${{ matrix.build_type }}-
+
           - name: Fix permissions
-            run: sudo chown -R user:user .
-        
+            run: |
+              sudo chown -R user:user .
+              mkdir -p /tmp/ccache
+              sudo chown -R user:user /tmp/ccache
+
           - name: Install dependencies
-            run: sudo apt update && sudo apt install -y libargon2-dev
+            run: sudo apt update && sudo apt install -y libargon2-dev ccache
+
+          - name: Configure ccache
+            run: |
+              sudo -u user ccache --set-config=cache_dir=/tmp/ccache
+              sudo -u user ccache --set-config=max_size=2G
+              sudo -u user ccache --set-config=compression=true
+              sudo -u user ccache --zero-stats
 
           - name: Configure
-            run: sudo -u user make cmake-${{ matrix.build_type }}
+            run: >-
+              sudo -u user env
+              CCACHE_DIR=/tmp/ccache
+              CMAKE_OPTS="-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
+              make cmake-${{ matrix.build_type }}
 
           - name: Build
-            run: sudo -u user cmake --build build-${{ matrix.build_type }} -j $(nproc)
+            run: sudo -u user env CCACHE_DIR=/tmp/ccache cmake --build build-${{ matrix.build_type }} -j $(nproc)
 
           - name: Run tests
             run: sudo -u user make test-${{ matrix.build_type }}
+
+          - name: Show ccache stats
+            if: always()
+            run: ccache --set-config=cache_dir=/tmp/ccache && ccache --show-stats
