@@ -308,7 +308,16 @@ components_manager:
             path: /reviews
             method: GET
             task_processor: main-task-processor
-                
+
+        handler-review-delete:
+            path: /reviews/{id}
+            method: DELETE
+            task_processor: main-task-processor
+            auth:
+                types:
+                    - jwt
+                required: true
+
         handler-post-update:
             path: /posts/{id}
             method: PUT

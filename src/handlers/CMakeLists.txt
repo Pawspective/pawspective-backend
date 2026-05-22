@@ -30,6 +30,7 @@ set(HANDLERS_SOURCES
     src/post_update_handler.cpp
     src/post_delete_handler.cpp
     src/review_get_handler.cpp
+    src/review_delete_handler.cpp
 )
 
 add_library(pawspective_handlers STATIC ${HANDLERS_SOURCES})
