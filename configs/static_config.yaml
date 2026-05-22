@@ -383,3 +383,12 @@ components_manager:
                     - jwt
                 required: true
 
+        handler-requests-get:
+            path: /requests
+            method: GET
+            task_processor: main-task-processor
+            auth:
+                types:
+                    - jwt
+                required: true
+
