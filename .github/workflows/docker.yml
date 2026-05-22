@@ -65,6 +65,11 @@ jobs:
               CCACHE_DIR=/tmp/ccache
               CMAKE_OPTS="-DCMAKE_C_COMPILER_LAUNCHER=ccache -DCMAKE_CXX_COMPILER_LAUNCHER=ccache"
               make cmake-${{ matrix.build_type }}
+          
+          - name: Ensure ccache directory exists and is writable
+            run: |
+              sudo mkdir -p /tmp/ccache
+              sudo chmod 777 /tmp/ccache
 
           - name: Build
             run: sudo -u user env CCACHE_DIR=/tmp/ccache cmake --build build-${{ matrix.build_type }} -j $(nproc)
