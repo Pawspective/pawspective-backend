@@ -56,7 +56,7 @@ async def authenticated_user(service_client):
     assert login_response.status == 200
     tokens = login_response.json()
 
-    return {'token': tokens['access_token']}
+    return {'token': tokens['access_token'], 'user_id': register_response.json()['id']}
 
 
 @pytest.fixture
@@ -112,6 +112,43 @@ async def test_get_animal_success(service_client, registered_animal):
     assert data['status'] == 'available'
     assert data['organization_id'] == registered_animal['organization_id']
     assert data['breed']['id'] == registered_animal['breed']['id']
+    assert data['can_be_adopted'] is False
+
+
+async def test_get_animal_can_be_adopted_true_for_authenticated_user(
+    service_client, authenticated_user, registered_animal, pgsql
+):
+    conn = pgsql['postgres-db']
+    cursor = conn.cursor()
+    cursor.execute(
+        'DELETE FROM adopt_requests WHERE animal_id = %s AND user_id = %s',
+        (registered_animal['id'], authenticated_user['user_id']),
+    )
+    animal_id = registered_animal['id']
+    response = await service_client.get(
+        f'/animals/{animal_id}',
+        headers={'Authorization': f"Bearer {authenticated_user['token']}"},
+    )
+    assert response.status == 200
+    assert response.json()['can_be_adopted'] is True
+
+
+async def test_get_animal_can_be_adopted_false_when_request_exists(
+    service_client, authenticated_user, registered_animal, pgsql
+):
+    conn = pgsql['postgres-db']
+    cursor = conn.cursor()
+    cursor.execute(
+        'INSERT INTO adopt_requests (animal_id, user_id) VALUES (%s, %s)',
+        (registered_animal['id'], authenticated_user['user_id']),
+    )
+
+    response = await service_client.get(
+        f"/animals/{registered_animal['id']}",
+        headers={'Authorization': f"Bearer {authenticated_user['token']}"},
+    )
+    assert response.status == 200
+    assert response.json()['can_be_adopted'] is False
 
 
 async def test_get_animal_not_found(service_client):

@@ -197,6 +197,28 @@ async def test_animal_list_response_shape(
     assert 'good_with' in item
     assert 'age' in item
     assert 'status' in item
+    assert 'can_be_adopted' in item
+    assert item['can_be_adopted'] is False
+
+
+async def test_animal_list_can_be_adopted_true_with_auth(
+    service_client, authenticated_user, registered_org, dog_breed
+):
+    animal = await create_animal(
+        service_client,
+        authenticated_user['token'],
+        registered_org['id'],
+        dog_breed['id'],
+    )
+
+    response = await service_client.get(
+        '/animals',
+        headers={'Authorization': f"Bearer {authenticated_user['token']}"},
+    )
+    assert response.status == 200
+    items = response.json()['items']
+    item = next(a for a in items if a['id'] == animal['id'])
+    assert item['can_be_adopted'] is True
 
 
 # --- Filters ---
