@@ -116,7 +116,7 @@ ifdef LINT_CPP_FILES
 		-extra-arg=-Wno-unknown-argument \
 		-extra-arg=-Wno-unknown-warning-option \
 		-extra-arg="-std=c++20" \
-		$(LINT_CPP_FILES)
+		$(abspath $(LINT_CPP_FILES))
 else ifeq ($(origin CHANGED_FILES),undefined)
 	$(error No C++ source files found in src/)
 else
