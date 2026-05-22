@@ -55,7 +55,6 @@ async def register_and_login(service_client, city_id, prefix='org_owner'):
     return {'token': token, 'org_id': org_id, 'email': email}
 
 
-
 @pytest.fixture
 async def org_owner(service_client, city):
     return await register_and_login(service_client, city['id'])
