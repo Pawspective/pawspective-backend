@@ -6,13 +6,24 @@
 
 namespace pawspective::services {
 
+namespace {
+bool CanBeAdopted(const models::Animal& animal, const std::unordered_set<int64_t>& user_adopted_animal_ids) {
+    return animal.status == models::AnimalStatus::kAvailable && !user_adopted_animal_ids.contains(animal.id);
+}
+}  // namespace
+
 AnimalService::AnimalService(
     const repositories::AnimalRepository& repo,
     const BreedService& breed_service,
     const OrganizationService& org_service,
-    const UserService& user_service
+    const UserService& user_service,
+    const repositories::AdoptRequestRepository& adopt_request_repo
 )
-    : repository_(repo), breed_service_(breed_service), org_service_(org_service), user_service_(user_service) {}
+    : repository_(repo),
+      breed_service_(breed_service),
+      org_service_(org_service),
+      user_service_(user_service),
+      adopt_request_repo_(adopt_request_repo) {}
 
 dto::AnimalDTO AnimalService::Create(int64_t user_id, const dto::AnimalRegisterDTO& dto) const {
     auto user_org_id = user_service_.GetOrganizationId(user_id);
@@ -22,7 +33,7 @@ dto::AnimalDTO AnimalService::Create(int64_t user_id, const dto::AnimalRegisterD
 
     auto breed_dto = breed_service_.Get(dto.breed_id);
     models::Animal animal = repository_.Create(models::Animal::from_register_dto(dto));
-    return models::Animal::to_dto(animal, breed_dto);
+    return models::Animal::to_dto(animal, breed_dto, animal.status == models::AnimalStatus::kAvailable);
 }
 
 dto::AnimalDTO AnimalService::Update(int64_t user_id, int64_t animal_id, const dto::AnimalUpdateDTO& dto) const {
@@ -44,7 +55,8 @@ dto::AnimalDTO AnimalService::Update(int64_t user_id, int64_t animal_id, const d
     }
 
     auto breed_dto = breed_service_.Get(updated->breed_id);
-    return models::Animal::to_dto(*updated, breed_dto);
+    std::unordered_set<int64_t> user_adopted_animal_ids = adopt_request_repo_.GetAnimalIdsByUserId(user_id);
+    return models::Animal::to_dto(*updated, breed_dto, CanBeAdopted(*updated, user_adopted_animal_ids));
 }
 
 dto::AnimalDTO AnimalService::Adopt(int64_t user_id, int64_t animal_id) const {
@@ -60,10 +72,14 @@ dto::AnimalDTO AnimalService::Adopt(int64_t user_id, int64_t animal_id) const {
         throw AnimalNotFoundException();
     }
     auto breed_dto = breed_service_.Get(adopted->breed_id);
-    return models::Animal::to_dto(*adopted, breed_dto);
+    std::unordered_set<int64_t> user_adopted_animal_ids = adopt_request_repo_.GetAnimalIdsByUserId(user_id);
+    return models::Animal::to_dto(*adopted, breed_dto, CanBeAdopted(*adopted, user_adopted_animal_ids));
 }
 
-std::vector<dto::AnimalDTO> AnimalService::GetByIds(const std::vector<std::int64_t>& ids) const {
+std::vector<dto::AnimalDTO> AnimalService::GetByIds(
+    const std::vector<std::int64_t>& ids,
+    std::optional<int64_t> user_id
+) const {
     auto animals = repository_.GetByIds(ids);
 
     std::vector<std::int64_t> breed_ids;
@@ -75,28 +91,41 @@ std::vector<dto::AnimalDTO> AnimalService::GetByIds(const std::vector<std::int64
 
     std::vector<dto::AnimalDTO> result;
     result.reserve(animals.size());
+    const bool has_user = user_id.has_value();
+    std::unordered_set<int64_t> user_adopted_animal_ids;
+    if (has_user) {
+        user_adopted_animal_ids = adopt_request_repo_.GetAnimalIdsByUserId(*user_id);
+    }
     std::transform(
         std::make_move_iterator(animals.begin()),
         std::make_move_iterator(animals.end()),
         std::back_inserter(result),
-        [&breed_dtos](models::Animal&& animal) {
-            return models::Animal::to_dto(std::move(animal), breed_dtos[animal.breed_id]);
+        [&breed_dtos, &user_adopted_animal_ids, has_user](models::Animal&& animal) {
+            const bool can_be_adopted = has_user && CanBeAdopted(animal, user_adopted_animal_ids);
+            return models::Animal::to_dto(std::move(animal), breed_dtos[animal.breed_id], can_be_adopted);
         }
     );
     return result;
 }
 
-dto::AnimalDTO AnimalService::Get(int64_t id) const {
+dto::AnimalDTO AnimalService::Get(int64_t id, std::optional<int64_t> user_id) const {
     auto animal = repository_.GetById(id);
     if (!animal) {
         throw AnimalNotFoundException();
     }
 
     auto breed_dto = breed_service_.Get(animal->breed_id);
-    return models::Animal::to_dto(*animal, breed_dto);
+    const bool has_user = user_id.has_value();
+    std::unordered_set<int64_t> user_adopted_animal_ids;
+    if (has_user) {
+        user_adopted_animal_ids = adopt_request_repo_.GetAnimalIdsByUserId(*user_id);
+    }
+    const bool can_be_adopted = has_user && CanBeAdopted(*animal, user_adopted_animal_ids);
+    return models::Animal::to_dto(*animal, breed_dto, can_be_adopted);
 }
 
-dto::AnimalListDTO AnimalService::GetByOrganizationPaginated(int64_t org_id, int page) const {
+dto::AnimalListDTO AnimalService::GetByOrganizationPaginated(int64_t org_id, int page, std::optional<int64_t> user_id)
+    const {
     static constexpr int kPageSize = 20;
 
     (void)org_service_.Get(org_id);
@@ -111,12 +140,19 @@ dto::AnimalListDTO AnimalService::GetByOrganizationPaginated(int64_t org_id, int
         return animal.breed_id;
     });
     auto breed_dtos = breed_service_.GetByIds(breed_ids);
+
+    const bool has_user = user_id.has_value();
+    std::unordered_set<int64_t> user_adopted_animal_ids;
+    if (has_user) {
+        user_adopted_animal_ids = adopt_request_repo_.GetAnimalIdsByUserId(*user_id);
+    }
     std::transform(
         std::make_move_iterator(animals.begin()),
         std::make_move_iterator(animals.end()),
         std::back_inserter(items),
-        [&breed_dtos](models::Animal&& animal) {
-            return models::Animal::to_dto(std::move(animal), breed_dtos[animal.breed_id]);
+        [&breed_dtos, &user_adopted_animal_ids, has_user](models::Animal&& animal) {
+            const bool can_be_adopted = has_user && CanBeAdopted(animal, user_adopted_animal_ids);
+            return models::Animal::to_dto(std::move(animal), breed_dtos[animal.breed_id], can_be_adopted);
         }
     );
 
@@ -133,7 +169,11 @@ dto::AnimalFilterDTO AnimalService::GetFilterOptions() const {
     return models::AnimalFilters::to_dto(filters);
 }
 
-dto::AnimalListDTO AnimalService::FindByFilters(const dto::AnimalFilterDTO& filter_dto, int page) const {
+dto::AnimalListDTO AnimalService::FindByFilters(
+    const dto::AnimalFilterDTO& filter_dto,
+    int page,
+    std::optional<int64_t> user_id
+) const {
     static constexpr int kPageSize = 20;
 
     auto filter_model = models::AnimalFilters::from_dto(filter_dto);
@@ -147,12 +187,18 @@ dto::AnimalListDTO AnimalService::FindByFilters(const dto::AnimalFilterDTO& filt
         return animal.breed_id;
     });
     auto breed_dtos = breed_service_.GetByIds(breed_ids);
+    const bool has_user = user_id.has_value();
+    std::unordered_set<int64_t> user_adopted_animal_ids;
+    if (has_user) {
+        user_adopted_animal_ids = adopt_request_repo_.GetAnimalIdsByUserId(*user_id);
+    }
     std::transform(
         std::make_move_iterator(animals.begin()),
         std::make_move_iterator(animals.end()),
         std::back_inserter(items),
-        [&breed_dtos](models::Animal&& animal) {
-            return models::Animal::to_dto(std::move(animal), breed_dtos[animal.breed_id]);
+        [&breed_dtos, &user_adopted_animal_ids, has_user](models::Animal&& animal) {
+            const bool can_be_adopted = has_user && CanBeAdopted(animal, user_adopted_animal_ids);
+            return models::Animal::to_dto(std::move(animal), breed_dtos[animal.breed_id], can_be_adopted);
         }
     );
 

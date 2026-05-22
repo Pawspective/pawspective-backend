@@ -21,7 +21,7 @@ AnimalGetHandler::AnimalGetHandler(
 userver::formats::json::Value AnimalGetHandler::HandleRequestJsonThrow(
     const userver::server::http::HttpRequest& request,
     const userver::formats::json::Value& /*request_json*/,
-    userver::server::request::RequestContext& /*context*/
+    userver::server::request::RequestContext& context
 ) const {
     const auto& id_str = request.GetPathArg("id");
 
@@ -34,7 +34,11 @@ userver::formats::json::Value AnimalGetHandler::HandleRequestJsonThrow(
     }
 
     try {
-        const dto::AnimalDTO animal_dto = animal_service_.get_service().Get(animal_id);
+        std::optional<int64_t> user_id = std::nullopt;
+        if (const int64_t* user_id_value = context.GetDataOptional<int64_t>("user_id")) {
+            user_id = *user_id_value;
+        }
+        const dto::AnimalDTO animal_dto = animal_service_.get_service().Get(animal_id, user_id);
 
         return userver::formats::json::ValueBuilder{animal_dto}.ExtractValue();
     } catch (const services::AnimalNotFoundException& e) {

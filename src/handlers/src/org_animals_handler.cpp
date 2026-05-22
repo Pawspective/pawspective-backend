@@ -22,7 +22,7 @@ OrganizationAnimalHandler::OrganizationAnimalHandler(
 userver::formats::json::Value OrganizationAnimalHandler::HandleRequestJsonThrow(
     const userver::server::http::HttpRequest& request,
     const userver::formats::json::Value& /*request_json*/,
-    userver::server::request::RequestContext& /*context*/
+    userver::server::request::RequestContext& context
 ) const {
     const auto& id_str = request.GetPathArg("id");
 
@@ -50,7 +50,11 @@ userver::formats::json::Value OrganizationAnimalHandler::HandleRequestJsonThrow(
     }
 
     try {
-        const auto result = animal_service_.get_service().GetByOrganizationPaginated(org_id, page);
+        std::optional<int64_t> user_id = std::nullopt;
+        if (const int64_t* user_id_value = context.GetDataOptional<int64_t>("user_id")) {
+            user_id = *user_id_value;
+        }
+        const auto result = animal_service_.get_service().GetByOrganizationPaginated(org_id, page, user_id);
         return userver::formats::json::ValueBuilder{result}.ExtractValue();
     } catch (const services::OrganizationNotFoundException& e) {
         LOG_WARNING() << "Organization not found for ID: " << org_id;
