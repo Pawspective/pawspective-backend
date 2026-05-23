@@ -26,7 +26,7 @@ ifeq ($(origin CHANGED_FILES),undefined)
 else ifneq ($(strip $(CHANGED_FILES)),)
   LINT_CPP_FILES  := $(CHANGED_FILES)
   CPPCHECK_CPP_FILES := $(filter %.cpp,$(LINT_CPP_FILES))
-  CPPCHECK_FILTER := $(foreach f,$(CPPCHECK_CPP_FILES),--file-filter=*/$f)
+  CPPCHECK_FILTER := $(foreach f,$(CPPCHECK_CPP_FILES),--file-filter=*$f)
 else
   LINT_CPP_FILES  :=
   CPPCHECK_FILTER :=
