@@ -21,6 +21,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Fix git safe directory
+        run: git config --global --add safe.directory '*'
+
       - name: Cache CMake build
         uses: actions/cache@v4
         with:
@@ -43,7 +46,8 @@ jobs:
         id: changed-files
         if: github.event_name == 'pull_request'
         run: |
-          FILES=$(git diff --name-only --diff-filter=ACMR "${{ github.event.pull_request.base.sha }}" HEAD \
+          git fetch origin ${{ github.event.pull_request.base.ref }}
+          FILES=$(git diff --name-only --diff-filter=ACMR "origin/${{ github.event.pull_request.base.ref }}" HEAD \
             | grep -E '\.(cpp|hpp)$' | grep '^src/' | tr '\n' ' ' || true)
           echo "files=$FILES" >> $GITHUB_OUTPUT
 

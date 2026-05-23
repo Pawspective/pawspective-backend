@@ -25,7 +25,8 @@ ifeq ($(origin CHANGED_FILES),undefined)
   CPPCHECK_FILTER := --file-filter=*/src/*
 else ifneq ($(strip $(CHANGED_FILES)),)
   LINT_CPP_FILES  := $(CHANGED_FILES)
-  CPPCHECK_FILTER := $(foreach f,$(LINT_CPP_FILES),--file-filter=$(abspath $(f)))
+  CPPCHECK_CPP_FILES := $(filter %.cpp,$(LINT_CPP_FILES))
+  CPPCHECK_FILTER := $(foreach f,$(CPPCHECK_CPP_FILES),--file-filter=*$f)
 else
   LINT_CPP_FILES  :=
   CPPCHECK_FILTER :=
@@ -125,15 +126,18 @@ endif
 
 cppcheck:
 	@echo "Running cppcheck..."
-ifdef LINT_CPP_FILES
+ifeq ($(origin CHANGED_FILES),undefined)
 	$(CPPCHECK) --enable=all --error-exitcode=1 \
 		--project=$(BUILD_DIR)/compile_commands.json \
 		--suppressions-list=.cppcheck_suppressions \
 		$(CPPCHECK_FILTER)
-else ifeq ($(origin CHANGED_FILES),undefined)
-	$(error No C++ source files found in src/)
+else ifneq ($(strip $(CPPCHECK_FILTER)),)
+	$(CPPCHECK) --enable=all --error-exitcode=1 \
+		--project=$(BUILD_DIR)/compile_commands.json \
+		--suppressions-list=.cppcheck_suppressions \
+		$(CPPCHECK_FILTER)
 else
-	@echo "No C++ files changed in this PR, skipping cppcheck."
+	@echo "No C++ source files changed in this PR, skipping cppcheck."
 endif
 
 lint: $(LINT_STEPS)
