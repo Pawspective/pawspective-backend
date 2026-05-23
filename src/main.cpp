@@ -9,6 +9,7 @@
 #include <userver/storages/secdist/provider_component.hpp>
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/utils/daemon_run.hpp>
+#include "adopt_requests_get_handler.hpp"
 #include "adopt_request_repository_component.hpp"
 #include "adopt_request_service_component.hpp"
 #include "animal_delete_handler.hpp"
@@ -121,7 +122,8 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::handlers::PostsGetHandler>()
             .Append<pawspective::handlers::PostCreateHandler>()
             .Append<pawspective::handlers::PostUpdateHandler>()
-            .Append<pawspective::handlers::PostDeleteHandler>();
+            .Append<pawspective::handlers::PostDeleteHandler>()
+            .Append<pawspective::handlers::AdoptRequestsGetHandler>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }
