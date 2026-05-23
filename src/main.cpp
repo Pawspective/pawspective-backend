@@ -9,9 +9,9 @@
 #include <userver/storages/secdist/provider_component.hpp>
 #include <userver/testsuite/testsuite_support.hpp>
 #include <userver/utils/daemon_run.hpp>
-#include "adopt_requests_get_handler.hpp"
 #include "adopt_request_repository_component.hpp"
 #include "adopt_request_service_component.hpp"
+#include "adopt_requests_get_handler.hpp"
 #include "animal_delete_handler.hpp"
 #include "animal_filters_handler.hpp"
 #include "animal_get_handler.hpp"
