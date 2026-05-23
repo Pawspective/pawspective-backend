@@ -51,7 +51,7 @@ userver::formats::json::Value AdoptRequestsGetHandler::HandleRequestJsonThrow(
         }
     }
 
-    const auto* user_id_ptr = context.GetDataOptional<int64_t>("user_id");
+    const auto* user_id_ptr = context.GetData<int64_t>("user_id");
     const int64_t user_id = *user_id_ptr;
 
     try {
