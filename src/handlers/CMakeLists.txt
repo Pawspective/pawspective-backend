@@ -33,6 +33,7 @@ set(HANDLERS_SOURCES
     src/review_delete_handler.cpp
     src/adopt_requests_get_handler.cpp
     src/adopt_request_accept_handler.cpp
+    src/adopt_request_deny_handler.cpp
 )
 
 add_library(pawspective_handlers STATIC ${HANDLERS_SOURCES})
