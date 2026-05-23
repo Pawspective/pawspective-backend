@@ -51,8 +51,7 @@ userver::formats::json::Value AdoptRequestsGetHandler::HandleRequestJsonThrow(
         }
     }
 
-    const auto* user_id_ptr = context.GetData<int64_t>("user_id");
-    const int64_t user_id = *user_id_ptr;
+    const int64_t user_id = context.GetData<int64_t>("user_id");
 
     try {
         const auto result = adopt_request_service_.get_service().GetByOrganizationId(user_id, org_id, page);
