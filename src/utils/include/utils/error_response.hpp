@@ -91,6 +91,8 @@ inline constexpr std::string_view kAnimalNotFound = "ANIMAL_NOT_FOUND";
 inline constexpr std::string_view kPostNotFound = "POST_NOT_FOUND";
 inline constexpr std::string_view kReviewAlreadyExists = "REVIEW_ALREADY_EXISTS";
 inline constexpr std::string_view kReviewNotFound = "REVIEW_NOT_FOUND";
+inline constexpr std::string_view kAdoptRequestAlreadyExists = "ADOPT_REQUEST_ALREADY_EXISTS";
+inline constexpr std::string_view kAnimalNotAvailable = "ANIMAL_NOT_AVAILABLE";
 }  // namespace error_code
 
 }  // namespace pawspective::utils

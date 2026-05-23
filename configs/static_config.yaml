@@ -374,3 +374,12 @@ components_manager:
                 types:
                     - jwt
                 required: true
+
+        handler-animal-adopt:
+            path: /animals/{id}/adopt
+            method: POST
+            task_processor: main-task-processor
+            auth:
+                types:
+                    - jwt
+                required: true

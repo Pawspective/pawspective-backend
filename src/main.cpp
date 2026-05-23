@@ -14,6 +14,7 @@
 #include "adopt_request_repository_component.hpp"
 #include "adopt_request_service_component.hpp"
 #include "adopt_requests_get_handler.hpp"
+#include "animal_adopt_handler.hpp"
 #include "animal_delete_handler.hpp"
 #include "animal_filters_handler.hpp"
 #include "animal_get_handler.hpp"
@@ -127,7 +128,8 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::handlers::PostDeleteHandler>()
             .Append<pawspective::handlers::AdoptRequestsGetHandler>()
             .Append<pawspective::handlers::AdoptRequestAcceptHandler>()
-            .Append<pawspective::handlers::AdoptRequestDenyHandler>();
+            .Append<pawspective::handlers::AdoptRequestDenyHandler>()
+            .Append<pawspective::handlers::AnimalAdoptHandler>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }
