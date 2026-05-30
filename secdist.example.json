@@ -1,5 +1,17 @@
 {
   "jwt-service": {
     "secret_key": "dev-secret-key-change-me-in-production"
+  },
+  "postgresql_settings": {
+    "databases": {
+      "postgres-db": [
+        {
+          "shard_number": 0,
+          "hosts": [
+            "host=localhost port=5432 dbname=postgres-db user=user password=password"
+          ]
+        }
+      ]
+    }
   }
 }
