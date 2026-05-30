@@ -320,6 +320,10 @@ components_manager:
             path: /reviews
             method: GET
             task_processor: main-task-processor
+            auth:
+                types:
+                    - jwt
+                required: false
 
         handler-review-delete:
             path: /reviews/{id}
