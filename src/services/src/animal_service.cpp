@@ -164,6 +164,30 @@ std::unordered_map<int64_t, std::string> AnimalService::GetNames(const std::vect
     return repository_.GetNamesByIds(ids);
 }
 
+std::vector<dto::AnimalDTO> AnimalService::GetAdoptedAnimalsWithoutReviewsByUserId(int64_t user_id) const {
+    auto animals = repository_.GetAdoptedAnimalsWithoutReviewsByUserId(user_id);
+
+    std::vector<int64_t> breed_ids;
+    breed_ids.reserve(animals.size());
+    std::transform(animals.begin(), animals.end(), std::back_inserter(breed_ids), [](const auto& animal) {
+        return animal.breed_id;
+    });
+    auto breed_dtos = breed_service_.GetByIds(breed_ids);
+
+    std::vector<dto::AnimalDTO> result;
+    result.reserve(animals.size());
+    std::transform(
+        std::make_move_iterator(animals.begin()),
+        std::make_move_iterator(animals.end()),
+        std::back_inserter(result),
+        [&breed_dtos](models::Animal&& animal) {
+            return models::Animal::to_dto(std::move(animal), breed_dtos[animal.breed_id], false);
+        }
+    );
+
+    return result;
+}
+
 dto::AnimalFilterDTO AnimalService::GetFilterOptions() const {
     auto filters = repository_.GetAvailableFilters();
     return models::AnimalFilters::to_dto(filters);
