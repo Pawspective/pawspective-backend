@@ -344,4 +344,22 @@ std::optional<models::Animal> AnimalRepository::Adopt(std::int64_t animal_id, st
     return res;
 }
 
+std::vector<models::Animal> AnimalRepository::GetAdoptedAnimalsWithoutReviewsByUserId(std::int64_t user_id) const {
+    auto result = pg_cluster_->Execute(
+        userver::storages::postgres::ClusterHostType::kSlave,
+        "SELECT a.id, a.organization_id, a.name, a.breed_id, a.user_id, a.size, a.gender, "
+        "a.care_level, a.good_with, a.color, a.age, a.description, a.status "
+        "FROM animals a "
+        "WHERE a.user_id = $1 "
+        "AND NOT EXISTS ("
+        "    SELECT 1 FROM reviews r "
+        "    WHERE r.user_id = $1 AND r.animal_id = a.id"
+        ") "
+        "ORDER BY a.id ASC",
+        user_id
+    );
+
+    return result.AsContainer<std::vector<models::Animal>>(userver::storages::postgres::kRowTag);
+}
+
 }  // namespace pawspective::repositories
