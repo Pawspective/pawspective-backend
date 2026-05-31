@@ -261,6 +261,15 @@ components_manager:
                     - jwt
                 required: false
 
+        handler-me-adopted-animals-pending-review:
+            path: /me/adopted-animals/pending-review
+            method: GET
+            task_processor: main-task-processor
+            auth:
+                types:
+                    - jwt
+                required: true
+
         handler-animal-filters:
             path: /animals/filters
             method: GET
