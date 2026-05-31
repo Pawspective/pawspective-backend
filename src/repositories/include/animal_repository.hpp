@@ -1,7 +1,9 @@
 #pragma once
 
 #include <optional>
+#include <unordered_map>
 #include <userver/storages/postgres/cluster.hpp>
+#include <utility>
 #include <vector>
 
 #include "../../models/include/animal.hpp"
@@ -23,6 +25,7 @@ public:
     models::Animal Create(const models::Animal& animal) const;
     std::optional<models::Animal> Update(const models::Animal& animal) const;
     [[nodiscard]] std::unordered_map<int64_t, std::string> GetNamesByIds(const std::vector<int64_t>& ids) const;
+    [[nodiscard]] std::vector<models::Animal> GetAdoptedAnimalsWithoutReviewsByUserId(std::int64_t user_id) const;
     [[nodiscard]] models::AnimalFilters GetAvailableFilters() const;
     [[nodiscard]] std::pair<std::vector<models::Animal>, std::int64_t> FindByFiltersPaginated(
         const models::AnimalFilters& filter,

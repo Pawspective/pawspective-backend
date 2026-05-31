@@ -31,6 +31,7 @@ public:
     dto::AnimalDTO Adopt(int64_t user_id, int64_t animal_id) const;
     [[nodiscard]] dto::AnimalDTO Get(int64_t id, std::optional<int64_t> user_id = std::nullopt) const;
     [[nodiscard]] std::unordered_map<int64_t, std::string> GetNames(const std::vector<int64_t>& ids) const;
+    [[nodiscard]] std::vector<dto::AnimalDTO> GetAdoptedAnimalsWithoutReviewsByUserId(int64_t user_id) const;
     [[nodiscard]] std::vector<dto::AnimalDTO> GetByIds(
         const std::vector<std::int64_t>& ids,
         std::optional<int64_t> user_id = std::nullopt

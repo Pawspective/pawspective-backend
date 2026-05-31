@@ -37,6 +37,7 @@
 #include "components/user_service_component.hpp"
 #include "health_handler.hpp"
 #include "jwt_component.hpp"
+#include "me_adopted_animals_pending_review_handler.hpp"
 #include "org_animals_handler.hpp"
 #include "org_delete_handler.hpp"
 #include "org_get_handler.hpp"
@@ -115,6 +116,7 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::handlers::AnimalListHandler>()
             .Append<pawspective::handlers::AnimalFiltersHandler>()
             .Append<pawspective::handlers::ReviewCreateHandler>()
+            .Append<pawspective::handlers::MeAdoptedAnimalsPendingReviewHandler>()
             .Append<pawspective::handlers::ReviewUpdateHandler>()
             .Append<pawspective::handlers::ReviewGetHandler>()
             .Append<pawspective::handlers::ReviewDeleteHandler>()
