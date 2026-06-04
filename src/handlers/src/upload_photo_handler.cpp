@@ -33,7 +33,18 @@ std::string UploadPhotoHandler::HandleRequest(
     userver::server::http::HttpRequest& request,
     userver::server::request::RequestContext& /*context*/
 ) const {
-    const auto media_type = std::string{userver::http::ContentType{request.GetHeader("Content-Type")}.MediaType()};
+    const auto& content_type_header = request.GetHeader("Content-Type");
+    if (content_type_header.empty()) {
+        utils::ErrorResponse(utils::error_code::kInvalidContentType, "Content-Type header is required")
+            .ThrowClientError();
+    }
+
+    std::string media_type;
+    try {
+        media_type = std::string{userver::http::ContentType{content_type_header}.MediaType()};
+    } catch (const std::exception&) {
+        utils::ErrorResponse(utils::error_code::kInvalidContentType, "Invalid Content-Type header").ThrowClientError();
+    }
 
     const auto type_it = kAllowedTypes.find(media_type);
     if (type_it == kAllowedTypes.end()) {
@@ -56,7 +67,7 @@ std::string UploadPhotoHandler::HandleRequest(
         url = s3_.GetClient().UploadFile(key, body, media_type);
     } catch (const std::exception& e) {
         LOG_ERROR() << "Photo upload to S3 failed: " << e.what();
-        utils::ErrorResponse(utils::error_code::kUploadFailed, "Failed to upload photo").ThrowClientError();
+        utils::ErrorResponse(utils::error_code::kUploadFailed, "Failed to upload photo").ThrowServerError();
     }
 
     request.GetHttpResponse().SetContentType(userver::http::ContentType("application/json"));

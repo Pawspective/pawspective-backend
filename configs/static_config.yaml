@@ -46,9 +46,6 @@ components_manager:
             refresh_ttl: 86400
 
         s3-service:
-            bucket: $S3_BUCKET
-            endpoint: storage.yandexcloud.net
-            public_url_base: $S3_PUBLIC_URL_BASE
             timeout: 5000
         
         session-service-pg:

@@ -4,7 +4,10 @@
   },
   "s3-service": {
     "access_key": "YOUR_YANDEX_CLOUD_ACCESS_KEY_ID",
-    "secret_key": "YOUR_YANDEX_CLOUD_SECRET_ACCESS_KEY"
+    "secret_key": "YOUR_YANDEX_CLOUD_SECRET_ACCESS_KEY",
+    "bucket": "your-bucket-name",
+    "endpoint": "storage.yandexcloud.net",
+    "public_url_base": "https://your-bucket-name.storage.yandexcloud.net"
   },
   "postgresql_settings": {
     "databases": {

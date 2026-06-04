@@ -23,24 +23,21 @@ utils::S3UploadClient MakeClient(
     const auto& secrets = secdist.Get<models::S3Secrets>();
     auto& http_client = context.FindComponent<userver::components::HttpClient>().GetHttpClient();
 
-    const auto bucket = config["bucket"].As<std::string>();
-    const auto endpoint = config["endpoint"].As<std::string>();
-    const auto public_url_base = config["public_url_base"].As<std::string>();
     const auto timeout_ms = config["timeout"].As<int>(5000);
 
     auto connection = userver::s3api::MakeS3Connection(
         http_client,
         userver::s3api::S3ConnectionType::kHttps,
-        endpoint,
+        secrets.endpoint,
         userver::s3api::ConnectionCfg{std::chrono::milliseconds{timeout_ms}, 3}
     );
 
     auto auth = std::make_shared<
         userver::s3api::authenticators::AccessKey>(secrets.access_key, userver::s3api::Secret{secrets.secret_key});
 
-    auto s3_client = userver::s3api::GetS3Client(std::move(connection), std::move(auth), bucket);
+    auto s3_client = userver::s3api::GetS3Client(std::move(connection), std::move(auth), secrets.bucket);
 
-    return utils::S3UploadClient{std::move(s3_client), public_url_base};
+    return utils::S3UploadClient{std::move(s3_client), secrets.public_url_base};
 }
 
 }  // namespace
@@ -59,15 +56,6 @@ userver::yaml_config::Schema S3Component::GetStaticConfigSchema() {
         description: S3-compatible object storage configuration
         additionalProperties: false
         properties:
-            bucket:
-                type: string
-                description: Storage bucket name
-            endpoint:
-                type: string
-                description: S3-compatible endpoint hostname (e.g. storage.yandexcloud.net)
-            public_url_base:
-                type: string
-                description: Base public URL for uploaded files (e.g. https://bucket.storage.yandexcloud.net)
             timeout:
                 type: integer
                 description: HTTP request timeout in milliseconds

@@ -6,7 +6,11 @@
 namespace pawspective::utils {
 
 S3UploadClient::S3UploadClient(userver::s3api::ClientPtr client, std::string public_url_base)
-    : client_(std::move(client)), public_url_base_(std::move(public_url_base)) {}
+    : client_(std::move(client)), public_url_base_(std::move(public_url_base)) {
+    while (!public_url_base_.empty() && public_url_base_.back() == '/') {
+        public_url_base_.pop_back();
+    }
+}
 
 std::string S3UploadClient::UploadFile(std::string_view key, std::string data, std::string_view content_type) {
     try {

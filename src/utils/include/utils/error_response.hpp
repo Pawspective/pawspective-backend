@@ -64,6 +64,11 @@ public:
      */
     [[noreturn]] void ThrowNotFound() const;
 
+    /**
+     * @brief Throw InternalServerError (HTTP 500) with this error response
+     */
+    [[noreturn]] void ThrowServerError() const;
+
 private:
     std::string code_;
     std::string message_;
