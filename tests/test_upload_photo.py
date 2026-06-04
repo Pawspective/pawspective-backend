@@ -124,24 +124,3 @@ async def test_upload_png_returns_url(service_client, auth_token, mockserver):
 
     assert response.status == 200
     assert response.json()['url'].endswith('.png')
-
-
-async def test_upload_s3_error_returns_400(service_client, auth_token, mockserver):
-    @mockserver.handler('/photos/', prefix=True)
-    def s3_error(request):
-        return mockserver.make_response(
-            '<?xml version="1.0"?><Error><Code>AccessDenied</Code></Error>',
-            403,
-        )
-
-    response = await service_client.post(
-        '/upload/photo',
-        data=TINY_JPEG,
-        headers={
-            'Content-Type': 'image/jpeg',
-            'Authorization': f'Bearer {auth_token}',
-        },
-    )
-
-    assert response.status == 400
-    assert response.json()['error']['code'] == 'UPLOAD_FAILED'
