@@ -9,8 +9,13 @@ Parse(const userver::formats::json::Value& value, userver::formats::parse::To<S3
     return S3Secrets{value};
 }
 
-S3Secrets::S3Secrets(const userver::formats::json::Value& value)
-    : access_key(value["s3-service"]["access_key"].As<std::string>()),
-      secret_key(value["s3-service"]["secret_key"].As<std::string>()) {}
+S3Secrets::S3Secrets(const userver::formats::json::Value& value) {
+    if (!value.HasMember("s3-service")) {
+        return;
+    }
+    const auto& s3 = value["s3-service"];
+    access_key = s3["access_key"].As<std::string>("");
+    secret_key = s3["secret_key"].As<std::string>("");
+}
 
 }  // namespace pawspective::models
