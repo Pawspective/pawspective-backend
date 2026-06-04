@@ -2,6 +2,10 @@
   "jwt-service": {
     "secret_key": "dev-secret-key-change-me-in-production"
   },
+  "s3-service": {
+    "access_key": "YOUR_YANDEX_CLOUD_ACCESS_KEY_ID",
+    "secret_key": "YOUR_YANDEX_CLOUD_SECRET_ACCESS_KEY"
+  },
   "postgresql_settings": {
     "databases": {
       "postgres-db": [

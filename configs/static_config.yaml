@@ -44,6 +44,12 @@ components_manager:
             secret_key: $JWT_SECRET_KEY
             access_ttl: 3600
             refresh_ttl: 86400
+
+        s3-service:
+            bucket: $S3_BUCKET
+            endpoint: storage.yandexcloud.net
+            public_url_base: $S3_PUBLIC_URL_BASE
+            timeout: 5000
         
         session-service-pg:
             load-enabled: true 
@@ -390,6 +396,15 @@ components_manager:
 
         handler-animal-adopt:
             path: /animals/{id}/adopt
+            method: POST
+            task_processor: main-task-processor
+            auth:
+                types:
+                    - jwt
+                required: true
+
+        handler-upload-photo:
+            path: /upload/photo
             method: POST
             task_processor: main-task-processor
             auth:

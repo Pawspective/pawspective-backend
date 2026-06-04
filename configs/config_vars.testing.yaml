@@ -5,3 +5,7 @@ logger-level: debug
 is-testing: true
 
 server-port: 8080
+
+S3_BUCKET: hollow1crown
+S3_ENDPOINT: storage.yandexcloud.net
+S3_PUBLIC_URL_BASE: https://hollow1crown.storage.yandexcloud.net

@@ -59,7 +59,9 @@
 #include "review_repository_component.hpp"
 #include "review_service_component.hpp"
 #include "review_update_handler.hpp"
+#include "s3_component.hpp"
 #include "session_cleaner_component.hpp"
+#include "upload_photo_handler.hpp"
 #include "user_delete_handler.hpp"
 #include "user_registration_handler.hpp"
 #include "user_repository_component.hpp"
@@ -82,6 +84,7 @@ int main(int argc, char* argv[]) {
             .Append<userver::components::Postgres>("postgres-db")
             .Append<pawspective::components::PgSessionComponent>()
             .Append<pawspective::components::JwtComponent>()
+            .Append<pawspective::components::S3Component>()
             .Append<pawspective::components::UserRepositoryComponent>()
             .Append<pawspective::handlers::AuthRefreshHandler>()
             .Append<pawspective::handlers::UserRegistrationHandler>()
@@ -131,7 +134,8 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::handlers::AdoptRequestsGetHandler>()
             .Append<pawspective::handlers::AdoptRequestAcceptHandler>()
             .Append<pawspective::handlers::AdoptRequestDenyHandler>()
-            .Append<pawspective::handlers::AnimalAdoptHandler>();
+            .Append<pawspective::handlers::AnimalAdoptHandler>()
+            .Append<pawspective::handlers::UploadPhotoHandler>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }

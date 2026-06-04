@@ -36,6 +36,7 @@ set(HANDLERS_SOURCES
     src/adopt_request_deny_handler.cpp
     src/animal_adopt_handler.cpp
     src/me_adopted_animals_pending_review_handler.cpp
+    src/upload_photo_handler.cpp
 )
 
 add_library(pawspective_handlers STATIC ${HANDLERS_SOURCES})
