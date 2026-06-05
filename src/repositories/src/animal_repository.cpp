@@ -22,6 +22,7 @@ const utils::sql::QueryWhitelist kFilterWhitelist{
      {"careLevels", "a.care_level::text"},
      {"colors", "a.color::text"},
      {"goodWiths", "a.good_with::text"},
+     {"statuses", "a.status::text"},
      {"age", "a.age"}},
     {{"id", "a.id"}}
 };
@@ -112,7 +113,12 @@ std::pair<std::vector<models::Animal>, std::int64_t> AnimalRepository::GetByOrga
         "SELECT id, organization_id, name, breed_id, user_id, size, gender, "
         "care_level, good_with, color, age, description, status "
         "FROM animals WHERE organization_id = $1 "
-        "ORDER BY id ASC "
+        "ORDER BY "
+        "  CASE status "
+        "    WHEN 'available' THEN 1 "
+        "    ELSE 2 "
+        "  END ASC, "
+        "id ASC "
         "LIMIT $2 OFFSET $3",
         org_id,
         limit,
@@ -210,6 +216,7 @@ models::AnimalFilters AnimalRepository::GetAvailableFilters() const {
         "ARRAY(SELECT unnest(enum_range(NULL::care_level))::text), "
         "ARRAY(SELECT unnest(enum_range(NULL::animal_color))::text), "
         "ARRAY(SELECT unnest(enum_range(NULL::good_with))::text), "
+        "ARRAY(SELECT unnest(enum_range(NULL::animal_status))::text), "
         "COALESCE(MIN(age), 0), "
         "COALESCE(MAX(age), 100) "
         "FROM animals"
@@ -218,6 +225,7 @@ models::AnimalFilters AnimalRepository::GetAvailableFilters() const {
     auto row = result.AsSingleRow<std::tuple<
         std::vector<std::int64_t>,
         std::vector<std::int64_t>,
+        std::vector<std::string>,
         std::vector<std::string>,
         std::vector<std::string>,
         std::vector<std::string>,
@@ -236,8 +244,9 @@ models::AnimalFilters AnimalRepository::GetAvailableFilters() const {
         ToEnumVector<models::CareLevel>(std::get<5>(row)),
         ToEnumVector<models::AnimalColor>(std::get<6>(row)),
         ToEnumVector<models::GoodWith>(std::get<7>(row)),
-        std::get<8>(row),
-        std::get<9>(row)
+        ToEnumVector<models::AnimalStatus>(std::get<8>(row)),
+        std::get<9>(row),
+        std::get<10>(row)
     };
 }
 
@@ -269,6 +278,7 @@ std::pair<std::vector<models::Animal>, std::int64_t> AnimalRepository::FindByFil
         add_any_enum("careLevels", filter.care_levels);
         add_any_enum("colors", filter.colors);
         add_any_enum("goodWiths", filter.good_withs);
+        add_any_enum("statuses", filter.statuses);
         qf.conditions.push_back(utils::sql::Condition::Ge("age", filter.min_age));
         qf.conditions.push_back(utils::sql::Condition::Le("age", filter.max_age));
         return qf;
@@ -327,7 +337,8 @@ std::optional<models::Animal> AnimalRepository::Adopt(std::int64_t animal_id, st
     return result.AsSingleRow<models::Animal>(userver::storages::postgres::kRowTag);
 }
 
-[[nodiscard]] std::unordered_map<int64_t, std::string> AnimalRepository::GetNamesByIds(const std::vector<int64_t>& ids
+[[nodiscard]] std::unordered_map<std::int64_t, std::string> AnimalRepository::GetNamesByIds(
+    const std::vector<std::int64_t>& ids
 ) const {
     if (ids.empty()) {
         return {};

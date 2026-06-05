@@ -18,6 +18,7 @@ struct AnimalFilterDTO {
     std::optional<std::vector<models::CareLevel>> care_levels;
     std::optional<std::vector<models::AnimalColor>> colors;
     std::optional<std::vector<models::GoodWith>> good_withs;
+    std::optional<std::vector<models::AnimalStatus>> statuses;
     std::optional<int> age_lte;
     std::optional<int> age_gte;
 };

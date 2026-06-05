@@ -12,6 +12,7 @@ AnimalFilters AnimalFilters::from_dto(const dto::AnimalFilterDTO& dto) {
     model.care_levels = dto.care_levels.value_or(std::vector<CareLevel>{});
     model.colors = dto.colors.value_or(std::vector<AnimalColor>{});
     model.good_withs = dto.good_withs.value_or(std::vector<GoodWith>{});
+    model.statuses = dto.statuses.value_or(std::vector<AnimalStatus>{});
 
     model.min_age = dto.age_gte.value_or(0);
     model.max_age = dto.age_lte.value_or(100);
@@ -33,7 +34,7 @@ dto::AnimalFilterDTO AnimalFilters::to_dto(const AnimalFilters& model) {
     dto.care_levels = model.care_levels;
     dto.colors = model.colors;
     dto.good_withs = model.good_withs;
-
+    dto.statuses = model.statuses;
     if (dto.animal_types.has_value()) {
         filter_unspecified(dto.animal_types.value());
     }
@@ -52,7 +53,9 @@ dto::AnimalFilterDTO AnimalFilters::to_dto(const AnimalFilters& model) {
     if (dto.good_withs.has_value()) {
         filter_unspecified(dto.good_withs.value());
     }
-
+    if (dto.statuses.has_value()) {
+        filter_unspecified(dto.statuses.value());
+    }
     dto.age_gte = model.min_age;
     dto.age_lte = model.max_age;
 
