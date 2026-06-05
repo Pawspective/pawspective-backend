@@ -337,8 +337,7 @@ std::optional<models::Animal> AnimalRepository::Adopt(std::int64_t animal_id, st
     return result.AsSingleRow<models::Animal>(userver::storages::postgres::kRowTag);
 }
 
-[[nodiscard]] std::unordered_map<int64_t, std::string> AnimalRepository::GetNamesByIds(
-    const std::vector<int64_t>& ids
+[[nodiscard]] std::unordered_map<int64_t, std::string> AnimalRepository::GetNamesByIds(const std::vector<int64_t>& ids
 ) const {
     if (ids.empty()) {
         return {};
