@@ -40,4 +40,8 @@ void ErrorResponse::ThrowNotFound() const {
     throw userver::server::handlers::ResourceNotFound{FormattedErrorBody{GetString()}};
 }
 
+void ErrorResponse::ThrowServerError() const {
+    throw userver::server::handlers::InternalServerError{FormattedErrorBody{GetString()}};
+}
+
 }  // namespace pawspective::utils

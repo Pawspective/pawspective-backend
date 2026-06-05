@@ -1,5 +1,6 @@
-set(COMPONENTS_SOURCES 
+set(COMPONENTS_SOURCES
     src/jwt_component.cpp
+    src/s3_component.cpp
     src/pg_session_component.cpp
     src/city_repository_component.cpp
     src/city_service_component.cpp

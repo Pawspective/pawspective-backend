@@ -15,3 +15,4 @@ Makefile.local
 CMakeUserPresets.json
 secdist.json
 ${PREFIX:-~/.local}
+postgresql/seed_cities_breeds.sql

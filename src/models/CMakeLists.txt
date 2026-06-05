@@ -1,6 +1,7 @@
-set(MODELS_SOURCES 
+set(MODELS_SOURCES
     src/user.cpp
     src/jwt_secrets.cpp
+    src/s3_secrets.cpp
     src/organization.cpp
     src/city.cpp
     src/animal.cpp
