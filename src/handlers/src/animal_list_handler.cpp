@@ -76,6 +76,7 @@ dto::AnimalFilterDTO ParseFiltersFromRequest(const userver::server::http::HttpRe
     dto.care_levels = ParseEnumVector<models::CareLevel>(request.GetArgVector("care_levels"));
     dto.colors = ParseEnumVector<models::AnimalColor>(request.GetArgVector("colors"));
     dto.good_withs = ParseEnumVector<models::GoodWith>(request.GetArgVector("good_withs"));
+    dto.statuses = ParseEnumVector<models::AnimalStatus>(request.GetArgVector("statuses"));
     dto.age_gte = ParseOptionalInt(request, "age_gte");
     dto.age_lte = ParseOptionalInt(request, "age_lte");
 
