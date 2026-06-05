@@ -20,6 +20,7 @@ struct AnimalFilters {
     std::vector<CareLevel> care_levels;
     std::vector<AnimalColor> colors;
     std::vector<GoodWith> good_withs;
+    std::vector<AnimalStatus> statuses;
 
     int min_age{0};
     int max_age{0};

@@ -15,6 +15,7 @@ AnimalFilterDTO Parse(const userver::formats::json::Value& json, userver::format
     dto.care_levels = json["care_levels"].As<std::optional<std::vector<models::CareLevel>>>();
     dto.colors = json["colors"].As<std::optional<std::vector<models::AnimalColor>>>();
     dto.good_withs = json["good_withs"].As<std::optional<std::vector<models::GoodWith>>>();
+    dto.statuses = json["statuses"].As<std::optional<std::vector<models::AnimalStatus>>>();
     dto.age_lte = json["age_lte"].As<std::optional<int>>();
     dto.age_gte = json["age_gte"].As<std::optional<int>>();
 
@@ -34,6 +35,7 @@ Serialize(const AnimalFilterDTO& filters, userver::formats::serialize::To<userve
     builder["goodWiths"] = filters.good_withs;
     builder["ageLte"] = filters.age_lte;
     builder["ageGte"] = filters.age_gte;
+    builder["statuses"] = filters.statuses;
 
     return builder.ExtractValue();
 }
