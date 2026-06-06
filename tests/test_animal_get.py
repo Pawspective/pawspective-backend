@@ -89,6 +89,7 @@ async def registered_animal(service_client, authenticated_user, registered_org, 
             'status': 'available',
             'organization_id': registered_org['id'],
             'breed_id': breed['id'],
+            'photos': [],
         },
         headers={'Authorization': f"Bearer {authenticated_user['token']}"},
     )
@@ -113,6 +114,7 @@ async def test_get_animal_success(service_client, registered_animal):
     assert data['organization_id'] == registered_animal['organization_id']
     assert data['breed']['id'] == registered_animal['breed']['id']
     assert data['can_be_adopted'] is False
+    assert data['photos'] == []
 
 
 async def test_get_animal_can_be_adopted_true_for_authenticated_user(

@@ -19,6 +19,7 @@ Serialize(const OrganizationDTO& data, userver::formats::serialize::To<userver::
     builder["id"] = data.id;
     builder["name"] = data.name;
     builder["description"] = data.description;
+    builder["avatar_url"] = data.avatar_url;
     builder["city"] = data.city;
 
     return builder.ExtractValue();
@@ -31,6 +32,7 @@ Parse(const userver::formats::json::Value& json, userver::formats::parse::To<Org
     dto.id = json["id"].As<std::int64_t>();
     dto.name = json["name"].As<std::string>();
     dto.description = json["description"].As<std::optional<std::string>>();
+    dto.avatar_url = json["avatar_url"].As<std::optional<std::string>>();
     dto.city = json["city"].As<CityDTO>();
 
     return dto;

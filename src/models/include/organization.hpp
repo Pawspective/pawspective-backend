@@ -20,10 +20,10 @@ struct Organization {
     std::int64_t id{};                       // NOLINT
     std::string name;                        // NOLINT
     std::optional<std::string> description;  // NOLINT
-    // std::optional<std::string> avatar_url;       // NOLINT
-    std::int64_t city_id{};  // NOLINT
+    std::optional<std::string> avatar_url;   // NOLINT
+    std::int64_t city_id{};                  // NOLINT
 
-    auto introspect() const { return std::tie(id, name, description, city_id); }
+    auto introspect() const { return std::tie(id, name, description, avatar_url, city_id); }
 };
 
 }  // namespace pawspective::models

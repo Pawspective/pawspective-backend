@@ -13,7 +13,7 @@ struct AnimalDTO {
     std::int64_t id{};
     std::int64_t organization_id{};
     std::string name;
-    // std::optional<std::string> photo_url;
+    std::vector<std::string> photos;
     BreedDTO breed;
     models::AnimalSize size = models::AnimalSize::kUnspecified;
     models::AnimalGender gender = models::AnimalGender::kUnspecified;

@@ -12,6 +12,7 @@ Organization Organization::from_register_dto(const dto::OrganizationRegisterDTO&
         -1,  // id will be set by the database
         reg.name,
         reg.description,
+        reg.avatar_url,
         reg.city_id
     );
 }
@@ -22,12 +23,13 @@ dto::OrganizationDTO Organization::to_dto(const Organization& model, const dto::
     dto.id = model.id;
     dto.name = model.name;
     dto.description = model.description;
+    dto.avatar_url = model.avatar_url;
     dto.city = city_dto;
 
     return dto;
 }
 
 Organization Organization::from_update_dto(int64_t id, const dto::OrganizationUpdateDTO& upd) {
-    return Organization(id, upd.name.value_or(""), upd.description, upd.city_id.value_or(-1));
+    return Organization(id, upd.name.value_or(""), upd.description, upd.avatar_url, upd.city_id.value_or(-1));
 }
 }  // namespace pawspective::models

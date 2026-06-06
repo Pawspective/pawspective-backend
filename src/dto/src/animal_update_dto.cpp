@@ -10,6 +10,7 @@ AnimalUpdateDTO Parse(const userver::formats::json::Value& json, userver::format
 
     dto.name = json["name"].As<std::optional<std::string>>();
     dto.breed_id = json["breed_id"].As<std::optional<std::int64_t>>();
+    dto.photos = json["photos"].As<std::optional<std::vector<std::string>>>();
     dto.size = json["size"].As<std::optional<pawspective::models::AnimalSize>>();
     dto.gender = json["gender"].As<std::optional<pawspective::models::AnimalGender>>();
     dto.care_level = json["care_level"].As<std::optional<pawspective::models::CareLevel>>();
@@ -36,7 +37,7 @@ Serialize(const AnimalUpdateDTO& data, userver::formats::serialize::To<userver::
     builder["age"] = data.age;
     builder["description"] = data.description;
     builder["status"] = data.status;
-
+    builder["photos"] = data.photos;
     return builder.ExtractValue();
 }
 

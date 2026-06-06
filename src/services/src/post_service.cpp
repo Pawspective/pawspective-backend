@@ -59,7 +59,7 @@ dto::PostDTO PostService::Update(const int64_t user_id, const int64_t post_id, c
         throw ForbiddenException();
     }
     models::Post post = models::Post::from_update_dto(post_id, dto);
-    auto result = repository_.Update(post);
+    auto result = repository_.Update(post, dto.photos);
     if (!result) {
         throw PostNotFoundException();
     }

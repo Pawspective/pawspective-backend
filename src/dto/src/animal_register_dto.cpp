@@ -12,6 +12,7 @@ AnimalRegisterDTO Parse(const userver::formats::json::Value& json, userver::form
     dto.organization_id = json["organization_id"].As<std::int64_t>();
     dto.name = json["name"].As<std::string>();
     dto.breed_id = json["breed_id"].As<std::int64_t>();
+    dto.photos = json["photos"].As<std::vector<std::string>>();
     dto.size = json["size"].As<pawspective::models::AnimalSize>();
     dto.gender = json["gender"].As<pawspective::models::AnimalGender>();
     dto.care_level = json["care_level"].As<pawspective::models::CareLevel>();
@@ -30,6 +31,7 @@ Serialize(const AnimalRegisterDTO& data, userver::formats::serialize::To<userver
     builder["organization_id"] = data.organization_id;
     builder["name"] = data.name;
     builder["breed_id"] = data.breed_id;
+    builder["photos"] = data.photos;
     builder["size"] = data.size;
     builder["gender"] = data.gender;
     builder["care_level"] = data.care_level;

@@ -91,6 +91,7 @@ async def animal(service_client, org_with_owner, breed):
             'age': 3,
             'description': 'Test description',
             'status': 'available',
+            'photos': [],
         },
         headers={'Authorization': f"Bearer {org_with_owner['token']}"},
     )
@@ -166,6 +167,7 @@ async def test_animal_delete_forbidden_for_non_owner(service_client, org_with_ow
             'age': 1,
             'description': 'Another description',
             'status': 'available',
+            'photos': [],
         },
         headers={'Authorization': f'Bearer {other_token}'},
     )

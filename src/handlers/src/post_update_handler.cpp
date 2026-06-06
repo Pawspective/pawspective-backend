@@ -3,6 +3,7 @@
 #include <userver/components/component_context.hpp>
 #include <userver/formats/json/exception.hpp>
 #include <userver/server/http/http_status.hpp>
+#include <userver/utils/regex.hpp>
 #include "post_service_component.hpp"
 #include "post_update_dto.hpp"
 #include "services/exception.hpp"
@@ -42,6 +43,18 @@ userver::formats::json::Value PostUpdateHandler::HandleRequestJsonThrow(
         utils::Validator validator;
         if (update_dto.text.has_value()) {
             validator.Field("text", *update_dto.text).NotBlank().MaxLength(2000);
+        }
+        if (update_dto.photos.has_value()) {
+            const auto& photos_vector = *update_dto.photos;
+            validator.MaxSize(photos_vector.size(), 10, "must not exceed");
+            for (size_t i = 0; i < photos_vector.size(); ++i) {
+                validator.Field(fmt::format("photos[{}]", i), photos_vector.at(i))
+                    .MaxLength(2000)
+                    .Matches(
+                        ::userver::utils::regex(R"(^[a-f0-9]{32}\.(jpg|jpeg|png|webp|gif)$)"),
+                        "must be a valid photo filename (e.g. 66035e3bf.jpg)"
+                    );
+            }
         }
         validator.ThrowIfInvalid();
 

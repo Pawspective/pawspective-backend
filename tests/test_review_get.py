@@ -87,6 +87,7 @@ async def registered_animal(service_client, authenticated_user, registered_org, 
         'status': 'available',
         'organization_id': registered_org['id'],
         'breed_id': breed['id'],
+        'photos': [],
     }
     response = await service_client.post(
         '/animals',
@@ -280,6 +281,7 @@ async def test_reviews_only_returns_own_org_reviews(service_client, city, breed)
             'status': 'available',
             'organization_id': org1_id,
             'breed_id': breed['id'],
+            'photos': [],
         },
         headers={'Authorization': f'Bearer {token1}'},
     )
@@ -298,6 +300,7 @@ async def test_reviews_only_returns_own_org_reviews(service_client, city, breed)
             'status': 'available',
             'organization_id': org2_id,
             'breed_id': breed['id'],
+            'photos': [],
         },
         headers={'Authorization': f'Bearer {token2}'},
     )

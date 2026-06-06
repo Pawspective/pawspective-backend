@@ -7,7 +7,7 @@ namespace pawspective::dto {
 
 struct PostCreateDTO {
     std::string text;
-    // std::optional<std::string> photo_url;
+    std::vector<std::string> photos;
 };
 
 userver::formats::json::Value

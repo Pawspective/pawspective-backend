@@ -83,6 +83,7 @@ VALID_ANIMAL_PAYLOAD = {
     'good_with': 'children',
     'age': 3,
     'status': 'available',
+    'photos': [],
 }
 
 
@@ -112,6 +113,7 @@ async def test_register_animal_success(
     assert data['good_with'] == 'children'
     assert data['age'] == 3
     assert data['status'] == 'available'
+    assert data['photos'] == []
     assert 'id' in data
 
 

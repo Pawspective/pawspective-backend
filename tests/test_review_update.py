@@ -119,6 +119,7 @@ async def registered_animal(service_client, authenticated_user, breed):
             'status': 'available',
             'organization_id': authenticated_user['org_id'],
             'breed_id': breed['id'],
+            'photos': [],
         },
         headers={'Authorization': f"Bearer {authenticated_user['token']}"},
     )

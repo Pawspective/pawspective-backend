@@ -70,7 +70,7 @@ AnimalRepository::AnimalRepository(userver::storages::postgres::ClusterPtr pg_cl
     }
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
-        "SELECT id, organization_id, name, breed_id, user_id, size, gender, "
+        "SELECT id, organization_id, name, photos, breed_id, user_id, size, gender, "
         "care_level, good_with, color, age, description, status "
         "FROM animals WHERE id = ANY($1)",
         ids
@@ -81,7 +81,7 @@ AnimalRepository::AnimalRepository(userver::storages::postgres::ClusterPtr pg_cl
 [[nodiscard]] std::optional<models::Animal> AnimalRepository::GetById(int64_t id) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
-        "SELECT id, organization_id, name, breed_id, user_id, size, gender, "
+        "SELECT id, organization_id, name, photos, breed_id, user_id, size, gender, "
         "care_level, good_with, color, age, description, status "
         "FROM animals WHERE id = $1",
         id
@@ -110,7 +110,7 @@ std::pair<std::vector<models::Animal>, std::int64_t> AnimalRepository::GetByOrga
 
     auto data_result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
-        "SELECT id, organization_id, name, breed_id, user_id, size, gender, "
+        "SELECT id, organization_id, name, photos, breed_id, user_id, size, gender, "
         "care_level, good_with, color, age, description, status "
         "FROM animals WHERE organization_id = $1 "
         "ORDER BY "
@@ -132,13 +132,14 @@ std::pair<std::vector<models::Animal>, std::int64_t> AnimalRepository::GetByOrga
 models::Animal AnimalRepository::Create(const models::Animal& animal) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster,
-        "INSERT INTO animals (organization_id, name, breed_id, size, gender, "
+        "INSERT INTO animals (organization_id, name, photos, breed_id, size, gender, "
         "care_level, good_with, color, age, description, status) "
-        "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) "
-        "RETURNING id, organization_id, name, breed_id, user_id, size, gender, "
+        "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) "
+        "RETURNING id, organization_id, name, photos, breed_id, user_id, size, gender, "
         "care_level, good_with, color, age, description, status",
         animal.organization_id,
         animal.name,
+        animal.photos,
         animal.breed_id,
         animal.size,
         animal.gender,
@@ -152,7 +153,10 @@ models::Animal AnimalRepository::Create(const models::Animal& animal) const {
     return result.AsSingleRow<models::Animal>(userver::storages::postgres::kRowTag);
 }
 
-std::optional<models::Animal> AnimalRepository::Update(const models::Animal& animal) const {
+std::optional<models::Animal> AnimalRepository::Update(
+    const models::Animal& animal,
+    const std::optional<std::vector<std::string>>& upd_photos
+) const {
     userver::storages::postgres::ParameterStore parameters;
     std::vector<std::string> updates;
     parameters.PushBack(animal.id);
@@ -162,6 +166,9 @@ std::optional<models::Animal> AnimalRepository::Update(const models::Animal& ani
     };
     if (!animal.name.empty()) {
         add_field("name", animal.name);
+    }
+    if (upd_photos.has_value()) {
+        add_field("photos", upd_photos.value());
     }
     if (animal.breed_id != -1) {
         add_field("breed_id", animal.breed_id);
@@ -193,7 +200,7 @@ std::optional<models::Animal> AnimalRepository::Update(const models::Animal& ani
     }
     auto query = fmt::format(
         "UPDATE animals SET {} WHERE id = $1 "
-        "RETURNING id, organization_id, name, breed_id, user_id, size, gender, "
+        "RETURNING id, organization_id, name, photos, breed_id, user_id, size, gender, "
         "care_level, good_with, color, age, description, status",
         fmt::join(updates, ", ")
     );
@@ -303,7 +310,7 @@ std::pair<std::vector<models::Animal>, std::int64_t> AnimalRepository::FindByFil
     auto [data_clause, data_params] = utils::sql::BuildQueryClause(data_filter, kFilterWhitelist);
     auto data_result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
-        "SELECT a.id, a.organization_id, a.name, a.breed_id, a.user_id, a.size, a.gender, "
+        "SELECT a.id, a.organization_id, a.name, a.photos, a.breed_id, a.user_id, a.size, a.gender, "
         "a.care_level, a.good_with, a.color, a.age, a.description, a.status "
         "FROM animals a "
         "LEFT JOIN breeds b ON a.breed_id = b.id "
@@ -326,7 +333,7 @@ std::optional<models::Animal> AnimalRepository::Adopt(std::int64_t animal_id, st
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster,
         "UPDATE animals SET user_id = $2, status = 'adopted' WHERE id = $1 "
-        "RETURNING id, organization_id, name, breed_id, user_id, size, gender, "
+        "RETURNING id, organization_id, name, photos, breed_id, user_id, size, gender, "
         "care_level, good_with, color, age, description, status",
         animal_id,
         user_id
@@ -357,7 +364,7 @@ std::optional<models::Animal> AnimalRepository::Adopt(std::int64_t animal_id, st
 std::vector<models::Animal> AnimalRepository::GetAdoptedAnimalsWithoutReviewsByUserId(std::int64_t user_id) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
-        "SELECT a.id, a.organization_id, a.name, a.breed_id, a.user_id, a.size, a.gender, "
+        "SELECT a.id, a.organization_id, a.name, a.photos, a.breed_id, a.user_id, a.size, a.gender, "
         "a.care_level, a.good_with, a.color, a.age, a.description, a.status "
         "FROM animals a "
         "WHERE a.user_id = $1 "

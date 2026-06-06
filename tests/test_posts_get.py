@@ -66,6 +66,7 @@ async def create_post(service_client, token, overrides=None):
     """Create post for the user's own organization"""
     payload = {
         'text': f'Post content {uuid.uuid4().hex[:6]}',
+        'photos': [],
     }
     if overrides:
         payload.update(overrides)

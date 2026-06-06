@@ -22,7 +22,7 @@ struct Animal {
     std::int64_t id{};
     std::int64_t organization_id{};
     std::string name;
-    // std::optional<std::string> photo_url;
+    std::vector<std::string> photos;
     std::int64_t breed_id;
     std::optional<std::int64_t> user_id{};
     AnimalSize size;
@@ -38,7 +38,8 @@ struct Animal {
         return std::tie(
             id,
             organization_id,
-            name /*, photo_url*/,
+            name,
+            photos,
             breed_id,
             user_id,
             size,

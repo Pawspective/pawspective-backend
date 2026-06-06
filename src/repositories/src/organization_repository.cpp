@@ -13,7 +13,7 @@ OrganizationRepository::OrganizationRepository(userver::storages::postgres::Clus
 [[nodiscard]] std::optional<models::Organization> OrganizationRepository::GetById(int64_t organization_id) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
-        "SELECT id, name, description, city_id FROM organizations WHERE id = $1",
+        "SELECT id, name, description, avatar_url, city_id FROM organizations WHERE id = $1",
         organization_id
     );
     if (result.IsEmpty()) {
@@ -53,7 +53,7 @@ std::pair<std::vector<models::Organization>, std::int64_t> OrganizationRepositor
     const auto data_clause = pawspective::utils::sql::BuildQueryClause(data_filter, kWhitelist);
     auto data_result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
-        "SELECT id, name, description, city_id FROM organizations" + data_clause.query,
+        "SELECT id, name, description, avatar_url, city_id FROM organizations" + data_clause.query,
         data_clause.parameters
     );
     auto orgs = data_result.AsContainer<std::vector<models::Organization>>(userver::storages::postgres::kRowTag);
@@ -64,10 +64,11 @@ std::pair<std::vector<models::Organization>, std::int64_t> OrganizationRepositor
 models::Organization OrganizationRepository::Create(const models::Organization& organization) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster,
-        "INSERT INTO organizations (name, description, city_id) VALUES ($1, $2, $3) RETURNING id, name, description, "
-        "city_id",
+        "INSERT INTO organizations (name, description, avatar_url, city_id) VALUES ($1, $2, $3, $4) RETURNING id, "
+        "name, description, avatar_url, city_id",
         organization.name,
         organization.description,
+        organization.avatar_url,
         organization.city_id
     );
     return result.AsSingleRow<models::Organization>(userver::storages::postgres::kRowTag);
@@ -85,6 +86,10 @@ std::optional<models::Organization> OrganizationRepository::Update(const models:
         updates.push_back(fmt::format("description = ${}", parameters.Size() + 1));
         parameters.PushBack(org.description->empty() ? std::nullopt : org.description);
     }
+    if (org.avatar_url.has_value()) {
+        updates.push_back(fmt::format("avatar_url = ${}", parameters.Size() + 1));
+        parameters.PushBack(org.avatar_url->empty() ? std::nullopt : org.avatar_url);
+    }
     if (org.city_id != -1) {
         updates.push_back(fmt::format("city_id = ${}", parameters.Size() + 1));
         parameters.PushBack(org.city_id);
@@ -94,7 +99,7 @@ std::optional<models::Organization> OrganizationRepository::Update(const models:
     }
     auto query = fmt::format(
         "UPDATE organizations SET {} WHERE id = $1 "
-        "RETURNING id, name, description, city_id",
+        "RETURNING id, name, description, avatar_url, city_id",
         fmt::join(updates, ", ")
     );
     auto result = pg_cluster_->Execute(userver::storages::postgres::ClusterHostType::kMaster, query, parameters);
