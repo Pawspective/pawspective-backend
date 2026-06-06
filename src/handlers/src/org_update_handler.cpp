@@ -49,10 +49,10 @@ userver::formats::json::Value OrgUpdateHandler::HandleRequestJsonThrow(
             validator.Field("name", *update_dto.name).NotBlank().MaxLength(255);
         }
         if (update_dto.avatar_url.has_value()) {
-            static const userver::utils::regex pure_filename_regex(R"(^[a-f0-9]{32}\.(jpg|jpeg|png|webp|gif)$)");
+            static const userver::utils::regex KPureFilenameRegex(R"(^[a-zA-Z0-9]+\.(jpg|jpeg|png|webp|gif)$)");
             validator.Field("avatar_url", *update_dto.avatar_url)
                 .MaxLength(2000)
-                .Matches(pure_filename_regex, "must be a valid photo filename (e.g. 66035e3bf.jpg)");
+                .Matches(KPureFilenameRegex, "must be a valid photo filename (e.g. 66035e3bf.jpg)");
         }
         if (update_dto.description.has_value()) {
             validator.Field("description", *update_dto.description).MaxLength(2000);

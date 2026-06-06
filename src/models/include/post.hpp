@@ -3,6 +3,7 @@
 #include <chrono>
 #include <cstdint>
 #include <string>
+#include <vector>
 #include "../../dto/include/post_create_dto.hpp"
 #include "../../dto/include/post_dto.hpp"
 #include "../../dto/include/post_update_dto.hpp"

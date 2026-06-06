@@ -37,9 +37,9 @@ Validator& Validator::MaxLength(std::size_t max) {
     return *this;
 }
 
-Validator& Validator::MaxSize(std::size_t count, std::size_t max, const std::string& msg) {
+Validator& Validator::MaxSize(const std::string& field, std::size_t count, std::size_t max, const std::string& msg) {
     if (count > max) {
-        AddError(msg + " " + std::to_string(max) + " elements");
+        errors_.push_back({field, msg + " " + std::to_string(max) + " elements"});
     }
     return *this;
 }

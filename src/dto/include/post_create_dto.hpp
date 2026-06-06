@@ -2,6 +2,7 @@
 
 #include <string>
 #include <userver/formats/json/value.hpp>
+#include <vector>
 
 namespace pawspective::dto {
 

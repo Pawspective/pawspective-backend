@@ -7,6 +7,7 @@
 #include <userver/formats/json/value_builder.hpp>
 #include <userver/formats/serialize/common_containers.hpp>
 #include <userver/formats/serialize/to.hpp>
+#include <vector>
 #include "animal_enums.hpp"
 #include "breed_dto.hpp"
 

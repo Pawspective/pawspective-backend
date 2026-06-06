@@ -4,6 +4,7 @@
 #include <optional>
 #include <string>
 #include <userver/formats/json/value.hpp>
+#include <vector>
 
 #include "breed_dto.hpp"
 

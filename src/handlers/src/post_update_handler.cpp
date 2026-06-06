@@ -46,14 +46,13 @@ userver::formats::json::Value PostUpdateHandler::HandleRequestJsonThrow(
         }
         if (update_dto.photos.has_value()) {
             const auto& photos_vector = *update_dto.photos;
-            validator.MaxSize(photos_vector.size(), 10, "must not exceed");
+            validator.MaxSize("photos", photos_vector.size(), 10, "must not exceed");
+            const auto photo_regex = userver::utils::regex(R"(^[a-zA-Z0-9]+\.(jpg|jpeg|png|webp|gif)$)");
+
             for (size_t i = 0; i < photos_vector.size(); ++i) {
                 validator.Field(fmt::format("photos[{}]", i), photos_vector.at(i))
                     .MaxLength(2000)
-                    .Matches(
-                        ::userver::utils::regex(R"(^[a-f0-9]{32}\.(jpg|jpeg|png|webp|gif)$)"),
-                        "must be a valid photo filename (e.g. 66035e3bf.jpg)"
-                    );
+                    .Matches(photo_regex, "must be a valid photo filename with extension (e.g. 6035e3bf.jpg)");
             }
         }
         validator.ThrowIfInvalid();

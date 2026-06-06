@@ -1,7 +1,9 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include <string>
+#include <vector>
 #include "animal_enums.hpp"
 
 namespace pawspective::dto {
