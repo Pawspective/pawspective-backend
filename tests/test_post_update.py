@@ -100,6 +100,7 @@ async def create_post(service_client, token, overrides=None):
     """Create post for the user's own organization"""
     payload = {
         'text': f'Post content {uuid.uuid4().hex[:6]}',
+        'photos': [],
     }
     if overrides:
         payload.update(overrides)
@@ -128,6 +129,8 @@ async def test_update_post_success(service_client, authenticated_user):
     assert data['text'] == 'Updated text'
     assert data['organization_id'] == authenticated_user['org_id']
     assert 'created_at' in data
+    assert 'photos' in data
+    assert data['photos'] == []
 
 
 async def test_update_post_partial_update(service_client, authenticated_user):
@@ -144,6 +147,8 @@ async def test_update_post_partial_update(service_client, authenticated_user):
     data = response.json()
     assert data['text'] == 'New text only'
     assert data['organization_id'] == authenticated_user['org_id']
+    assert 'photos' in data
+    assert data['photos'] == []
 
 
 async def test_update_post_persists_in_database(service_client, authenticated_user, pgsql):
@@ -152,19 +157,20 @@ async def test_update_post_persists_in_database(service_client, authenticated_us
 
     await service_client.put(
         f'/posts/{post["id"]}',
-        json={'text': 'After update'},
+        json={'text': 'After update', 'photos': []},
         headers={'Authorization': f"Bearer {authenticated_user['token']}"},
     )
     conn = pgsql['postgres-db']
     cursor = conn.cursor()
     cursor.execute(
-        'SELECT id, text FROM posts WHERE id = %s',
+        'SELECT id, text, photos FROM posts WHERE id = %s',
         (post['id'],),
     )
     row = cursor.fetchone()
     assert row is not None
     assert row[0] == post['id']
     assert row[1] == 'After update'
+    assert row[2] == []
 
 
 async def test_update_post_multiple_times(service_client, authenticated_user):
@@ -173,19 +179,20 @@ async def test_update_post_multiple_times(service_client, authenticated_user):
 
     response1 = await service_client.put(
         f'/posts/{post["id"]}',
-        json={'text': 'Version 2'},
+        json={'text': 'Version 2', 'photos': []},
         headers={'Authorization': f"Bearer {authenticated_user['token']}"},
     )
     assert response1.status == 200
     assert response1.json()['text'] == 'Version 2'
-
+    assert response1.json()['photos'] == []
     response2 = await service_client.put(
         f'/posts/{post["id"]}',
-        json={'text': 'Version 3'},
+        json={'text': 'Version 3', 'photos': []},
         headers={'Authorization': f"Bearer {authenticated_user['token']}"},
     )
     assert response2.status == 200
     assert response2.json()['text'] == 'Version 3'
+    assert response2.json()['photos'] == []
 
 
 async def test_update_post_empty_text_returns_400(service_client, authenticated_user):

@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <string>
 #include <userver/formats/json/value.hpp>
+#include <vector>
 
 namespace pawspective::dto {
 
@@ -10,7 +11,7 @@ struct PostDTO {
     std::int64_t id{};
     std::int64_t organization_id{};
     std::string text;
-    // std::optional<std::string> photo_url;
+    std::vector<std::string> photos;
     std::chrono::system_clock::time_point created_at{};
 };
 

@@ -48,7 +48,7 @@ dto::AnimalDTO AnimalService::Update(int64_t user_id, int64_t animal_id, const d
     }
 
     models::Animal to_update = models::Animal::from_update_dto(animal_id, dto);
-    auto updated = repository_.Update(to_update);
+    auto updated = repository_.Update(to_update, dto.photos);
 
     if (!updated) {
         throw AnimalNotFoundException();

@@ -3,6 +3,7 @@
 #include <chrono>
 #include <cstdint>
 #include <string>
+#include <vector>
 #include "../../dto/include/post_create_dto.hpp"
 #include "../../dto/include/post_dto.hpp"
 #include "../../dto/include/post_update_dto.hpp"
@@ -17,7 +18,7 @@ struct Post {
     std::int64_t id{};
     std::int64_t organization_id{};
     std::string text;
-    // std::optional<std::string> photo_url;
+    std::vector<std::string> photos;
     std::chrono::system_clock::time_point created_at{};
 };
 

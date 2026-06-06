@@ -11,7 +11,7 @@ Serialize(const PostCreateDTO& data, userver::formats::serialize::To<userver::fo
     userver::formats::json::ValueBuilder builder;
 
     builder["text"] = data.text;
-    // builder["photo_url"] = data.photo_url;
+    builder["photos"] = data.photos;
 
     return builder.ExtractValue();
 }
@@ -20,7 +20,7 @@ PostCreateDTO Parse(const userver::formats::json::Value& json, userver::formats:
     PostCreateDTO dto;
 
     dto.text = json["text"].As<std::string>();
-    // dto.photo_url = json["photo_url"].As<std::optional<std::string>>();
+    dto.photos = json["photos"].As<std::vector<std::string>>();
 
     return dto;
 }

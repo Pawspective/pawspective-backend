@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS organizations (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,
+    avatar_url TEXT,
     city_id BIGINT NOT NULL,
     CONSTRAINT fk_organizations_city FOREIGN KEY (city_id) REFERENCES cities(id) ON DELETE RESTRICT
 );
@@ -69,6 +70,7 @@ CREATE TABLE IF NOT EXISTS animals (
     id BIGSERIAL PRIMARY KEY,
     organization_id BIGINT NOT NULL,
     name VARCHAR(255) NOT NULL,
+    photos TEXT[] NOT NULL DEFAULT '{}',
     breed_id BIGINT NOT NULL,
     size animal_size NOT NULL,       
     gender animal_gender NOT NULL,    
@@ -89,6 +91,7 @@ CREATE TABLE IF NOT EXISTS posts (
     id BIGSERIAL PRIMARY KEY,
     organization_id BIGINT NOT NULL,
     text TEXT NOT NULL,
+    photos TEXT[] NOT NULL DEFAULT '{}',
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     CONSTRAINT fk_posts_organization FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE
 );

@@ -37,6 +37,13 @@ Validator& Validator::MaxLength(std::size_t max) {
     return *this;
 }
 
+Validator& Validator::MaxSize(const std::string& field, std::size_t count, std::size_t max, const std::string& msg) {
+    if (count > max) {
+        errors_.push_back({field, msg + " " + std::to_string(max) + " elements"});
+    }
+    return *this;
+}
+
 Validator& Validator::Matches(const userver::utils::regex& re, std::string msg) {
     if (!userver::utils::regex_match(current_value_, re)) {
         AddError(std::move(msg));

@@ -21,6 +21,9 @@ Serialize(const OrganizationUpdateDTO& data, userver::formats::serialize::To<use
     if (data.description.has_value()) {
         builder["description"] = *data.description;
     }
+    if (data.avatar_url.has_value()) {
+        builder["avatar_url"] = *data.avatar_url;
+    }
     if (data.city_id.has_value()) {
         builder["city_id"] = *data.city_id;
     }
@@ -37,6 +40,9 @@ Parse(const userver::formats::json::Value& json, userver::formats::parse::To<Org
     }
     if (json.HasMember("description")) {
         dto.description = json["description"].As<std::optional<std::string>>();
+    }
+    if (json.HasMember("avatar_url")) {
+        dto.avatar_url = json["avatar_url"].As<std::optional<std::string>>();
     }
     if (json.HasMember("city_id")) {
         dto.city_id = json["city_id"].As<std::optional<std::int64_t>>();

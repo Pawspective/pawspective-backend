@@ -12,7 +12,7 @@ namespace pawspective::dto {
 struct OrganizationRegisterDTO {
     std::string name;
     std::optional<std::string> description;
-    // std::optional<std::string> avatar_url; // TODO: add avatar_url later
+    std::optional<std::string> avatar_url;
     std::int64_t city_id{};
 };
 

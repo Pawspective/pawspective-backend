@@ -19,6 +19,9 @@ Serialize(const OrganizationRegisterDTO& data, userver::formats::serialize::To<u
     if (data.description.has_value()) {
         builder["description"] = *data.description;
     }
+    if (data.avatar_url.has_value()) {
+        builder["avatar_url"] = *data.avatar_url;
+    }
     builder["city_id"] = data.city_id;
 
     return builder.ExtractValue();
@@ -31,6 +34,9 @@ Parse(const userver::formats::json::Value& json, userver::formats::parse::To<Org
     dto.name = json["name"].As<std::string>();
     if (json.HasMember("description")) {
         dto.description = json["description"].As<std::optional<std::string>>();
+    }
+    if (json.HasMember("avatar_url")) {
+        dto.avatar_url = json["avatar_url"].As<std::optional<std::string>>();
     }
     dto.city_id = json["city_id"].As<std::int64_t>();
 

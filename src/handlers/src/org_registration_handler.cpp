@@ -1,8 +1,10 @@
 #include "org_registration_handler.hpp"
 
+#include <regex>
 #include <userver/components/component_context.hpp>
 #include <userver/formats/json/exception.hpp>
 #include <userver/server/http/http_status.hpp>
+#include <userver/utils/regex.hpp>
 #include "organization_register_dto.hpp"
 #include "organization_service_component.hpp"
 #include "services/exception.hpp"
@@ -34,6 +36,13 @@ userver::formats::json::Value OrgRegistrationHandler::HandleRequestJsonThrow(
 
         utils::Validator validator;
         validator.Field("name", org_data.name).NotBlank().MaxLength(255);
+        if (org_data.avatar_url.has_value()) {
+            static const userver::utils::regex kPureFilenameRegex(R"(\.(jpg|jpeg|png|webp|gif)$)");
+
+            validator.Field("avatar_url", *org_data.avatar_url)
+                .MaxLength(2000)
+                .Matches(kPureFilenameRegex, "must be a valid photo filename (e.g. 66035e3bf.jpg)");
+        }
         if (org_data.description.has_value()) {
             validator.Field("description", *org_data.description).MaxLength(2000);
         }

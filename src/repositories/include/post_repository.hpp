@@ -19,7 +19,8 @@ public:
         int limit
     ) const;
     models::Post Create(const models::Post& post) const;
-    std::optional<models::Post> Update(const models::Post& post) const;
+    std::optional<models::Post> Update(const models::Post& post, const std::optional<std::vector<std::string>>& photos)
+        const;
     bool Delete(int64_t post_id) const;
 
 private:

@@ -7,6 +7,7 @@ Post Post::from_create_dto(std::int64_t organization_id, const dto::PostCreateDT
     Post post;
 
     post.text = create.text;
+    post.photos = create.photos;
     post.organization_id = organization_id;
     return post;
 }
@@ -18,6 +19,9 @@ Post Post::from_update_dto(std::int64_t id, const dto::PostUpdateDTO& upd) {
     if (upd.text.has_value()) {
         post.text = *upd.text;
     }
+    if (upd.photos.has_value()) {
+        post.photos = *upd.photos;
+    }
     return post;
 }
 
@@ -27,6 +31,7 @@ dto::PostDTO Post::to_dto(const Post& model) {
     dto.id = model.id;
     dto.text = model.text;
     dto.organization_id = model.organization_id;
+    dto.photos = model.photos;
     dto.created_at = model.created_at;
 
     return dto;

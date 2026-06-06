@@ -3,12 +3,13 @@
 #include <optional>
 #include <string>
 #include <userver/formats/json/value.hpp>
+#include <vector>
 
 namespace pawspective::dto {
 
 struct PostUpdateDTO {
     std::optional<std::string> text;
-    // std::optional<std::string> photo_url;
+    std::optional<std::vector<std::string>> photos;
 };
 
 userver::formats::json::Value

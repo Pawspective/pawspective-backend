@@ -86,6 +86,7 @@ async def registered_animal(service_client, authenticated_user, registered_org, 
         'status': 'available',
         'organization_id': registered_org['id'],
         'breed_id': breed['id'],
+        'photos': [],
     }
     response = await service_client.post(
         '/animals',

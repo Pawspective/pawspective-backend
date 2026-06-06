@@ -23,7 +23,10 @@ public:
         int limit
     ) const;
     models::Animal Create(const models::Animal& animal) const;
-    std::optional<models::Animal> Update(const models::Animal& animal) const;
+    std::optional<models::Animal> Update(
+        const models::Animal& animal,
+        const std::optional<std::vector<std::string>>& upd_photos
+    ) const;
     [[nodiscard]] std::unordered_map<int64_t, std::string> GetNamesByIds(const std::vector<int64_t>& ids) const;
     [[nodiscard]] std::vector<models::Animal> GetAdoptedAnimalsWithoutReviewsByUserId(std::int64_t user_id) const;
     [[nodiscard]] models::AnimalFilters GetAvailableFilters() const;

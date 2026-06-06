@@ -86,6 +86,7 @@ async def create_animal(service_client, token, org_id, breed_id, overrides=None)
         'good_with': 'dogs',
         'age': 3,
         'status': 'available',
+        'photos': [],
     }
     if overrides:
         payload.update(overrides)
@@ -198,6 +199,7 @@ async def test_org_animals_response_shape(
     assert 'age' in item
     assert 'status' in item
     assert 'can_be_adopted' in item
+    assert 'photos' in item
     assert item['can_be_adopted'] is False
 
 

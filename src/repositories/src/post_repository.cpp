@@ -11,7 +11,7 @@ PostRepository::PostRepository(userver::storages::postgres::ClusterPtr pg_cluste
 [[nodiscard]] std::optional<models::Post> PostRepository::GetById(int64_t post_id) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
-        "SELECT id, organization_id, text, created_at FROM posts WHERE id = $1",
+        "SELECT id, organization_id, text, photos, created_at FROM posts WHERE id = $1",
         post_id
     );
     if (result.IsEmpty()) {
@@ -38,7 +38,7 @@ std::pair<std::vector<models::Post>, std::int64_t> PostRepository::GetByOrganiza
 
     auto data_result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kSlave,
-        "SELECT id, organization_id, text, created_at "
+        "SELECT id, organization_id, text, photos, created_at "
         "FROM posts WHERE organization_id = $1 "
         "ORDER BY created_at DESC "
         "LIMIT $2 OFFSET $3",
@@ -54,23 +54,45 @@ std::pair<std::vector<models::Post>, std::int64_t> PostRepository::GetByOrganiza
 models::Post PostRepository::Create(const models::Post& post) const {
     auto result = pg_cluster_->Execute(
         userver::storages::postgres::ClusterHostType::kMaster,
-        "INSERT INTO posts (organization_id, text) VALUES ($1, $2) RETURNING id, organization_id, text, created_at",
+        "INSERT INTO posts (organization_id, text, photos) VALUES ($1, $2, $3) RETURNING id, organization_id, text, "
+        "photos, created_at",
         post.organization_id,
-        post.text
+        post.text,
+        post.photos
     );
     return result.AsSingleRow<models::Post>(userver::storages::postgres::kRowTag);
 }
 
-std::optional<models::Post> PostRepository::Update(const models::Post& post) const {
-    if (post.text.empty()) {
+std::optional<models::Post> PostRepository::Update(
+    const models::Post& post,
+    const std::optional<std::vector<std::string>>& upd_photos
+) const {
+    userver::storages::postgres::ParameterStore parameters;
+    std::vector<std::string> updates;
+    parameters.PushBack(post.id);
+
+    auto add_field = [&](const std::string& field_name, auto value) {
+        updates.push_back(fmt::format("{} = ${}", field_name, parameters.Size() + 1));
+        parameters.PushBack(value);
+    };
+    if (!post.text.empty()) {
+        add_field("text", post.text);
+    }
+    if (upd_photos.has_value()) {
+        add_field("photos", upd_photos.value());
+    }
+    if (updates.empty()) {
         return GetById(post.id);
     }
-    auto result = pg_cluster_->Execute(
-        userver::storages::postgres::ClusterHostType::kMaster,
-        "UPDATE posts SET text = $2 WHERE id = $1 RETURNING id, organization_id, text, created_at",
-        post.id,
-        post.text
+
+    auto query = fmt::format(
+        "UPDATE posts SET {} WHERE id = $1 "
+        "RETURNING id, organization_id, text, photos, created_at",
+        fmt::join(updates, ", ")
     );
+
+    auto result = pg_cluster_->Execute(userver::storages::postgres::ClusterHostType::kMaster, query, parameters);
+
     if (result.IsEmpty()) {
         return std::nullopt;
     }

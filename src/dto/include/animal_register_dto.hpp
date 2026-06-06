@@ -1,7 +1,9 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 #include <string>
+#include <vector>
 #include "animal_enums.hpp"
 
 namespace pawspective::dto {
@@ -9,7 +11,7 @@ namespace pawspective::dto {
 struct AnimalRegisterDTO {
     std::int64_t organization_id{};
     std::string name;
-    // std::optional<std::string> photo_url;
+    std::vector<std::string> photos;
     std::int64_t breed_id{};
     models::AnimalSize size = models::AnimalSize::kUnspecified;
     models::AnimalGender gender = models::AnimalGender::kUnspecified;

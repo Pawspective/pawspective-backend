@@ -66,7 +66,7 @@ async def test_create_post_success(service_client, authenticated_user, registere
 
     response = await service_client.post(
         '/posts',
-        json={'text': post_text},
+        json={'text': post_text, 'photos': []},
         headers={'Authorization': f"Bearer {authenticated_user['token']}"},
     )
 
@@ -76,13 +76,14 @@ async def test_create_post_success(service_client, authenticated_user, registere
     assert data['text'] == post_text
     assert 'created_at' in data
     assert data['organization_id'] == registered_org['id']
+    assert 'photos' in data
 
 
 async def test_create_post_returns_correct_structure(service_client, authenticated_user, registered_org):
     """POST /posts returns a PostDTO with all required fields"""
     response = await service_client.post(
         '/posts',
-        json={'text': 'Test post'},
+        json={'text': 'Test post', 'photos': []},
         headers={'Authorization': f"Bearer {authenticated_user['token']}"},
     )
 
@@ -92,6 +93,7 @@ async def test_create_post_returns_correct_structure(service_client, authenticat
     assert 'text' in data
     assert 'created_at' in data
     assert 'organization_id' in data
+    assert 'photos' in data
 
 
 async def test_create_post_persists_in_database(service_client, authenticated_user, registered_org, pgsql):
@@ -100,7 +102,7 @@ async def test_create_post_persists_in_database(service_client, authenticated_us
 
     response = await service_client.post(
         '/posts',
-        json={'text': post_text},
+        json={'text': post_text, 'photos': []},
         headers={'Authorization': f"Bearer {authenticated_user['token']}"},
     )
     assert response.status == 201
@@ -108,7 +110,7 @@ async def test_create_post_persists_in_database(service_client, authenticated_us
     conn = pgsql['postgres-db']
     cursor = conn.cursor()
     cursor.execute(
-        'SELECT id, text, organization_id FROM posts WHERE id = %s',
+        'SELECT id, text, organization_id, photos FROM posts WHERE id = %s',
         (post_id,),
     )
     row = cursor.fetchone()
@@ -116,18 +118,19 @@ async def test_create_post_persists_in_database(service_client, authenticated_us
     assert row[0] == post_id
     assert row[1] == post_text
     assert row[2] == registered_org['id']
+    assert row[3] == []
 
 
 async def test_create_post_multiple_posts(service_client, authenticated_user, registered_org):
     """User can create multiple posts for the same organization"""
     response1 = await service_client.post(
         '/posts',
-        json={'text': 'First post'},
+        json={'text': 'First post', 'photos': []},
         headers={'Authorization': f"Bearer {authenticated_user['token']}"},
     )
     response2 = await service_client.post(
         '/posts',
-        json={'text': 'Second post'},
+        json={'text': 'Second post', 'photos': []},
         headers={'Authorization': f"Bearer {authenticated_user['token']}"},
     )
 
@@ -140,7 +143,7 @@ async def test_create_post_empty_text_returns_400(service_client, authenticated_
     """Empty text returns 400 validation error"""
     response = await service_client.post(
         '/posts',
-        json={'text': ''},
+        json={'text': '', 'photos': []},
         headers={'Authorization': f"Bearer {authenticated_user['token']}"},
     )
 
@@ -165,7 +168,7 @@ async def test_create_post_text_too_long_returns_400(service_client, authenticat
     long_text = 'a' * 5001
     response = await service_client.post(
         '/posts',
-        json={'text': long_text},
+        json={'text': long_text, 'photos': []},
         headers={'Authorization': f"Bearer {authenticated_user['token']}"},
     )
 
@@ -177,7 +180,7 @@ async def test_create_post_whitespace_only_text_returns_400(service_client, auth
     """Whitespace-only text returns 400"""
     response = await service_client.post(
         '/posts',
-        json={'text': '   '},
+        json={'text': '   ', 'photos': []},
         headers={'Authorization': f"Bearer {authenticated_user['token']}"},
     )
 
@@ -189,7 +192,7 @@ async def test_create_post_unauthenticated_returns_401(service_client, registere
     """Request without auth token returns 401"""
     response = await service_client.post(
         '/posts',
-        json={'text': 'Test post'},
+        json={'text': 'Test post', 'photos': []},
     )
 
     assert response.status == 401
@@ -199,7 +202,7 @@ async def test_create_post_invalid_token_returns_401(service_client, registered_
     """Request with invalid token returns 401"""
     response = await service_client.post(
         '/posts',
-        json={'text': 'Test post'},
+        json={'text': 'Test post', 'photos': []},
         headers={'Authorization': 'Bearer invalid_token'},
     )
 
@@ -228,7 +231,7 @@ async def test_create_post_user_without_org_returns_403(service_client, city):
 
     response = await service_client.post(
         '/posts',
-        json={'text': 'Test post'},
+        json={'text': 'Test post', 'photos': []},
         headers={'Authorization': f'Bearer {token}'},
     )
 
@@ -242,7 +245,7 @@ async def test_create_post_unicode_text(service_client, authenticated_user, regi
 
     response = await service_client.post(
         '/posts',
-        json={'text': unicode_text},
+        json={'text': unicode_text, 'photos': []},
         headers={'Authorization': f"Bearer {authenticated_user['token']}"},
     )
 
@@ -256,7 +259,7 @@ async def test_create_post_with_special_characters(service_client, authenticated
 
     response = await service_client.post(
         '/posts',
-        json={'text': special_text},
+        json={'text': special_text, 'photos': []},
         headers={'Authorization': f"Bearer {authenticated_user['token']}"},
     )
 
@@ -271,7 +274,7 @@ async def test_create_post_creates_created_at_timestamp(service_client, authenti
     before = time.time()
     response = await service_client.post(
         '/posts',
-        json={'text': 'Timestamp test'},
+        json={'text': 'Timestamp test', 'photos': []},
         headers={'Authorization': f"Bearer {authenticated_user['token']}"},
     )
     after = time.time()
@@ -286,7 +289,7 @@ async def test_create_post_json_content_type_required(service_client, authentica
     """Request must have Content-Type: application/json"""
     response = await service_client.post(
         '/posts',
-        data='text=plain text',
+        data='text=plain text&photos=[]',
         headers={
             'Authorization': f"Bearer {authenticated_user['token']}",
             'Content-Type': 'application/x-www-form-urlencoded',

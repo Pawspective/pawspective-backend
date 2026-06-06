@@ -13,7 +13,7 @@ Animal Animal::from_register_dto(const dto::AnimalRegisterDTO& reg) {
         -1,  // id will be set by the database
         reg.organization_id,
         reg.name,
-        // reg.photo_url, --- IGNORE ---
+        reg.photos,
         reg.breed_id,
         std::nullopt,  // user_id will be null when creating a new animal
         reg.size,
@@ -33,7 +33,7 @@ dto::AnimalDTO Animal::to_dto(const Animal& model, const dto::BreedDTO& breed, b
     dto.id = model.id;
     dto.organization_id = model.organization_id;
     dto.name = model.name;
-    // dto.photo_url = model.photo_url; --- IGNORE ---
+    dto.photos = model.photos;
     dto.breed = breed;
     dto.size = model.size;
     dto.gender = model.gender;
@@ -53,7 +53,7 @@ Animal Animal::from_update_dto(std::int64_t id, const dto::AnimalUpdateDTO& upd)
         id,
         -1,  // organization_id will not be updated
         upd.name.value_or(""),
-        // std::nullopt, --- IGNORE ---
+        upd.photos.value_or(std::vector<std::string>{}),
         upd.breed_id.value_or(-1),
         std::nullopt,  // user_id is set only via Adopt, not through general update
         upd.size.value_or(AnimalSize::kUnspecified),

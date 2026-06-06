@@ -1,5 +1,3 @@
 # Suppress unusedFunction warnings for the whole project.
 unusedFunction
 
-# UTEST macro from userver confuses cppcheck's parser in test files.
-syntaxError:*tests/*.cpp

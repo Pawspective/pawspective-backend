@@ -3,6 +3,7 @@
 #include <userver/components/component_context.hpp>
 #include <userver/formats/json/exception.hpp>
 #include <userver/server/http/http_status.hpp>
+#include <userver/utils/regex.hpp>
 #include "animal_register_dto.hpp"
 #include "animal_service_component.hpp"
 #include "services/exception.hpp"
@@ -36,6 +37,14 @@ userver::formats::json::Value AnimalRegistrationHandler::HandleRequestJsonThrow(
         validator.Field("name", animal_data.name).NotBlank().MaxLength(255);
         if (animal_data.description.has_value()) {
             validator.Field("description", *animal_data.description).MaxLength(2000);
+        }
+        validator.MaxSize("photos", animal_data.photos.size(), 10, "must not exceed");
+        const auto photo_regex = userver::utils::regex(R"(\.(jpg|jpeg|png|webp|gif)$)");
+
+        for (size_t i = 0; i < animal_data.photos.size(); ++i) {
+            validator.Field(fmt::format("photos[{}]", i), animal_data.photos[i])
+                .MaxLength(2000)
+                .Matches(photo_regex, "must be a valid photo filename with extension (e.g. 6035e3bf.jpg)");
         }
         validator.ThrowIfInvalid();
 

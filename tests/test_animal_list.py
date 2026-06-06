@@ -100,6 +100,7 @@ async def create_animal(
         'good_with': 'dogs',
         'age': 3,
         'status': 'available',
+        'photos': [],
     }
     if overrides:
         payload.update(overrides)
@@ -199,6 +200,8 @@ async def test_animal_list_response_shape(
     assert 'status' in item
     assert 'can_be_adopted' in item
     assert item['can_be_adopted'] is False
+    assert 'photos' in item
+    assert item['photos'] == []
 
 
 async def test_animal_list_can_be_adopted_true_with_auth(
@@ -874,6 +877,7 @@ async def test_animal_list_filter_by_city(
             'color': 'black',
             'age': 3,
             'status': 'available',
+            'photos': [],
         },
         headers={'Authorization': f"Bearer {authenticated_user['token']}"},
     )
@@ -892,6 +896,7 @@ async def test_animal_list_filter_by_city(
             'color': 'white',
             'age': 5,
             'status': 'available',
+            'photos': [],
         },
         headers={'Authorization': f"Bearer {user2_token}"},
     )
@@ -988,6 +993,7 @@ async def test_animal_list_filter_multiple_cities(
                 'color': 'black',
                 'age': i + 1,
                 'status': 'available',
+                'photos': [],
             },
             headers={'Authorization': f"Bearer {tokens[i]}"},
         )
