@@ -37,7 +37,7 @@ userver::formats::json::Value OrgRegistrationHandler::HandleRequestJsonThrow(
         utils::Validator validator;
         validator.Field("name", org_data.name).NotBlank().MaxLength(255);
         if (org_data.avatar_url.has_value()) {
-            static const userver::utils::regex kPureFilenameRegex(R"(^[a-zA-Z0-9]+\.(jpg|jpeg|png|webp|gif)$)");
+            static const userver::utils::regex kPureFilenameRegex(R"(\.(jpg|jpeg|png|webp|gif)$)");
 
             validator.Field("avatar_url", *org_data.avatar_url)
                 .MaxLength(2000)

@@ -39,7 +39,7 @@ userver::formats::json::Value AnimalRegistrationHandler::HandleRequestJsonThrow(
             validator.Field("description", *animal_data.description).MaxLength(2000);
         }
         validator.MaxSize("photos", animal_data.photos.size(), 10, "must not exceed");
-        const auto photo_regex = userver::utils::regex(R"(^[a-zA-Z0-9]+\.(jpg|jpeg|png|webp|gif)$)");
+        const auto photo_regex = userver::utils::regex(R"(\.(jpg|jpeg|png|webp|gif)$)");
 
         for (size_t i = 0; i < animal_data.photos.size(); ++i) {
             validator.Field(fmt::format("photos[{}]", i), animal_data.photos[i])
