@@ -24,7 +24,7 @@ userver::formats::json::Value DeletePhotoHandler::HandleRequestJsonThrow(
 
     const auto url = request_body["url"].As<std::string>();
     if (url.empty()) {
-        utils::ErrorResponse(utils::error_code::kMissingField, "Field 'url' must not be empty").ThrowClientError();
+        utils::ErrorResponse(utils::error_code::kValidationError, "Field 'url' must not be empty").ThrowClientError();
     }
 
     try {

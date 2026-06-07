@@ -59,7 +59,7 @@ async def test_delete_photo_empty_url(service_client, auth_token):
         headers={'Authorization': f'Bearer {auth_token}'},
     )
     assert response.status == 400
-    assert response.json()['error']['code'] == 'MISSING_FIELD'
+    assert response.json()['error']['code'] == 'VALIDATION_ERROR'
 
 
 async def test_delete_photo_invalid_url(service_client, auth_token):
