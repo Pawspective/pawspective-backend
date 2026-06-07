@@ -1,6 +1,8 @@
 import uuid
 import pytest
 
+S3_PUBLIC_BASE = 'https://hollow1crown.storage.yandexcloud.net'
+
 
 def make_unique_email(prefix='org_delete'):
     random_part = uuid.uuid4().hex[:10]
@@ -155,3 +157,56 @@ async def test_org_delete_twice(service_client, org_with_owner):
         headers={'Authorization': f'Bearer {token}'},
     )
     assert response2.status == 403
+
+
+async def test_org_delete_with_avatar_cleans_s3(
+    service_client, org_with_owner, pgsql, testpoint
+):
+    """Deleting an org with an avatar triggers S3 DELETE for the avatar"""
+    org_id = org_with_owner['org']['id']
+    token = org_with_owner['token']
+    avatar_url = f'{S3_PUBLIC_BASE}/photos/{uuid.uuid4().hex}.jpg'
+
+    conn = pgsql['postgres-db']
+    cursor = conn.cursor()
+    cursor.execute(
+        'UPDATE organizations SET avatar_url = %s WHERE id = %s', (avatar_url, org_id))
+
+    keys_deleted = []
+
+    @testpoint('s3-delete-file')
+    def s3_handler(data):
+        keys_deleted.append(data['key'])
+
+    response = await service_client.delete(
+        f'/orgs/{org_id}',
+        headers={'Authorization': f'Bearer {token}'},
+    )
+
+    assert response.status == 204
+    assert s3_handler.times_called == 1
+    assert avatar_url.split('/')[-1] in keys_deleted[0]
+
+
+async def test_org_delete_without_avatar_no_s3_call(
+    service_client, org_with_owner, mockserver
+):
+    """Deleting an org with no avatar makes no S3 calls"""
+    org_id = org_with_owner['org']['id']
+    token = org_with_owner['token']
+
+    s3_deleted = []
+
+    @mockserver.handler('/photos/', prefix=True)
+    def s3_handler(request):
+        if request.method == 'DELETE':
+            s3_deleted.append(request.path)
+        return mockserver.make_response('', 204)
+
+    response = await service_client.delete(
+        f'/orgs/{org_id}',
+        headers={'Authorization': f'Bearer {token}'},
+    )
+
+    assert response.status == 204
+    assert len(s3_deleted) == 0

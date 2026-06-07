@@ -2,6 +2,8 @@ import uuid
 
 import pytest
 
+S3_PUBLIC_BASE = 'https://hollow1crown.storage.yandexcloud.net'
+
 
 def make_unique_email(prefix='post_user'):
     random_part = uuid.uuid4().hex[:10]
@@ -400,3 +402,124 @@ async def test_update_post_same_text(service_client, authenticated_user):
 
     assert response.status == 200
     assert response.json()['text'] == 'Same text'
+
+
+async def test_update_post_removes_old_photos_from_s3(
+    service_client, authenticated_user, pgsql, testpoint
+):
+    """Updating photos list triggers S3 DELETE for removed URLs"""
+    photo_url = f'{S3_PUBLIC_BASE}/photos/{uuid.uuid4().hex}.jpg'
+    post = await create_post(service_client, authenticated_user['token'], {'text': 'Post with photo'})
+
+    conn = pgsql['postgres-db']
+    cursor = conn.cursor()
+    cursor.execute('UPDATE posts SET photos = %s WHERE id = %s',
+                   ([photo_url], post['id']))
+
+    keys_deleted = []
+
+    @testpoint('s3-delete-file')
+    def s3_handler(data):
+        keys_deleted.append(data['key'])
+
+    response = await service_client.put(
+        f'/posts/{post["id"]}',
+        json={'photos': []},
+        headers={'Authorization': f"Bearer {authenticated_user['token']}"},
+    )
+
+    assert response.status == 200
+    assert response.json()['photos'] == []
+    assert s3_handler.times_called == 1
+    assert 'photos/' in keys_deleted[0]
+
+
+async def test_update_post_partial_photo_removal(
+    service_client, authenticated_user, pgsql, testpoint
+):
+    """Only removed photos are deleted from S3; retained ones are not touched"""
+    kept_url = f'{S3_PUBLIC_BASE}/photos/{uuid.uuid4().hex}.jpg'
+    removed_url = f'{S3_PUBLIC_BASE}/photos/{uuid.uuid4().hex}.png'
+    post = await create_post(service_client, authenticated_user['token'], {'text': 'Post'})
+
+    conn = pgsql['postgres-db']
+    cursor = conn.cursor()
+    cursor.execute('UPDATE posts SET photos = %s WHERE id = %s',
+                   ([kept_url, removed_url], post['id']))
+
+    keys_deleted = []
+
+    @testpoint('s3-delete-file')
+    def s3_handler(data):
+        keys_deleted.append(data['key'])
+
+    response = await service_client.put(
+        f'/posts/{post["id"]}',
+        json={'photos': [kept_url]},
+        headers={'Authorization': f"Bearer {authenticated_user['token']}"},
+    )
+
+    assert response.status == 200
+    assert response.json()['photos'] == [kept_url]
+    assert s3_handler.times_called == 1
+    assert removed_url.split('/')[-1] in keys_deleted[0]
+
+
+async def test_update_post_unchanged_photos_no_s3_delete(
+    service_client, authenticated_user, pgsql, mockserver
+):
+    """Sending the same photo list does not trigger any S3 deletes"""
+    photo_url = f'{S3_PUBLIC_BASE}/photos/{uuid.uuid4().hex}.jpg'
+    post = await create_post(service_client, authenticated_user['token'], {'text': 'Post'})
+
+    conn = pgsql['postgres-db']
+    cursor = conn.cursor()
+    cursor.execute('UPDATE posts SET photos = %s WHERE id = %s',
+                   ([photo_url], post['id']))
+
+    s3_deleted = []
+
+    @mockserver.handler('/photos/', prefix=True)
+    def s3_handler(request):
+        if request.method == 'DELETE':
+            s3_deleted.append(request.path)
+        return mockserver.make_response('', 204)
+
+    response = await service_client.put(
+        f'/posts/{post["id"]}',
+        json={'photos': [photo_url]},
+        headers={'Authorization': f"Bearer {authenticated_user['token']}"},
+    )
+
+    assert response.status == 200
+    assert len(s3_deleted) == 0
+
+
+async def test_update_post_without_photos_field_no_s3_delete(
+    service_client, authenticated_user, pgsql, mockserver
+):
+    """Omitting photos field in update does not trigger any S3 deletes"""
+    photo_url = f'{S3_PUBLIC_BASE}/photos/{uuid.uuid4().hex}.jpg'
+    post = await create_post(service_client, authenticated_user['token'], {'text': 'Post'})
+
+    conn = pgsql['postgres-db']
+    cursor = conn.cursor()
+    cursor.execute('UPDATE posts SET photos = %s WHERE id = %s',
+                   ([photo_url], post['id']))
+
+    s3_deleted = []
+
+    @mockserver.handler('/photos/', prefix=True)
+    def s3_handler(request):
+        if request.method == 'DELETE':
+            s3_deleted.append(request.path)
+        return mockserver.make_response('', 204)
+
+    response = await service_client.put(
+        f'/posts/{post["id"]}',
+        json={'text': 'Text only update'},
+        headers={'Authorization': f"Bearer {authenticated_user['token']}"},
+    )
+
+    assert response.status == 200
+    assert len(s3_deleted) == 0

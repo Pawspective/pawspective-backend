@@ -408,12 +408,3 @@ components_manager:
                 types:
                     - jwt
                 required: true
-
-        handler-delete-photo:
-            path: /delete/photo
-            method: DELETE
-            task_processor: main-task-processor
-            auth:
-                types:
-                    - jwt
-                required: true

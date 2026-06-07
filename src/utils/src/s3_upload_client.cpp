@@ -1,7 +1,9 @@
 #include "utils/s3_upload_client.hpp"
 #include <fmt/format.h>
+#include <userver/formats/json/value_builder.hpp>
 #include <userver/logging/log.hpp>
 #include <userver/s3api/clients/s3api.hpp>
+#include <userver/testsuite/testpoint.hpp>
 
 namespace pawspective::utils {
 
@@ -31,6 +33,12 @@ void S3UploadClient::DeleteFile(std::string_view url) {
     if (key.empty()) {
         throw std::invalid_argument("URL does not contain a valid S3 key");
     }
+    TESTPOINT("s3-delete-file", [&key] {
+        userver::formats::json::ValueBuilder builder;
+        builder["key"] = std::string(key);
+        return builder.ExtractValue();
+    }());
+
     try {
         client_->DeleteObject(key);
     } catch (const std::exception& e) {

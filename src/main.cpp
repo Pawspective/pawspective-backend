@@ -35,7 +35,6 @@
 #include "city_repository_component.hpp"
 #include "city_service_component.hpp"
 #include "components/user_service_component.hpp"
-#include "delete_photo_handler.hpp"
 #include "health_handler.hpp"
 #include "jwt_component.hpp"
 #include "me_adopted_animals_pending_review_handler.hpp"
@@ -136,8 +135,7 @@ int main(int argc, char* argv[]) {
             .Append<pawspective::handlers::AdoptRequestAcceptHandler>()
             .Append<pawspective::handlers::AdoptRequestDenyHandler>()
             .Append<pawspective::handlers::AnimalAdoptHandler>()
-            .Append<pawspective::handlers::UploadPhotoHandler>()
-            .Append<pawspective::handlers::DeletePhotoHandler>();
+            .Append<pawspective::handlers::UploadPhotoHandler>();
 
     return userver::utils::DaemonMain(argc, argv, component_list);
 }

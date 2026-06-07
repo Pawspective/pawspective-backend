@@ -1,6 +1,8 @@
 import uuid
 import pytest
 
+S3_PUBLIC_BASE = 'https://hollow1crown.storage.yandexcloud.net'
+
 
 def make_unique_email(prefix='org_upd'):
     random_part = uuid.uuid4().hex[:10]
@@ -288,3 +290,96 @@ async def test_update_org_nonexistent_org(service_client, org_with_owner):
     )
 
     assert response.status == 403
+
+
+async def test_update_org_avatar_removes_old_from_s3(
+    service_client, org_with_owner, pgsql, testpoint
+):
+    """Replacing avatar_url triggers S3 DELETE for the old one"""
+    org_id = org_with_owner['org']['id']
+    token = org_with_owner['token']
+    old_avatar = f'{S3_PUBLIC_BASE}/photos/{uuid.uuid4().hex}.jpg'
+    new_avatar = f'{S3_PUBLIC_BASE}/photos/{uuid.uuid4().hex}.jpg'
+
+    conn = pgsql['postgres-db']
+    cursor = conn.cursor()
+    cursor.execute(
+        'UPDATE organizations SET avatar_url = %s WHERE id = %s', (old_avatar, org_id))
+
+    keys_deleted = []
+
+    @testpoint('s3-delete-file')
+    def s3_handler(data):
+        keys_deleted.append(data['key'])
+
+    response = await service_client.put(
+        f'/orgs/{org_id}',
+        json={'avatar_url': new_avatar},
+        headers={'Authorization': f'Bearer {token}'},
+    )
+
+    assert response.status == 200
+    assert s3_handler.times_called == 1
+    assert old_avatar.split('/')[-1] in keys_deleted[0]
+
+
+async def test_update_org_same_avatar_no_s3_delete(
+    service_client, org_with_owner, pgsql, mockserver
+):
+    """Sending the same avatar_url does not trigger S3 DELETE"""
+    org_id = org_with_owner['org']['id']
+    token = org_with_owner['token']
+    avatar = f'{S3_PUBLIC_BASE}/photos/{uuid.uuid4().hex}.jpg'
+
+    conn = pgsql['postgres-db']
+    cursor = conn.cursor()
+    cursor.execute(
+        'UPDATE organizations SET avatar_url = %s WHERE id = %s', (avatar, org_id))
+
+    s3_deleted = []
+
+    @mockserver.handler('/photos/', prefix=True)
+    def s3_handler(request):
+        if request.method == 'DELETE':
+            s3_deleted.append(request.path)
+        return mockserver.make_response('', 204)
+
+    response = await service_client.put(
+        f'/orgs/{org_id}',
+        json={'avatar_url': avatar},
+        headers={'Authorization': f'Bearer {token}'},
+    )
+
+    assert response.status == 200
+    assert len(s3_deleted) == 0
+
+
+async def test_update_org_without_avatar_field_no_s3_delete(
+    service_client, org_with_owner, pgsql, mockserver
+):
+    """Omitting avatar_url in update does not trigger S3 DELETE"""
+    org_id = org_with_owner['org']['id']
+    token = org_with_owner['token']
+    avatar = f'{S3_PUBLIC_BASE}/photos/{uuid.uuid4().hex}.jpg'
+
+    conn = pgsql['postgres-db']
+    cursor = conn.cursor()
+    cursor.execute(
+        'UPDATE organizations SET avatar_url = %s WHERE id = %s', (avatar, org_id))
+
+    s3_deleted = []
+
+    @mockserver.handler('/photos/', prefix=True)
+    def s3_handler(request):
+        if request.method == 'DELETE':
+            s3_deleted.append(request.path)
+        return mockserver.make_response('', 204)
+
+    response = await service_client.put(
+        f'/orgs/{org_id}',
+        json={'name': 'Name only update'},
+        headers={'Authorization': f'Bearer {token}'},
+    )
+
+    assert response.status == 200
+    assert len(s3_deleted) == 0

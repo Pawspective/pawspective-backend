@@ -47,7 +47,7 @@ userver::formats::json::Value PostUpdateHandler::HandleRequestJsonThrow(
         if (update_dto.photos.has_value()) {
             const auto& photos_vector = *update_dto.photos;
             validator.MaxSize("photos", photos_vector.size(), 10, "must not exceed");
-            const auto photo_regex = userver::utils::regex(R"(\.(jpg|jpeg|png|webp|gif)$)");
+            const auto photo_regex = userver::utils::regex(R"(^.+\.(jpg|jpeg|png|webp|gif)$)");
 
             for (size_t i = 0; i < photos_vector.size(); ++i) {
                 validator.Field(fmt::format("photos[{}]", i), photos_vector.at(i))

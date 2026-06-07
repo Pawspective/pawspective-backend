@@ -7,6 +7,7 @@
 #include "../../repositories/include/post_repository.hpp"
 #include "organization_service.hpp"
 #include "services/user_service.hpp"
+#include "utils/s3_upload_client.hpp"
 
 namespace pawspective::services {
 
@@ -15,7 +16,8 @@ public:
     explicit PostService(
         const repositories::PostRepository& repo,
         const services::OrganizationService& org_service,
-        const services::UserService& user_service
+        const services::UserService& user_service,
+        utils::S3UploadClient& s3
     );
     dto::PostDTO Create(int64_t user_id, const dto::PostCreateDTO& dto) const;
     [[nodiscard]] dto::PostDTO Get(int64_t id) const;
@@ -27,6 +29,7 @@ private:
     const repositories::PostRepository& repository_;
     const services::UserService& user_service_;
     const services::OrganizationService& org_service_;
+    utils::S3UploadClient& s3_;
 };
 
 }  // namespace pawspective::services

@@ -1,5 +1,7 @@
 #include "post_service.hpp"
 
+#include <unordered_set>
+#include <userver/logging/log.hpp>
 #include "services/exception.hpp"
 
 namespace pawspective::services {
@@ -7,9 +9,10 @@ namespace pawspective::services {
 PostService::PostService(
     const repositories::PostRepository& repo,
     const services::OrganizationService& org_service,
-    const services::UserService& user_service
+    const services::UserService& user_service,
+    utils::S3UploadClient& s3
 )
-    : repository_(repo), user_service_(user_service), org_service_(org_service) {}
+    : repository_(repo), user_service_(user_service), org_service_(org_service), s3_(s3) {}
 
 dto::PostDTO PostService::Create(int64_t user_id, const dto::PostCreateDTO& dto) const {
     auto user_org_id = user_service_.GetOrganizationId(user_id);
@@ -63,6 +66,20 @@ dto::PostDTO PostService::Update(const int64_t user_id, const int64_t post_id, c
     if (!result) {
         throw PostNotFoundException();
     }
+
+    if (dto.photos.has_value()) {
+        const std::unordered_set<std::string> new_photos(dto.photos->begin(), dto.photos->end());
+        for (const auto& url : existing->photos) {
+            if (!new_photos.contains(url)) {
+                try {
+                    s3_.DeleteFile(url);
+                } catch (const std::exception& e) {
+                    LOG_ERROR() << "Failed to delete removed post photo from S3: " << e.what();
+                }
+            }
+        }
+    }
+
     return models::Post::to_dto(*result);
 }
 
@@ -78,6 +95,14 @@ void PostService::Delete(int64_t user_id, int64_t post_id) const {
     auto deleted = repository_.Delete(post_id);
     if (!deleted) {
         throw PostNotFoundException();
+    }
+
+    for (const auto& url : existing->photos) {
+        try {
+            s3_.DeleteFile(url);
+        } catch (const std::exception& e) {
+            LOG_ERROR() << "Failed to delete post photo from S3 on post delete: " << e.what();
+        }
     }
 }
 

@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <iterator>
+#include <unordered_set>
+#include <userver/logging/log.hpp>
 #include "services/exception.hpp"
 
 namespace pawspective::services {
@@ -17,13 +19,15 @@ AnimalService::AnimalService(
     const BreedService& breed_service,
     const OrganizationService& org_service,
     const UserService& user_service,
-    const repositories::AdoptRequestRepository& adopt_request_repo
+    const repositories::AdoptRequestRepository& adopt_request_repo,
+    utils::S3UploadClient& s3
 )
     : repository_(repo),
       breed_service_(breed_service),
       org_service_(org_service),
       user_service_(user_service),
-      adopt_request_repo_(adopt_request_repo) {}
+      adopt_request_repo_(adopt_request_repo),
+      s3_(s3) {}
 
 dto::AnimalDTO AnimalService::Create(int64_t user_id, const dto::AnimalRegisterDTO& dto) const {
     auto user_org_id = user_service_.GetOrganizationId(user_id);
@@ -52,6 +56,19 @@ dto::AnimalDTO AnimalService::Update(int64_t user_id, int64_t animal_id, const d
 
     if (!updated) {
         throw AnimalNotFoundException();
+    }
+
+    if (dto.photos.has_value()) {
+        const std::unordered_set<std::string> new_photos(dto.photos->begin(), dto.photos->end());
+        for (const auto& url : existing->photos) {
+            if (!new_photos.contains(url)) {
+                try {
+                    s3_.DeleteFile(url);
+                } catch (const std::exception& e) {
+                    LOG_ERROR() << "Failed to delete removed animal photo from S3: " << e.what();
+                }
+            }
+        }
     }
 
     auto breed_dto = breed_service_.Get(updated->breed_id);
@@ -242,6 +259,14 @@ void AnimalService::Delete(int64_t user_id, int64_t animal_id) const {
     auto deleted = repository_.Delete(animal_id);
     if (!deleted) {
         throw AnimalNotFoundException();
+    }
+
+    for (const auto& url : existing->photos) {
+        try {
+            s3_.DeleteFile(url);
+        } catch (const std::exception& e) {
+            LOG_ERROR() << "Failed to delete animal photo from S3 on animal delete: " << e.what();
+        }
     }
 }
 
