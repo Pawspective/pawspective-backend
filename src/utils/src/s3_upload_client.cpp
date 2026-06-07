@@ -22,4 +22,18 @@ std::string S3UploadClient::UploadFile(std::string_view key, std::string data, s
     return fmt::format("{}/{}", public_url_base_, key);
 }
 
+void S3UploadClient::DeleteFile(std::string_view url) {
+    const auto prefix = public_url_base_ + "/";
+    if (url.substr(0, prefix.size()) != prefix) {
+        throw std::invalid_argument("URL does not match the expected S3 base");
+    }
+    const auto key = url.substr(prefix.size());
+    try {
+        client_->DeleteObject(key);
+    } catch (const std::exception& e) {
+        LOG_ERROR() << "S3 delete failed for key=" << key << ": " << e.what();
+        throw;
+    }
+}
+
 }  // namespace pawspective::utils
