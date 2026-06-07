@@ -1,8 +1,6 @@
 import uuid
 import pytest
 
-S3_PUBLIC_BASE = 'https://hollow1crown.storage.yandexcloud.net'
-
 
 def make_unique_email(prefix='org_delete'):
     random_part = uuid.uuid4().hex[:10]
@@ -165,7 +163,7 @@ async def test_org_delete_with_avatar_cleans_s3(
     """Deleting an org with an avatar triggers S3 DELETE for the avatar"""
     org_id = org_with_owner['org']['id']
     token = org_with_owner['token']
-    avatar_url = f'{S3_PUBLIC_BASE}/photos/{uuid.uuid4().hex}.jpg'
+    avatar_url = f'{uuid.uuid4().hex}.jpg'
 
     conn = pgsql['postgres-db']
     cursor = conn.cursor()

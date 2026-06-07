@@ -1,8 +1,6 @@
 import uuid
 import pytest
 
-S3_PUBLIC_BASE = 'https://hollow1crown.storage.yandexcloud.net'
-
 
 def make_unique_email(prefix='animal_delete'):
     random_part = uuid.uuid4().hex[:10]
@@ -227,8 +225,8 @@ async def test_animal_delete_with_photos_cleans_s3(
     service_client, animal, pgsql, testpoint
 ):
     """Deleting an animal triggers S3 DELETE for all its photos"""
-    photo_url1 = f'{S3_PUBLIC_BASE}/photos/{uuid.uuid4().hex}.jpg'
-    photo_url2 = f'{S3_PUBLIC_BASE}/photos/{uuid.uuid4().hex}.png'
+    photo_url1 = f'{uuid.uuid4().hex}.jpg'
+    photo_url2 = f'{uuid.uuid4().hex}.png'
     conn = pgsql['postgres-db']
     cursor = conn.cursor()
     cursor.execute(

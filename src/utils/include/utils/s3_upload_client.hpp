@@ -11,7 +11,7 @@ public:
     S3UploadClient(userver::s3api::ClientPtr client, std::string public_url_base);
 
     std::string UploadFile(std::string_view key, std::string data, std::string_view content_type);
-    void DeleteFile(std::string_view url);
+    void DeleteFile(std::string_view filename);
 
 private:
     userver::s3api::ClientPtr client_;

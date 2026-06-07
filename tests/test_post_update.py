@@ -2,8 +2,6 @@ import uuid
 
 import pytest
 
-S3_PUBLIC_BASE = 'https://hollow1crown.storage.yandexcloud.net'
-
 
 def make_unique_email(prefix='post_user'):
     random_part = uuid.uuid4().hex[:10]
@@ -408,7 +406,7 @@ async def test_update_post_removes_old_photos_from_s3(
     service_client, authenticated_user, pgsql, testpoint
 ):
     """Updating photos list triggers S3 DELETE for removed URLs"""
-    photo_url = f'{S3_PUBLIC_BASE}/photos/{uuid.uuid4().hex}.jpg'
+    photo_url = f'{uuid.uuid4().hex}.jpg'
     post = await create_post(service_client, authenticated_user['token'], {'text': 'Post with photo'})
 
     conn = pgsql['postgres-db']
@@ -438,8 +436,8 @@ async def test_update_post_partial_photo_removal(
     service_client, authenticated_user, pgsql, testpoint
 ):
     """Only removed photos are deleted from S3; retained ones are not touched"""
-    kept_url = f'{S3_PUBLIC_BASE}/photos/{uuid.uuid4().hex}.jpg'
-    removed_url = f'{S3_PUBLIC_BASE}/photos/{uuid.uuid4().hex}.png'
+    kept_url = f'{uuid.uuid4().hex}.jpg'
+    removed_url = f'{uuid.uuid4().hex}.png'
     post = await create_post(service_client, authenticated_user['token'], {'text': 'Post'})
 
     conn = pgsql['postgres-db']
@@ -469,7 +467,7 @@ async def test_update_post_unchanged_photos_no_s3_delete(
     service_client, authenticated_user, pgsql, mockserver
 ):
     """Sending the same photo list does not trigger any S3 deletes"""
-    photo_url = f'{S3_PUBLIC_BASE}/photos/{uuid.uuid4().hex}.jpg'
+    photo_url = f'{uuid.uuid4().hex}.jpg'
     post = await create_post(service_client, authenticated_user['token'], {'text': 'Post'})
 
     conn = pgsql['postgres-db']
@@ -499,7 +497,7 @@ async def test_update_post_without_photos_field_no_s3_delete(
     service_client, authenticated_user, pgsql, mockserver
 ):
     """Omitting photos field in update does not trigger any S3 deletes"""
-    photo_url = f'{S3_PUBLIC_BASE}/photos/{uuid.uuid4().hex}.jpg'
+    photo_url = f'{uuid.uuid4().hex}.jpg'
     post = await create_post(service_client, authenticated_user['token'], {'text': 'Post'})
 
     conn = pgsql['postgres-db']

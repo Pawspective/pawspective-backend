@@ -2,6 +2,7 @@ import pytest
 from pytest_userver import plugins
 from testsuite.databases.pgsql import discover
 
+
 pytest_plugins = [
     'pytest_userver.plugins.core',
     'pytest_userver.plugins.postgresql',

@@ -2,8 +2,6 @@ import uuid
 
 import pytest
 
-S3_PUBLIC_BASE = 'https://hollow1crown.storage.yandexcloud.net'
-
 
 def make_unique_email(prefix='post_user'):
     random_part = uuid.uuid4().hex[:10]
@@ -265,8 +263,8 @@ async def test_delete_post_with_photos_cleans_s3(
     service_client, authenticated_user, pgsql, testpoint
 ):
     """Deleting a post triggers S3 DELETE for all its photos"""
-    photo_url1 = f'{S3_PUBLIC_BASE}/photos/{uuid.uuid4().hex}.jpg'
-    photo_url2 = f'{S3_PUBLIC_BASE}/photos/{uuid.uuid4().hex}.png'
+    photo_url1 = f'{uuid.uuid4().hex}.jpg'
+    photo_url2 = f'{uuid.uuid4().hex}.png'
     post = await create_post(service_client, authenticated_user['token'], {'text': 'Post with photos'})
 
     conn = pgsql['postgres-db']

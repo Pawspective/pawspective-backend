@@ -24,25 +24,18 @@ std::string S3UploadClient::UploadFile(std::string_view key, std::string data, s
     return fmt::format("{}/{}", public_url_base_, key);
 }
 
-void S3UploadClient::DeleteFile(std::string_view url) {
-    const auto prefix = public_url_base_ + "/";
-    if (!url.starts_with(prefix)) {
-        throw std::invalid_argument("URL does not match the expected S3 base");
-    }
-    const auto key = url.substr(prefix.size());
-    if (key.empty()) {
-        throw std::invalid_argument("URL does not contain a valid S3 key");
-    }
+void S3UploadClient::DeleteFile(std::string_view filename) {
+    const auto key = fmt::format("photos/{}", filename);
     TESTPOINT("s3-delete-file", [&key] {
         userver::formats::json::ValueBuilder builder;
-        builder["key"] = std::string(key);
+        builder["key"] = key;
         return builder.ExtractValue();
     }());
 
     try {
         client_->DeleteObject(key);
     } catch (const std::exception& e) {
-        LOG_ERROR() << "S3 delete failed for key=" << key << ": " << e.what();
+        LOG_ERROR() << "S3 delete failed for filename=" << filename << ": " << e.what();
         throw;
     }
 }
