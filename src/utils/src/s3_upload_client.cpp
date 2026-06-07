@@ -1,7 +1,9 @@
 #include "utils/s3_upload_client.hpp"
 #include <fmt/format.h>
+#include <userver/formats/json/value_builder.hpp>
 #include <userver/logging/log.hpp>
 #include <userver/s3api/clients/s3api.hpp>
+#include <userver/testsuite/testpoint.hpp>
 
 namespace pawspective::utils {
 
@@ -20,6 +22,22 @@ std::string S3UploadClient::UploadFile(std::string_view key, std::string data, s
         throw;
     }
     return fmt::format("{}/{}", public_url_base_, key);
+}
+
+void S3UploadClient::DeleteFile(std::string_view filename) {
+    const auto key = fmt::format("photos/{}", filename);
+    TESTPOINT("s3-delete-file", [&key] {
+        userver::formats::json::ValueBuilder builder;
+        builder["key"] = key;
+        return builder.ExtractValue();
+    }());
+
+    try {
+        client_->DeleteObject(key);
+    } catch (const std::exception& e) {
+        LOG_ERROR() << "S3 delete failed for filename=" << filename << ": " << e.what();
+        throw;
+    }
 }
 
 }  // namespace pawspective::utils

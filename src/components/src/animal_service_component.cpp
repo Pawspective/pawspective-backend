@@ -5,6 +5,7 @@
 #include "breed_service_component.hpp"
 #include "components/user_service_component.hpp"
 #include "organization_service_component.hpp"
+#include "s3_component.hpp"
 
 namespace pawspective::components {
 AnimalServiceComponent::AnimalServiceComponent(
@@ -17,7 +18,8 @@ AnimalServiceComponent::AnimalServiceComponent(
           context.FindComponent<BreedServiceComponent>().get_service(),
           context.FindComponent<OrganizationServiceComponent>().get_service(),
           context.FindComponent<UserServiceComponent>().get_service(),
-          context.FindComponent<AdoptRequestRepositoryComponent>().get_repository()
+          context.FindComponent<AdoptRequestRepositoryComponent>().get_repository(),
+          context.FindComponent<S3Component>().GetClient()
       ) {}
 
 const services::AnimalService& AnimalServiceComponent::get_service() const { return service_; }

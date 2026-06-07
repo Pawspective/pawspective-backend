@@ -101,10 +101,8 @@ async def test_upload_jpeg_returns_url(service_client, auth_token, mockserver):
 
     assert response.status == 200
     data = response.json()
-    assert 'url' in data
-    assert data['url'].startswith('https://')
-    assert 'photos/' in data['url']
-    assert data['url'].endswith('.jpg')
+    assert 'filename' in data
+    assert data['filename'].endswith('.jpg')
 
 
 async def test_upload_png_returns_url(service_client, auth_token, mockserver):
@@ -123,4 +121,4 @@ async def test_upload_png_returns_url(service_client, auth_token, mockserver):
     )
 
     assert response.status == 200
-    assert response.json()['url'].endswith('.png')
+    assert response.json()['filename'].endswith('.png')

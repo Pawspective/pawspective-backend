@@ -100,6 +100,7 @@ inline constexpr std::string_view kAdoptRequestAlreadyExists = "ADOPT_REQUEST_AL
 inline constexpr std::string_view kAnimalNotAvailable = "ANIMAL_NOT_AVAILABLE";
 inline constexpr std::string_view kInvalidContentType = "INVALID_CONTENT_TYPE";
 inline constexpr std::string_view kUploadFailed = "UPLOAD_FAILED";
+inline constexpr std::string_view kDeleteFailed = "DELETE_FAILED";
 }  // namespace error_code
 
 }  // namespace pawspective::utils

@@ -219,3 +219,50 @@ async def test_animal_delete_twice(service_client, animal):
         headers={'Authorization': f'Bearer {token}'},
     )
     assert response2.status == 404
+
+
+async def test_animal_delete_with_photos_cleans_s3(
+    service_client, animal, pgsql, testpoint
+):
+    """Deleting an animal triggers S3 DELETE for all its photos"""
+    photo_url1 = f'{uuid.uuid4().hex}.jpg'
+    photo_url2 = f'{uuid.uuid4().hex}.png'
+    conn = pgsql['postgres-db']
+    cursor = conn.cursor()
+    cursor.execute(
+        'UPDATE animals SET photos = %s WHERE id = %s',
+        ([photo_url1, photo_url2], animal['id']),
+    )
+
+    @testpoint('s3-delete-file')
+    def s3_handler(data):
+        pass
+
+    response = await service_client.delete(
+        f'/animals/{animal["id"]}',
+        headers={'Authorization': f'Bearer {animal["token"]}'},
+    )
+
+    assert response.status == 204
+    assert s3_handler.times_called == 2
+
+
+async def test_animal_delete_without_photos_no_s3_call(
+    service_client, animal, mockserver
+):
+    """Deleting an animal with no photos makes no S3 calls"""
+    s3_deleted = []
+
+    @mockserver.handler('/photos/', prefix=True)
+    def s3_handler(request):
+        if request.method == 'DELETE':
+            s3_deleted.append(request.path)
+        return mockserver.make_response('', 204)
+
+    response = await service_client.delete(
+        f'/animals/{animal["id"]}',
+        headers={'Authorization': f'Bearer {animal["token"]}'},
+    )
+
+    assert response.status == 204
+    assert len(s3_deleted) == 0

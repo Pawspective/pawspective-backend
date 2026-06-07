@@ -257,3 +257,52 @@ async def test_delete_post_after_organization_deleted(service_client, authentica
         headers={'Authorization': f"Bearer {authenticated_user['token']}"},
     )
     assert response.status == 404
+
+
+async def test_delete_post_with_photos_cleans_s3(
+    service_client, authenticated_user, pgsql, testpoint
+):
+    """Deleting a post triggers S3 DELETE for all its photos"""
+    photo_url1 = f'{uuid.uuid4().hex}.jpg'
+    photo_url2 = f'{uuid.uuid4().hex}.png'
+    post = await create_post(service_client, authenticated_user['token'], {'text': 'Post with photos'})
+
+    conn = pgsql['postgres-db']
+    cursor = conn.cursor()
+    cursor.execute('UPDATE posts SET photos = %s WHERE id = %s',
+                   ([photo_url1, photo_url2], post['id']))
+
+    @testpoint('s3-delete-file')
+    def s3_handler(data):
+        pass
+
+    response = await service_client.delete(
+        f'/posts/{post["id"]}',
+        headers={'Authorization': f"Bearer {authenticated_user['token']}"},
+    )
+
+    assert response.status == 204
+    assert s3_handler.times_called == 2
+
+
+async def test_delete_post_without_photos_no_s3_call(
+    service_client, authenticated_user, mockserver
+):
+    """Deleting a post with no photos makes no S3 calls"""
+    post = await create_post(service_client, authenticated_user['token'], {'text': 'Post no photos'})
+
+    s3_deleted = []
+
+    @mockserver.handler('/photos/', prefix=True)
+    def s3_handler(request):
+        if request.method == 'DELETE':
+            s3_deleted.append(request.path)
+        return mockserver.make_response('', 204)
+
+    response = await service_client.delete(
+        f'/posts/{post["id"]}',
+        headers={'Authorization': f"Bearer {authenticated_user['token']}"},
+    )
+
+    assert response.status == 204
+    assert len(s3_deleted) == 0

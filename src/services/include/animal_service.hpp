@@ -13,6 +13,7 @@
 #include "animal_update_dto.hpp"
 #include "breed_service.hpp"
 #include "organization_service.hpp"
+#include "utils/s3_upload_client.hpp"
 
 namespace pawspective::services {
 
@@ -23,7 +24,8 @@ public:
         const BreedService& breed_service,
         const OrganizationService& org_service,
         const UserService& user_service,
-        const repositories::AdoptRequestRepository& adopt_request_repo
+        const repositories::AdoptRequestRepository& adopt_request_repo,
+        utils::S3UploadClient& s3
     );
 
     dto::AnimalDTO Create(int64_t user_id, const dto::AnimalRegisterDTO& dto) const;
@@ -55,6 +57,7 @@ private:
     const OrganizationService& org_service_;
     const UserService& user_service_;
     const repositories::AdoptRequestRepository& adopt_request_repo_;
+    utils::S3UploadClient& s3_;
 };
 
 }  // namespace pawspective::services

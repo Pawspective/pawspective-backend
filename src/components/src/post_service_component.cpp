@@ -2,6 +2,7 @@
 #include "components/user_service_component.hpp"
 #include "organization_service_component.hpp"
 #include "post_repository_component.hpp"
+#include "s3_component.hpp"
 
 namespace pawspective::components {
 
@@ -13,7 +14,8 @@ PostServiceComponent::PostServiceComponent(
       service_(
           context.FindComponent<PostRepositoryComponent>().get_repository(),
           context.FindComponent<OrganizationServiceComponent>().get_service(),
-          context.FindComponent<UserServiceComponent>().get_service()
+          context.FindComponent<UserServiceComponent>().get_service(),
+          context.FindComponent<S3Component>().GetClient()
       ) {}
 
 const services::PostService& PostServiceComponent::get_service() const { return service_; }

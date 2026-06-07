@@ -60,11 +60,11 @@ std::string UploadPhotoHandler::HandleRequest(
         utils::ErrorResponse(utils::error_code::kMissingField, "Request body is empty").ThrowClientError();
     }
 
-    const auto key = fmt::format("photos/{}.{}", userver::utils::generators::GenerateUuid(), type_it->second);
+    const auto filename = fmt::format("{}.{}", userver::utils::generators::GenerateUuid(), type_it->second);
+    const auto key = fmt::format("photos/{}", filename);
 
-    std::string url;
     try {
-        url = s3_.GetClient().UploadFile(key, body, media_type);
+        s3_.GetClient().UploadFile(key, body, media_type);
     } catch (const std::exception& e) {
         LOG_ERROR() << "Photo upload to S3 failed: " << e.what();
         utils::ErrorResponse(utils::error_code::kUploadFailed, "Failed to upload photo").ThrowServerError();
@@ -73,7 +73,7 @@ std::string UploadPhotoHandler::HandleRequest(
     request.GetHttpResponse().SetContentType(userver::http::ContentType("application/json"));
 
     userver::formats::json::ValueBuilder builder;
-    builder["url"] = url;
+    builder["filename"] = filename;
     return userver::formats::json::ToString(builder.ExtractValue());
 }
 

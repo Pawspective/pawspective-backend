@@ -1,5 +1,6 @@
 #include "organization_service.hpp"
 
+#include <userver/logging/log.hpp>
 #include "services/exception.hpp"
 
 namespace pawspective::services {
@@ -7,9 +8,10 @@ namespace pawspective::services {
 OrganizationService::OrganizationService(
     const repositories::OrganizationRepository& repo,
     const services::CityService& city_service,
-    const services::UserService& user_service
+    const services::UserService& user_service,
+    utils::S3UploadClient& s3
 )
-    : repository_(repo), city_service_(city_service), user_service_(user_service) {}
+    : repository_(repo), city_service_(city_service), user_service_(user_service), s3_(s3) {}
 
 dto::OrganizationDTO OrganizationService::Register(const int64_t user_id, const dto::OrganizationRegisterDTO& dto)
     const {
@@ -64,6 +66,10 @@ dto::OrganizationDTO OrganizationService::Update(
     if (!user.organization_id || user.organization_id != org_id) {
         throw ForbiddenException();
     }
+    auto existing = repository_.GetById(org_id);
+    if (!existing) {
+        throw OrganizationNotFoundException();
+    }
     std::optional<dto::CityDTO> validated_city;
     if (dto.city_id.has_value()) {
         validated_city = city_service_.Get(*dto.city_id);
@@ -73,6 +79,15 @@ dto::OrganizationDTO OrganizationService::Update(
     if (!result) {
         throw OrganizationNotFoundException();
     }
+
+    if (dto.avatar_url.has_value() && existing->avatar_url.has_value() && *dto.avatar_url != *existing->avatar_url) {
+        try {
+            s3_.DeleteFile(*existing->avatar_url);
+        } catch (const std::exception& e) {
+            LOG_ERROR() << "Failed to delete old org avatar from S3: " << e.what();
+        }
+    }
+
     auto city_dto = validated_city.has_value() ? std::move(*validated_city) : city_service_.Get(result->city_id);
     return models::Organization::to_dto(*result, city_dto);
 }
@@ -89,6 +104,14 @@ void OrganizationService::Delete(int64_t user_id, int64_t org_id) const {
     auto deleted = repository_.Delete(org_id);
     if (!deleted) {
         throw OrganizationNotFoundException();
+    }
+
+    if (org->avatar_url.has_value()) {
+        try {
+            s3_.DeleteFile(*org->avatar_url);
+        } catch (const std::exception& e) {
+            LOG_ERROR() << "Failed to delete org avatar from S3 on org delete: " << e.what();
+        }
     }
 }
 
