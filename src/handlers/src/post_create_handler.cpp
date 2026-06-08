@@ -36,12 +36,12 @@ userver::formats::json::Value PostCreateHandler::HandleRequestJsonThrow(
         utils::Validator validator;
         validator.Field("text", post_data.text).NotBlank().MaxLength(2000);
         validator.MaxSize("photos", post_data.photos.size(), 10, "must not exceed");
-        const auto photo_regex = userver::utils::regex(R"(\.(jpg|jpeg|png|webp|gif)$)");
+        const auto photo_regex = userver::utils::regex(R"(^.+\.(jpg|jpeg|png|webp|gif)$)");
 
         for (size_t i = 0; i < post_data.photos.size(); ++i) {
             validator.Field(fmt::format("photos[{}]", i), post_data.photos[i])
                 .MaxLength(2000)
-                .Matches(photo_regex, "must be a valid photo filename with extension (e.g. 6035e3bf.jpg)");
+                .Matches(photo_regex, "must be a valid photo filename with extension");
         }
         validator.ThrowIfInvalid();
 
