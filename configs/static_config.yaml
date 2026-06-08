@@ -24,7 +24,7 @@ components_manager:
         http-client-middleware-pipeline:
 
         default-secdist-provider:
-            config: /home/user/pawspective/secdist.json
+            config: $secdist-path
             missing-ok: false
 
 
@@ -36,7 +36,7 @@ components_manager:
             fs-task-processor: fs-task-processor
             
         postgres-db:
-            dbconnection: 'postgresql://user:password@localhost:5432/postgres-db'
+            dbalias: postgres-db
             blocking_task_processor: fs-task-processor
             dns_resolver: async
 

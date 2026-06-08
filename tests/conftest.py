@@ -1,4 +1,6 @@
+import pathlib
 import pytest
+import yaml
 from pytest_userver import plugins
 from testsuite.databases.pgsql import discover
 
@@ -10,10 +12,13 @@ pytest_plugins = [
 
 
 @pytest.fixture(scope='session')
+def userver_config_vars_path(service_source_dir) -> pathlib.Path:
+    return service_source_dir / 'configs/config_vars.testing.yaml'
+
+@pytest.fixture(scope='session')
 def userver_default_log_level() -> str:
     """Lower service log verbosity for testsuite runner."""
     return 'debug'
-
 
 @pytest.fixture(scope='session')
 def pgsql_local(service_source_dir, pgsql_local_create):
@@ -28,12 +33,12 @@ def pgsql_local(service_source_dir, pgsql_local_create):
 def userver_pg_config(pgsql_local):
     def _patch_config(config_yaml, config_vars):
         db_info = pgsql_local['postgres-db']
-
+        
         components = config_yaml['components_manager']['components']
-
         if 'postgres-db' not in components:
             components['postgres-db'] = {}
 
+        components['postgres-db'].pop('dbalias', None)
         components['postgres-db']['dbconnection'] = db_info.get_uri()
 
     return _patch_config
