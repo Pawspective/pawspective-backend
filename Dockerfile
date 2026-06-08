@@ -17,9 +17,10 @@ RUN make install-release
 FROM ubuntu:22.04
 
 RUN apt-get update && apt-get install -y \
+    --no-install-recommends \
     libargon2-1 \
     libldap-2.5-0 \
-    # ca-certificates \
+    ca-certificates \
     libcurl4 \
     libatomic1 \
     libfmt8 \
