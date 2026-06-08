@@ -82,8 +82,6 @@ jobs:
             -czf "${RELEASE_DIR}.tar.gz" \
             "$RELEASE_DIR"
 
-          cp "${RELEASE_DIR}.tar.gz"
-
       - name: Create GitHub Release
         run: |
           gh release create "${GITHUB_REF_NAME}" \
