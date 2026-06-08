@@ -1,0 +1,60 @@
+# ─── Build artefacts ──────────────────────────────────────────────────────────
+build*/
+cmake-build-*/
+
+# ─── CMake / Ninja generated files ────────────────────────────────────────────
+compile_commands.json
+CMakeUserPresets.json
+Makefile.local
+
+# ─── CPM / third-party source cache ───────────────────────────────────────────
+third_party/
+.cpm/
+.ccache/
+.cache/
+
+# ─── Test artefacts ───────────────────────────────────────────────────────────
+Testing/
+tests/__pycache__/
+tests/.pytest_cache/
+**/__pycache__/
+**/.pytest_cache/
+*.pyc
+
+# ─── IDE / editor files ───────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ─── OS generated files ───────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── Secrets (never bake into the image) ──────────────────────────────────────
+secdist.json
+
+# ─── Git ──────────────────────────────────────────────────────────────────────
+.git/
+.gitignore
+.github/
+
+# ─── Dev-container / devenv ───────────────────────────────────────────────────
+.devcontainer/
+Dockerfile
+docker-compose.yaml
+
+# ─── Docs / auxiliary ─────────────────────────────────────────────────────────
+README.md
+CONTRIBUTING.md
+LICENSE.md
+*.md
+
+# ─── Static analysis configs (not needed in container) ────────────────────────
+.clang-format
+.clang-tidy
+.cppcheck_suppressions
+
+# ─── PostgreSQL seed data (handled separately via migrations) ─────────────────
+postgresql/seed_cities_breeds.sql
