@@ -13,8 +13,6 @@
 
 [Quick Start](#-quick-start) · [Architecture](#-architecture) · [API](#-api-overview) · [Configuration](#-configuration) · [Contributing](#-contributing)
 
-</div>
-
 ---
 
 ## 📖 About
@@ -105,7 +103,7 @@ curl http://localhost:8080/health
 
 ## 🏗 Architecture
 
-```
+```text
 pawspective-backend/
 ├── src/
 │   ├── handlers/       # HTTP request handlers (controllers / routes)
@@ -324,7 +322,7 @@ We welcome contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for the
 
 **Example:**
 
-```
+```text
 feat(auth): add JWT refresh token endpoint
 fix(animals): correct pagination offset calculation
 ```
